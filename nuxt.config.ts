@@ -4,11 +4,13 @@ export default defineNuxtConfig({
   ui: {
     global: true,
   },
-  hub: {
-    database: true,
-    blob: true,
-    kv: true,
-    remote: true,
+  $development: {
+    hub: {
+      database: true,
+      blob: true,
+      kv: true,
+      remote: true,
+    },
   },
   image: {
     dir: 'public',
