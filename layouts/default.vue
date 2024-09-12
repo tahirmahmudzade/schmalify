@@ -22,22 +22,22 @@ const links: HorizontalNavigationLink[] | HorizontalNavigationLink[][] = [
       to: '/login',
       exactActiveClass: '',
     },
-    {
-      label: 'Settings',
-      // to: "/settings",
-    },
   ],
 ]
 </script>
 
 <template>
-  <div>
+  <div class="container mx-auto px-4">
+    <!-- Added container with mx-auto and padding -->
     <UHorizontalNavigation
       :links="links"
       :ui="{
+        after: '',
         before: 'hover:before:bg-gray-900 dark:hover:before:bg-gray-900',
-        inactive: 'text-gray-400 dark:text-gray-400 font-bold font-mono',
-        active: 'text-gray-400 dark:text-gray-400 font-bold font-mono',
+        inactive:
+          'text-gray-400 dark:text-gray-400 font-bold transition-colors duration-300', // add transition here
+        active:
+          'text-gray-400 dark:text-gray-400 font-bold transition-colors duration-300', // add transition here
       }"
     >
       <template #default="{ link }">
