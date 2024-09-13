@@ -2,7 +2,6 @@
 import type { HorizontalNavigationLink } from '#ui/types'
 
 const route = useRoute()
-const { isMobile } = useDevice()
 
 const path = computed(() => route.path)
 
@@ -20,39 +19,21 @@ onMounted(() => {
         as: 'Search',
       },
     ],
-    !isMobile
-      ? [
-          {
-            label: 'Sell Now',
-            click: () => {
-              useSellNowModal()
-            },
-          },
-          {
-            label: 'Register',
-            to: '/register',
-          },
-          {
-            label: 'Login',
-            to: '/login',
-          },
-        ]
-      : [
-          {
-            label: 'Sell Now',
-            click: () => {
-              useSellNowModal()
-            },
-          },
-          {
-            label: '',
-            // key: 'more',
-            icon: 'i-pepicons-pop-dots-x',
-            click: () => {
-              useLoginModal()
-            },
-          },
-        ],
+    [
+      {
+        label: 'Sell Now',
+        click: () => {
+          useSellNowModal()
+        },
+      },
+      {
+        label: 'Profile',
+        // key: 'more',
+        click: () => {
+          useLoginModal()
+        },
+      },
+    ],
   ]
 })
 </script>
@@ -63,6 +44,8 @@ onMounted(() => {
     <UHorizontalNavigation
       :links="links"
       :ui="{
+        wrapper:
+          'fixed top-0 left-0 w-full bg-gray-900 z-50 shadow-lg mx-auto px-5', // Solid background color and shadow
         after: '',
         before: 'hover:before:bg-gray-900 dark:hover:before:bg-gray-900',
         inactive:
@@ -108,26 +91,31 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          <div v-else-if="link.label === 'Categories'">
+          <div v-else-if="link.label === 'Sell Now'">
+            <ButtonsSellNowButton :click="link.click as () => void" />
+          </div>
+          <div v-else-if="link.label === 'Profile'">
             <UButton
-              label="Categories"
-              variant="outline"
-              color="white"
+              variant="solid"
+              color="black"
               :ui="{
-                rounded: 'rounded-full',
-                variant: {
-                  outline: 'text-gray-100',
+                color: {
+                  black: {
+                    solid: `text-gray-900 dark:text-gray-900 bg-gray-100 
+          dark:bg-gray-100 hover:bg-gray-900 dark:hover:bg-black
+          hover:text-gray-100 dark:hover:text-gray-100`,
+                  },
                 },
               }"
-            />
+            >
+              <Icon name="i-healthicons-ui-user-profile" size="1.5em"
+            /></UButton>
           </div>
-          <div v-else-if="link.label === 'Sell Now'">
-            <LazyButtonsSellNowButton :click="link.click as () => void" />
-          </div>
-          <p v-else>{{ link.label }}</p>
         </span>
       </template>
     </UHorizontalNavigation>
-    <slot />
+    <div class="mt-20">
+      <slot />
+    </div>
   </div>
 </template>
