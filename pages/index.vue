@@ -4,54 +4,138 @@
 const categories = [
   {
     name: 'All',
-    image: '/img/all.jpg',
+    image: '/img/categories/all.jpg',
     to: 'categories/all',
   },
   {
     name: 'For Free',
-    image: '/img/free.jpg',
+    image: '/img/categories/free.jpg',
     to: 'categories/free',
   },
   {
     name: 'Electronics',
-    image: '/img/electronics.avif',
+    image: '/img/categories/electronics.avif',
     to: 'categories/electronics',
   },
-  { name: 'Books', image: '/img/books.jpg', to: 'categories/books' },
+  { name: 'Books', image: '/img/categories/books.jpg', to: 'categories/books' },
   {
     name: 'Clothing',
-    image: '/img/clothing.avif',
+    image: '/img/categories/clothing.avif',
     to: 'categories/clothing',
   },
   {
     name: 'Furniture',
-    image: '/img/furniture.avif',
+    image: '/img/categories/furniture.avif',
     to: 'categories/furniture',
   },
   {
     name: 'Home & Garden',
-    image: '/img/home-garden.avif',
+    image: '/img/categories/home-garden.avif',
     to: 'categories/home-garden',
   },
   {
     name: 'Sports & Outdoors',
-    image: '/img/sport-outdoors.jpg',
+    image: '/img/categories/sport-outdoors.jpg',
     to: 'categories/sports-outdoors',
   },
   {
     name: 'Health & Beauty',
-    image: '/img/health.jpg',
+    image: '/img/categories/health.jpg',
     to: 'categories/health-beauty',
   },
   {
     name: 'Jewelry & Accessories',
-    image: '/img/accessories.jpg',
+    image: '/img/categories/accessories.jpg',
     to: 'categories/accessories',
   },
   {
     name: 'Leasure & Games',
-    image: '/img/games.jpg',
+    image: '/img/categories/games.jpg',
     to: 'categories/games',
+  },
+]
+
+const items = [
+  {
+    name: 'Laptop',
+    image: '/img/items/laptop.jpg',
+    price: '€500',
+    location: 'Schmalkalden',
+    category: 'Electronics',
+    date: '2022-01-01',
+    description: 'Brand new laptop for sale',
+  },
+  {
+    name: 'iPhone',
+    image: '/img/items/iphone.jpg',
+    price: '€300',
+    location: 'Schmalkalden',
+    category: 'Electronics',
+    date: '2022-01-01',
+    description: 'Used iPhone for sale',
+  },
+  {
+    name: 'Book',
+    image: '/img/items/book.jpg',
+    price: '€20',
+    location: 'Schmalkalden',
+    category: 'Books',
+    date: '2022-01-01',
+    description: 'Second-hand book for sale',
+  },
+  {
+    name: 'Shirt',
+    image: '/img/items/shirt.jpg',
+    price: '€10',
+    location: 'Schmalkalden',
+    category: 'Clothing',
+    date: '2022-01-01',
+    description: 'New shirt for sale',
+  },
+  {
+    name: 'Table',
+    image: '/img/items/table.jpg',
+    price: '€50',
+    location: 'Schmalkalden',
+    category: 'Furniture',
+    date: '2022-01-01',
+    description: 'Used table for sale',
+  },
+  {
+    name: 'Plant',
+    image: '/img/items/plant.jpg',
+    price: '€15',
+    location: 'Schmalkalden',
+    category: 'Home & Garden',
+    date: '2022-01-01',
+    description: 'Small plant for sale',
+  },
+  {
+    name: 'Bike',
+    image: '/img/items/bike.jpg',
+    price: '€100',
+    location: 'Schmalkalden',
+    category: 'Sports & Outdoors',
+    date: '2022-01-01',
+    description: 'Used bike for sale',
+  },
+  {
+    name: 'Perfume',
+    image: '/img/items/perfume.jpg',
+    price: '€30',
+    location: 'Schmalkalden',
+    category: 'Health & Beauty',
+    date: '2022-01-01',
+    description: 'New perfume for sale',
+  },
+  {
+    name: 'Necklace',
+    image: '/img/items/necklace.jpg',
+    price: '€25',
+    location: 'Schmalkalden',
+    category: 'Jewelry & Accessories',
+    date: '2022-01-01',
+    description: 'Used necklace for sale',
   },
 ]
 </script>
@@ -97,8 +181,13 @@ const categories = [
       </div>
     </div>
 
-    <!-- Category Section -->
+    <!-- Categories Section -->
     <div class="category-section">
+      <h2
+        class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center"
+      >
+        Categories
+      </h2>
       <div
         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 lg:gap-6 overflow-y-auto"
       >
@@ -123,6 +212,56 @@ const categories = [
         </NuxtLink>
       </div>
     </div>
+
+    <!-- Items Section -->
+    <div class="items-section mt-12">
+      <h2
+        class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center"
+      >
+        Latest Items
+      </h2>
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 lg:gap-6"
+      >
+        <!-- Loop through items array with v-for -->
+        <div
+          v-for="item in items"
+          :key="item.name"
+          class="item-card flex flex-col items-center p-4 rounded-lg shadow-md"
+        >
+          <NuxtImg
+            :src="item.image"
+            :alt="item.name"
+            class="item-image w-full object-cover"
+            format="webp"
+          />
+          <p
+            class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4"
+          >
+            {{ item.name }}
+          </p>
+          <p class="text-gray-400 text-center">{{ item.price }}</p>
+          <p class="text-gray-400 text-center">{{ item.location }}</p>
+          <p class="text-gray-400 text-center">{{ item.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Section: Shpock Description -->
+    <div class="description-section text-center mt-12 px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">
+        What is Schmalify?
+      </h2>
+      <p
+        class="text-gray-400 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto"
+      >
+        Schmalify is a second-hand marketplace designed for students in
+        Schmalkalden, providing a dedicated platform to buy and sell items
+        within the local student community. Schmalify aims to simplify the
+        trading process and foster a more efficient way for students to connect
+        and exchange goods.
+      </p>
+    </div>
   </div>
 </template>
 
@@ -132,16 +271,18 @@ const categories = [
 }
 
 /* Define the category section without scrolling on larger screens */
-.category-section {
-  max-height: none; /* No height restriction on larger screens */
-  overflow-y: unset; /* Disable scrolling for larger screens */
+.category-section,
+.items-section {
+  max-height: none;
+  overflow-y: unset;
 }
 
 /* Apply max-height and scrolling for mobile screens */
 @media (max-width: 768px) {
-  .category-section {
-    max-height: 500px; /* Limit height for mobile devices */
-    overflow-y: auto; /* Enable scrolling on mobile screens */
+  .category-section,
+  .items-section {
+    max-height: 500px; /* You can adjust this height as needed */
+    overflow-y: auto;
   }
 }
 
@@ -157,17 +298,31 @@ const categories = [
 }
 
 /* Adjust the category image to match the aspect ratio with reduced height */
-.category-image {
+.category-image,
+.item-image {
   width: 100%;
-  height: 150px; /* Slightly reduced height */
+  height: 150px; /* You can adjust this height as needed */
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: 0.5rem; /* Keep consistent border radius */
 }
 
-/* Add margin below image and center text */
-p {
-  margin-top: 12px;
-  font-size: 16px;
-  color: #2d3748;
+/* Description section styling */
+.description-section {
+  margin-top: 50px;
+  padding: 20px;
+  text-align: center;
+}
+
+.description-section p {
+  max-width: 700px;
+  margin: 0 auto;
+  color: #a0aec0;
+}
+
+/* Slightly increase the width for desktop screens */
+@media (min-width: 1024px) {
+  .description-section p {
+    max-width: 900px; /* Increase width for larger screens */
+  }
 }
 </style>

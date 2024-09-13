@@ -7,7 +7,6 @@ defineProps<{
 <template>
   <UButton
     label="Sell Now"
-    icon="i-material-symbols-light-sell-outline-sharp"
     variant="solid"
     color="black"
     :ui="{
@@ -20,5 +19,10 @@ defineProps<{
       },
     }"
     @click="click"
-  />
+  >
+    <template #leading>
+      <Icon name="i-material-symbols-light-sell-outline-sharp" size="1.5em" />
+      <!-- Solves cloud flare UButton icon issue -->
+    </template>
+  </UButton>
 </template>
