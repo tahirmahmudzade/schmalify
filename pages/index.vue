@@ -1,7 +1,17 @@
 <script setup lang="ts">
-const modal = useModal()
+// const modal = useModal()
 
 const categories = [
+  {
+    name: 'All',
+    image: '/img/all.jpg',
+    to: 'categories/all',
+  },
+  {
+    name: 'For Free',
+    image: '/img/free.jpg',
+    to: 'categories/free',
+  },
   {
     name: 'Electronics',
     image: '/img/electronics.avif',
@@ -9,7 +19,7 @@ const categories = [
   },
   { name: 'Books', image: '/img/books.jpg', to: 'categories/books' },
   {
-    name: 'Clothing & Accessories',
+    name: 'Clothing',
     image: '/img/clothing.avif',
     to: 'categories/clothing',
   },
@@ -27,6 +37,21 @@ const categories = [
     name: 'Sports & Outdoors',
     image: '/img/sport-outdoors.jpg',
     to: 'categories/sports-outdoors',
+  },
+  {
+    name: 'Health & Beauty',
+    image: '/img/health.jpg',
+    to: 'categories/health-beauty',
+  },
+  {
+    name: 'Jewelry & Accessories',
+    image: '/img/accessories.jpg',
+    to: 'categories/accessories',
+  },
+  {
+    name: 'Leasure & Games',
+    image: '/img/games.jpg',
+    to: 'categories/games',
   },
 ]
 </script>
