@@ -1,29 +1,60 @@
 <script setup lang="ts">
 import type { HorizontalNavigationLink } from '#ui/types'
 
-const links: HorizontalNavigationLink[] | HorizontalNavigationLink[][] = [
-  [
-    {
-      label: 'Schmalify',
-      to: '/',
-    },
+const route = useRoute()
+const { isMobile } = useDevice()
 
-    {
-      label: 'Search',
-    },
-  ],
-  [
-    {
-      label: 'Register',
-      to: '/register',
-    },
-    {
-      label: 'Login',
-      to: '/login',
-      exactActiveClass: '',
-    },
-  ],
-]
+const path = computed(() => route.path)
+
+const links = ref<HorizontalNavigationLink[] | HorizontalNavigationLink[][]>([])
+
+onMounted(() => {
+  links.value = [
+    [
+      {
+        label: 'Schmalify',
+        to: '/',
+      },
+      {
+        label: '',
+        as: 'Search',
+      },
+    ],
+    !isMobile
+      ? [
+          {
+            label: 'Sell Now',
+            click: () => {
+              useSellNowModal()
+            },
+          },
+          {
+            label: 'Register',
+            to: '/register',
+          },
+          {
+            label: 'Login',
+            to: '/login',
+          },
+        ]
+      : [
+          {
+            label: 'Sell Now',
+            click: () => {
+              useSellNowModal()
+            },
+          },
+          {
+            label: '',
+            // key: 'more',
+            icon: 'i-pepicons-pop-dots-x',
+            click: () => {
+              useLoginModal()
+            },
+          },
+        ],
+  ]
+})
 </script>
 
 <template>
@@ -48,7 +79,7 @@ const links: HorizontalNavigationLink[] | HorizontalNavigationLink[][] = [
             height="50"
             src="img/main-logo.png"
           />
-          <div v-else-if="link.label === 'Search'">
+          <div v-else-if="path !== '/' && link.as === 'Search'">
             <div class="flex-1">
               <div class="relative">
                 <span
@@ -76,6 +107,22 @@ const links: HorizontalNavigationLink[] | HorizontalNavigationLink[][] = [
                 />
               </div>
             </div>
+          </div>
+          <div v-else-if="link.label === 'Categories'">
+            <UButton
+              label="Categories"
+              variant="outline"
+              color="white"
+              :ui="{
+                rounded: 'rounded-full',
+                variant: {
+                  outline: 'text-gray-100',
+                },
+              }"
+            />
+          </div>
+          <div v-else-if="link.label === 'Sell Now'">
+            <LazyButtonsSellNowButton :click="link.click as () => void" />
           </div>
           <p v-else>{{ link.label }}</p>
         </span>
