@@ -5,6 +5,8 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxthub/core',
     '@nuxtjs/device',
+    '@nuxt/icon',
+    'nuxt-auth-utils',
   ],
   ui: {
     global: true,
