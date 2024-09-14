@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// const modal = useModal()
-
 const categories = [
   {
     name: 'All',
@@ -188,10 +186,7 @@ const items = [
       >
         Categories
       </h2>
-      <div
-        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 lg:gap-6 overflow-y-auto"
-      >
-        <!-- Loop through categories array with v-for -->
+      <div class="categories-container">
         <NuxtLink
           v-for="category in categories"
           :to="category.to"
@@ -220,10 +215,7 @@ const items = [
       >
         Latest Items
       </h2>
-      <div
-        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 lg:gap-6"
-      >
-        <!-- Loop through items array with v-for -->
+      <div class="items-container">
         <div
           v-for="item in items"
           :key="item.name"
@@ -247,7 +239,7 @@ const items = [
       </div>
     </div>
 
-    <!-- New Section: Shpock Description -->
+    <!-- New Section: Schmalify Description -->
     <div class="description-section text-center mt-12 px-4 sm:px-6 lg:px-8">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">
         What is Schmalify?
@@ -270,40 +262,40 @@ const items = [
   max-width: 1200px;
 }
 
-/* Define the category section without scrolling on larger screens */
-.category-section,
-.items-section {
-  max-height: none;
-  overflow-y: unset;
+/* Horizontal scrolling for categories and items */
+.categories-container,
+.items-container {
+  display: flex; /* Flexbox for horizontal layout */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  gap: 1rem; /* Add spacing between items */
+  padding-bottom: 1rem; /* Ensure the scrollbar is visible */
 }
 
-/* Apply max-height and scrolling for mobile screens */
-@media (max-width: 768px) {
-  .category-section,
-  .items-section {
-    max-height: 500px; /* You can adjust this height as needed */
-    overflow-y: auto;
-  }
+/* Styling for scrollbar */
+.categories-container::-webkit-scrollbar,
+.items-container::-webkit-scrollbar {
+  height: 6px; /* Horizontal scrollbar height */
 }
 
-/* Define the category card style */
-.category-card {
-  transition: transform 0.3s ease-in-out;
-  overflow: hidden;
+.categories-container::-webkit-scrollbar-thumb,
+.items-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Scrollbar color */
+  border-radius: 10px; /* Rounded scrollbar */
 }
 
-/* Scale the card on hover for interaction */
-.category-card:hover {
-  transform: scale(1.05);
+/* Card styling for categories and items */
+.category-card,
+.item-card {
+  flex: 0 0 150px; /* Each card takes up 150px in width */
+  max-width: 150px; /* Limit the max width of each card */
 }
 
-/* Adjust the category image to match the aspect ratio with reduced height */
 .category-image,
 .item-image {
   width: 100%;
-  height: 150px; /* You can adjust this height as needed */
+  height: 150px; /* Adjust height */
   object-fit: cover;
-  border-radius: 0.5rem; /* Keep consistent border radius */
+  border-radius: 0.5rem; /* Consistent border radius */
 }
 
 /* Description section styling */
@@ -319,10 +311,10 @@ const items = [
   color: #a0aec0;
 }
 
-/* Slightly increase the width for desktop screens */
+/* Increase the width for desktop screens */
 @media (min-width: 1024px) {
   .description-section p {
-    max-width: 900px; /* Increase width for larger screens */
+    max-width: 900px;
   }
 }
 </style>

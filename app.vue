@@ -10,6 +10,7 @@
       <NuxtPage />
     </NuxtLayout>
   </div>
+  <UModals />
 </template>
 
 <style>
