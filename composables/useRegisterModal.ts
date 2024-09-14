@@ -1,21 +1,20 @@
-import LoginModal from '~/components/modals/LoginModal.vue'
+import RegisterModal from '~/components/modals/RegisterModal.vue'
 
-export function useLoginModal() {
+export function useRegisterModal() {
   const modal = useModal()
   const toast = useToast()
 
-  modal.open(LoginModal, {
-    onClose: (toRegister: boolean = false) => {
+  modal.open(RegisterModal, {
+    onClose: (toLogin: boolean = false) => {
       modal.close()
 
       toast.add({
         id: 'login-success',
         title: 'Successfully logged in',
       })
-
-      if (toRegister) {
+      if (toLogin) {
         setTimeout(() => {
-          useRegisterModal()
+          useLoginModal()
         }, 500)
       } else {
         reloadNuxtApp({ path: '/' })
