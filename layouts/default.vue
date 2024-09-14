@@ -2,40 +2,43 @@
 import type { HorizontalNavigationLink } from '#ui/types'
 
 const route = useRoute()
+const { loggedIn, user } = useUserSession()
 
-const path = computed(() => route.path)
-
-const links = ref<HorizontalNavigationLink[] | HorizontalNavigationLink[][]>([])
-
-onMounted(() => {
-  links.value = [
-    [
-      {
-        label: 'Schmalify',
-        to: '/',
-      },
-      {
-        label: '',
-        as: 'Search',
-      },
-    ],
-    [
-      {
-        label: 'Sell Now',
-        click: () => {
-          useSellNowModal()
+const links = computed<
+  HorizontalNavigationLink[] | HorizontalNavigationLink[][]
+>(() => [
+  [
+    {
+      label: 'Schmalify',
+      to: '/',
+    },
+    route.path !== '/'
+      ? {
+          label: '',
+          as: 'Search',
+        }
+      : {
+          label: '',
         },
+  ],
+  [
+    {
+      label: 'Sell Now',
+      click: () => {
+        useSellNowModal()
       },
-      {
-        label: 'Profile',
-        // key: 'more',
-        click: () => {
-          useLoginModal()
-        },
+    },
+    {
+      label: 'Profile',
+      // key: 'more',
+      click: () => {
+        console.log('user logged in ? ', loggedIn)
+
+        loggedIn.value ? navigateTo('/profile') : useLoginModal()
       },
-    ],
-  ]
-})
+    },
+  ],
+])
 </script>
 
 <template>
@@ -62,7 +65,7 @@ onMounted(() => {
             height="50"
             src="img/main-logo.png"
           />
-          <div v-else-if="path !== '/' && link.as === 'Search'">
+          <div v-if="route.path !== '/' && link.as === 'Search'">
             <div class="flex-1">
               <div class="relative">
                 <span
@@ -91,25 +94,30 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          <div v-else-if="link.label === 'Sell Now'">
-            <ButtonsSellNowButton :click="link.click as () => void" />
+          <div v-if="link.label === 'Sell Now'">
+            <ClientOnly>
+              <ButtonsSellNowButton :click="link.click as () => void" />
+            </ClientOnly>
           </div>
           <div v-else-if="link.label === 'Profile'">
-            <UButton
-              variant="solid"
-              color="black"
-              :ui="{
-                color: {
-                  black: {
-                    solid: `text-gray-900 dark:text-gray-900 bg-gray-100 
+            <ClientOnly>
+              <UButton
+                variant="solid"
+                color="black"
+                size="xs"
+                :ui="{
+                  color: {
+                    black: {
+                      solid: `text-gray-900 dark:text-gray-900 bg-gray-100 
           dark:bg-gray-100 hover:bg-gray-900 dark:hover:bg-black
           hover:text-gray-100 dark:hover:text-gray-100`,
+                    },
                   },
-                },
-              }"
-            >
-              <Icon name="i-healthicons-ui-user-profile" size="1.5em"
-            /></UButton>
+                }"
+              >
+                <Icon name="i-healthicons-ui-user-profile" size="1.3em"
+              /></UButton>
+            </ClientOnly>
           </div>
         </span>
       </template>
