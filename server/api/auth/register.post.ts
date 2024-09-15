@@ -21,11 +21,7 @@ const userSchema = z.object({
 })
 
 export default defineEventHandler<{ body: CreateUser }>(async (event) => {
-  console.log('inside registration')
-
   const body = await readValidatedBody(event, userSchema.parse)
-
-  console.log('body', body)
 
   const isUser = await getUserByEmail(body.email)
 
@@ -45,8 +41,6 @@ export default defineEventHandler<{ body: CreateUser }>(async (event) => {
   }
 
   const user = await createUser(userData)
-
-  console.log('user', user)
 
   await setUserSession(event, {
     loggedInAt: new Date().toISOString(),
