@@ -11,6 +11,7 @@
     </NuxtLayout>
   </div>
   <UModals />
+  <UNotifications />
 </template>
 
 <style>

@@ -8,6 +8,17 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     'nuxt-auth-utils',
   ],
+  app: {
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+    },
+    layoutTransition: {
+      name: 'layout',
+      mode: 'out-in',
+    },
+  },
+  css: ['~/assets/css/transitions.css'],
   ui: {
     global: true,
   },
