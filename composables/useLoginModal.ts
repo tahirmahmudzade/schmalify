@@ -5,20 +5,23 @@ export function useLoginModal() {
   const toast = useToast()
 
   modal.open(LoginModal, {
+    transition: true,
     onClose: (toRegister: boolean = false) => {
       modal.close()
-
-      toast.add({
-        id: 'login-success',
-        title: 'Successfully logged in',
-      })
 
       if (toRegister) {
         setTimeout(() => {
           useRegisterModal()
         }, 500)
       } else {
-        reloadNuxtApp({ path: '/' })
+        toast.add({
+          id: 'login-success',
+          title: 'Successfully logged in',
+          timeout: 2000,
+        })
+        setTimeout(() => {
+          reloadNuxtApp({ path: '/', force: true })
+        }, 2100)
       }
     },
   })

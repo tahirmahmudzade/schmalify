@@ -60,83 +60,129 @@ async function onLogin() {
 
 <template>
   <UModal>
-    <div class="rounded-lg py-10 md:py-10 lg:py-5">
-      <div class="container flex flex-col mx-auto rounded-lg">
+    <template #default>
+      <!-- Modal Overlay (provided by UModal) -->
+      <div class="modal-container">
+        <!-- Modal Content -->
         <div
-          class="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable"
+          class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md"
         >
-          <div class="flex items-center justify-center w-full lg:p-12">
-            <div class="flex items-center xl:p-10">
-              <form
-                class="flex flex-col w-full h-full pb-6 text-center rounded-3xl"
+          <div class="p-6">
+            <form class="flex flex-col w-full text-center">
+              <h3
+                class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100"
               >
-                <h3 class="mb-3 text-4xl font-extrabold text-dark-grey-900">
-                  Sign Up
-                </h3>
-                <p class="mb-4 text-grey-700">Enter your email and password</p>
-                <UButton
-                  icon="i-flat-color-icons-google"
-                  color="white"
-                  class="py-2 justify-center bg-white dark:bg-white text-gray-900 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-800 hover:text-white dark:hover:text-white"
-                  label="Sign In With Google"
-                  :ui="{
-                    base: 'max-w-lg', // Max width and centering
-                    rounded: 'rounded-lg', // Rounded corners
-                  }"
+                Sign Up
+              </h3>
+              <p class="mb-4 text-gray-700 dark:text-gray-300">
+                Create your account
+              </p>
+              <UButton
+                icon="i-flat-color-icons-google"
+                color="white"
+                class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+                label="Sign Up With Google"
+                :ui="{
+                  base: 'max-w-lg',
+                  rounded: 'rounded-lg',
+                }"
+              />
+              <div class="flex items-center my-3">
+                <hr
+                  class="h-0 border-b border-gray-500 dark:border-gray-600 grow"
                 />
-                <div class="flex items-center mb-3">
-                  <hr class="h-0 border-b border-solid border-grey-500 grow" />
-                  <p class="mx-4 text-grey-600">or</p>
-                  <hr class="h-0 border-b border-solid border-grey-500 grow" />
-                </div>
+                <p class="mx-4 text-gray-600 dark:text-gray-400">or</p>
+                <hr
+                  class="h-0 border-b border-gray-500 dark:border-gray-600 grow"
+                />
+              </div>
 
-                <UForm :schema="schema" :state="credentials">
-                  <UFormGroup label="Email" name="email">
-                    <UInput
-                      v-model="credentials.email"
-                      placeholder="anyataylor1@gmail.com"
-                    />
-                  </UFormGroup>
+              <UForm :schema="schema" :state="credentials">
+                <UFormGroup label="Email" name="email">
+                  <UInput
+                    v-model="credentials.email"
+                    required
+                    placeholder="your-email@example.com"
+                  />
+                </UFormGroup>
 
-                  <UFormGroup class="mt-3" label="Password" name="password">
-                    <UInput v-model="credentials.password" type="password" />
-                  </UFormGroup>
+                <UFormGroup class="mt-3" label="Password" name="password">
+                  <UInput
+                    v-model="credentials.password"
+                    required
+                    type="password"
+                  />
+                </UFormGroup>
 
-                  <UFormGroup class="mt-3" label="Username" name="username">
-                    <UInput
-                      v-model="credentials.username"
-                      placeholder="anyataylor1"
-                    />
-                  </UFormGroup>
-                </UForm>
-                <UButton
-                  color="white"
-                  :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
-                  class="mt-5 py-2 justify-center bg-white dark:bg-white text-gray-900 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-800 hover:text-white dark:hover:text-white"
-                  label="Sign In"
-                  :ui="{
-                    // base: 'mx-auto',
-                    rounded: 'rounded-lg', // Rounded corners
-                    color: {
-                      white: {
-                        solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-400',
-                      },
+                <UFormGroup class="mt-3" label="Username" name="username">
+                  <UInput
+                    v-model="credentials.username"
+                    required
+                    placeholder="yourusername"
+                  />
+                </UFormGroup>
+              </UForm>
+              <UButton
+                color="white"
+                :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
+                class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+                label="Sign Up"
+                :ui="{
+                  rounded: 'rounded-lg',
+                  color: {
+                    white: {
+                      solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600',
                     },
-                  }"
-                  :disabled="isFormInvalid"
-                  @click="onSubmit"
-                />
-                <p class="text-sm leading-relaxed mt-3">
-                  Already have an account?
-                  <span @click="onLogin" class="font-bold cursor-pointer"
-                    >Log in</span
-                  >
-                </p>
-              </form>
-            </div>
+                  },
+                }"
+                :disabled="isFormInvalid"
+                @click="onSubmit"
+              />
+              <p
+                class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300"
+              >
+                Already have an account?
+                <span
+                  @click="onLogin"
+                  class="font-bold cursor-pointer text-blue-500 dark:text-blue-400"
+                >
+                  Log In
+                </span>
+              </p>
+            </form>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </UModal>
 </template>
+
+<style scoped>
+.modal-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Use fixed positioning to cover the entire viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1rem; /* Adjust padding as needed */
+  pointer-events: none; /* Allow clicks to pass through */
+}
+
+.modal-content {
+  pointer-events: auto; /* Enable clicks on modal content */
+}
+
+@media (max-height: 500px) {
+  /* Adjust for small screen heights */
+  .modal-container {
+    align-items: flex-start;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    overflow-y: auto;
+  }
+}
+</style>
