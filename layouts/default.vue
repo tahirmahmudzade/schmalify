@@ -2,7 +2,7 @@
 import type { HorizontalNavigationLink } from '#ui/types'
 
 const route = useRoute()
-const { loggedIn, user } = useUserSession()
+const { loggedIn } = useUserSession()
 
 const links = computed<
   HorizontalNavigationLink[] | HorizontalNavigationLink[][]
@@ -25,7 +25,7 @@ const links = computed<
     {
       label: 'Sell Now',
       click: () => {
-        useSellNowModal()
+        useSellNowNotificationModal()
       },
     },
     {
@@ -101,22 +101,7 @@ const links = computed<
           </div>
           <div v-else-if="link.label === 'Profile'">
             <ClientOnly>
-              <UButton
-                variant="solid"
-                color="black"
-                size="xs"
-                :ui="{
-                  color: {
-                    black: {
-                      solid: `text-gray-900 dark:text-gray-900 bg-gray-100 
-          dark:bg-gray-100 hover:bg-gray-900 dark:hover:bg-black
-          hover:text-gray-100 dark:hover:text-gray-100`,
-                    },
-                  },
-                }"
-              >
-                <Icon name="i-healthicons-ui-user-profile" size="1.3em"
-              /></UButton>
+              <ButtonsProfileButton :click="link.click as () => void" />
             </ClientOnly>
           </div>
         </span>
