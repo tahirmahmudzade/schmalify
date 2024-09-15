@@ -22,7 +22,7 @@ defineProps<{
     @click="click"
   >
     <template #leading>
-      <Icon name="i-material-symbols-light-sell-outline-sharp" size="1.3em" />
+      <Icon name="i-ep-sell" size="1.3em" />
       <!-- Solves cloud flare UButton icon issue -->
     </template>
   </UButton>

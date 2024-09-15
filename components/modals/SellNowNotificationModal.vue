@@ -1,0 +1,74 @@
+<script setup lang="ts">
+const emit = defineEmits(['login', 'cancel'])
+
+function onCancel() {
+  emit('cancel')
+}
+
+function onSignIn() {
+  emit('login')
+}
+</script>
+
+<template>
+  <UModal>
+    <UCard
+      :ui="{
+        ring: '',
+        divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+      }"
+    >
+      <template #header>
+        <div class="flex items-center justify-start space-x-1">
+          <Icon name="i-ep-sell" style="color: turquoise" />
+          <h1>Sell Now</h1>
+        </div>
+      </template>
+
+      <div class="flex items-center justify-start space-x-1">
+        <Icon
+          name="i-heroicons-exclamation-circle"
+          size="5.0em"
+          style="color: orange"
+        />
+        <p>
+          In order to get the best experience, it is recommended to log in to
+          your own account, you can also
+          <span
+            class="font-bold cursor-pointer text-blue-500 dark:text-blue-400 hover:underline"
+          >
+            continue as guest by clicking here
+          </span>
+        </p>
+      </div>
+      <template #footer>
+        <div class="flex items-center justify-between">
+          <UButton
+            color="white"
+            class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+            label="Sign In"
+            :ui="{
+              rounded: 'rounded-lg',
+
+              color: {
+                white: {
+                  solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600',
+                },
+              },
+            }"
+            @click="onSignIn"
+          >
+            <template #leading>
+              <Icon
+                name="i-ri-login-circle-line"
+                style="color: #22c55e"
+                size="1.3em"
+              />
+            </template>
+          </UButton>
+          <ButtonsCancelButton :click="onCancel" />
+        </div>
+      </template>
+    </UCard>
+  </UModal>
+</template>
