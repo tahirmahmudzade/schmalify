@@ -25,7 +25,9 @@ const links = computed<
     {
       label: 'Sell Now',
       click: () => {
-        useSellNowNotificationModal()
+        !loggedIn.value
+          ? useSellNowNotificationModal()
+          : useCreateLettingModal()
       },
     },
     {

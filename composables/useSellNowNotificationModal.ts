@@ -13,5 +13,11 @@ export const useSellNowNotificationModal = () => {
         useLoginModal()
       }, 500)
     },
+    onGuest: () => {
+      modal.close()
+      setTimeout(() => {
+        useCreateLettingModal(true)
+      }, 500)
+    },
   })
 }

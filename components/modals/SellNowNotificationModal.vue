@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const emit = defineEmits(['login', 'cancel'])
+const emit = defineEmits(['login', 'cancel', 'guest'])
 
 function onCancel() {
   emit('cancel')
@@ -7,6 +7,10 @@ function onCancel() {
 
 function onSignIn() {
   emit('login')
+}
+
+function onContinueAsGuest() {
+  emit('guest')
 }
 </script>
 
@@ -36,6 +40,7 @@ function onSignIn() {
           your own account, you can also
           <span
             class="font-bold cursor-pointer text-blue-500 dark:text-blue-400 hover:underline"
+            @click="onContinueAsGuest"
           >
             continue as guest by clicking here
           </span>
