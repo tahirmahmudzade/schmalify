@@ -34,6 +34,7 @@ export default defineNuxtConfig({
   //   database: true,
   //   blob: true,
   //   kv: true,
+  //   remote: true,
   // },
   image: {
     dir: 'public',
