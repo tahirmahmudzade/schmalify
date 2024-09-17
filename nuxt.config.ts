@@ -30,12 +30,12 @@ export default defineNuxtConfig({
       remote: true,
     },
   },
-  // hub: {
-  //   database: true,
-  //   blob: true,
-  //   kv: true,
-  //   remote: true,
-  // },
+  hub: {
+    database: true,
+    blob: true,
+    kv: true,
+    remote: true,
+  },
   image: {
     dir: 'public',
   },
