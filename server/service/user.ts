@@ -36,10 +36,13 @@ export const getUserByEmail = async (userEmail: string) => {
   })
 }
 
-export const createUser = async (userData: CreateUser) => {
+export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
   return useDrizzle()
     .insert(tables.user)
-    .values(userData)
+    .values({
+      id: nanoId(),
+      ...userData,
+    })
     .returning({
       email: tables.user.email,
       id: tables.user.id,
