@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const emit = defineEmits(['login', 'cancel', 'guest'])
+const emit = defineEmits(['signUp', 'cancel', 'guest'])
 
 function onCancel() {
   emit('cancel')
 }
 
-function onSignIn() {
-  emit('login')
+function onSignUp() {
+  emit('signUp')
 }
 
 function onContinueAsGuest() {
@@ -36,14 +36,15 @@ function onContinueAsGuest() {
           style="color: orange"
         />
         <p>
-          In order to get the best experience, it is recommended to log in to
-          your own account, you can also
+          In order to get the best experience, it is recommended to sign up to
+          your own account, or you can
           <span
             class="font-bold cursor-pointer text-blue-500 dark:text-blue-400 hover:underline"
             @click="onContinueAsGuest"
           >
-            continue as guest by clicking here
+            continue as guest
           </span>
+          (guest access is limited to 1 week).
         </p>
       </div>
       <template #footer>
@@ -51,7 +52,7 @@ function onContinueAsGuest() {
           <UButton
             color="white"
             class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-            label="Sign In"
+            label="Sign Up"
             :ui="{
               rounded: 'rounded-lg',
 
@@ -61,7 +62,7 @@ function onContinueAsGuest() {
                 },
               },
             }"
-            @click="onSignIn"
+            @click="onSignUp"
           >
             <template #leading>
               <Icon

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import z from 'zod'
+import type { Category } from '~/server/database/drizzle'
 
-const { asGuest = false } = defineProps<{
-  asGuest?: boolean
+const { categories, asGuest } = defineProps<{
+  categories: readonly Category[]
+  asGuest: boolean
 }>()
 
 const emit = defineEmits<{
@@ -10,6 +12,9 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
+const { user } = useUserSession()
+
+const userId = ref(user.value?.id)
 
 const schema = z.object({
   title: z
@@ -50,6 +55,7 @@ const itemData = reactive({
   firstName: '',
   lastName: '',
   phone: '',
+  category: '',
 })
 
 const isFormInvalid = computed(() => {
@@ -57,28 +63,54 @@ const isFormInvalid = computed(() => {
   return !result.success
 })
 
+const categoryNames = computed(() => categories.map((c) => c.name))
+
 function onClose() {
   emit('close', false)
 }
 
 async function onSubmit() {
+  const categoryId = categories.find((c) => c.name === itemData.category)?.id
+
   try {
+    if (asGuest) {
+      const newGuest = await $fetch('/api/auth/guestLogin', {
+        method: 'POST',
+        body: {
+          firstName: itemData.firstName,
+          lastName: itemData.lastName || '',
+          phone: itemData.phone,
+        },
+      })
+
+      userId.value = newGuest.guest.id
+    }
+
+    const body = {
+      title: itemData.title,
+      description: itemData.description,
+      price: itemData.price,
+      condition: itemData.condition,
+      categoryId,
+      userId: userId.value,
+    }
+
     await $fetch<{ statusCode: number; message: string }>('/api/items', {
       method: 'POST',
-      body: itemData,
+      body,
     })
 
     toast.add({
       color: 'green',
       title: 'Item created successfully',
     })
-
-    onClose()
   } catch (err) {
     toast.add({
       color: 'red',
-      title: 'Failed to create item',
+      title: 'Failed to create letting, please try again later with valid data',
     })
+  } finally {
+    onClose()
   }
 }
 </script>
@@ -160,6 +192,12 @@ async function onSubmit() {
                   <UInput
                     v-model="itemData.description"
                     placeholder="Item description (max length: 100 characters)"
+                  />
+                </UFormGroup>
+                <UFormGroup class="mt-3" label="Category" name="category">
+                  <USelectMenu
+                    v-model="itemData.category"
+                    :options="categoryNames"
                   />
                 </UFormGroup>
 

@@ -7,10 +7,10 @@ export const useSellNowNotificationModal = () => {
     onCancel: () => {
       modal.close()
     },
-    onLogin: () => {
+    onSignUp: () => {
       modal.close()
       setTimeout(() => {
-        useLoginModal()
+        useRegisterModal()
       }, 500)
     },
     onGuest: () => {
