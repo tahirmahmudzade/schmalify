@@ -1,10 +1,12 @@
+import type { User } from '#auth-utils'
 import RegisterModal from '~/components/modals/RegisterModal.vue'
 
-export function useRegisterModal() {
+export function useRegisterModal(user: User | null = null) {
   const modal = useModal()
   const toast = useToast()
 
   modal.open(RegisterModal, {
+    user,
     onClose: (toLogin: boolean = false) => {
       modal.close()
 

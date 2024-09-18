@@ -40,9 +40,10 @@ export default defineEventHandler<{
   await setUserSession(event, {
     loggedInAt: new Date().toISOString(),
     user: {
-      email: isUser.email,
+      email: isUser.email!,
       id: encodeId(isUser.id),
-      username: isUser.username,
+      username: isUser.username!,
+      isGuest: false,
     },
   })
 

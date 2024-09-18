@@ -1,5 +1,4 @@
 import z from 'zod'
-import nanoId from '~~/server/utils/nanoId'
 import { hash } from 'ohash'
 import { createUser, getUserByEmail } from '~/server/service/user'
 import { CreateUser } from '~/server/database/drizzle'
@@ -40,9 +39,8 @@ export default defineEventHandler<{ body: CreateUser }>(
 
     const hashedPassword = hash({ password: body.password })
 
-    const userData: CreateUser = {
+    const userData: Omit<CreateUser, 'id'> = {
       ...body,
-      id: nanoId(),
       password: hashedPassword,
     }
 
@@ -51,9 +49,10 @@ export default defineEventHandler<{ body: CreateUser }>(
     await setUserSession(event, {
       loggedInAt: new Date().toISOString(),
       user: {
-        email: user.email,
+        email: user.email!,
         id: encodeId(user.id),
-        username: user.username,
+        username: user.username!,
+        isGuest: false,
       },
     })
 

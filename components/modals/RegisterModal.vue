@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import type { User } from '#auth-utils'
 import z from 'zod'
+
+const { user = null } = defineProps<{
+  user?: User | null
+}>()
 
 const emit = defineEmits<{
   (e: 'close', toLogin?: boolean): void
@@ -39,13 +44,20 @@ function onClose() {
 
 async function onSubmit() {
   try {
-    await $fetch<{ statusCode: number; message: string }>(
-      '/api/auth/register',
-      {
-        method: 'POST',
+    if (user?.isGuest && user.id) {
+      await $fetch(`/api/users/${user.id}/upgrade`, {
+        method: 'PATCH',
         body: credentials,
-      }
-    )
+      })
+    } else {
+      await $fetch<{ statusCode: number; message: string }>(
+        '/api/auth/register',
+        {
+          method: 'POST',
+          body: credentials,
+        }
+      )
+    }
 
     onClose()
   } catch (err) {

@@ -2,7 +2,7 @@
 import type { HorizontalNavigationLink } from '#ui/types'
 
 const route = useRoute()
-const { loggedIn } = useUserSession()
+const { loggedIn, user } = useUserSession()
 
 const links = computed<
   HorizontalNavigationLink[] | HorizontalNavigationLink[][]
@@ -36,7 +36,13 @@ const links = computed<
       click: () => {
         console.log('user logged in ? ', loggedIn)
 
-        loggedIn.value ? navigateTo('/profile') : useLoginModal()
+        if (!loggedIn.value) {
+          useLoginModal()
+        } else {
+          loggedIn.value && !user.value?.isGuest
+            ? navigateTo('/profile')
+            : useRegisterModal(user.value)
+        }
       },
     },
   ],
