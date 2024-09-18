@@ -5,6 +5,7 @@ import {
   UpdateUser,
   useDrizzle,
 } from '../database/drizzle'
+import useNanoId from '../utils/nanoId'
 
 export const getUsers = async (withItems: boolean = false) => {
   return useDrizzle().query.user.findMany({
@@ -40,7 +41,7 @@ export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
   return useDrizzle()
     .insert(tables.user)
     .values({
-      id: nanoId(),
+      id: useNanoId(),
       ...userData,
     })
     .returning({

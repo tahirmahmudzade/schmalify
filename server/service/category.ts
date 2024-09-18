@@ -1,6 +1,13 @@
-import { CreateCategory, eq, tables, useDrizzle } from '../database/drizzle'
+import {
+  Category,
+  CreateCategory,
+  eq,
+  tables,
+  useDrizzle,
+} from '../database/drizzle'
+import useNanoId from '../utils/nanoId'
 
-export function getAllCategories() {
+export function getAllCategories(): Promise<Category[]> {
   return useDrizzle().query.category.findMany()
 }
 
@@ -20,7 +27,7 @@ export function createCategory(categoryData: Omit<CreateCategory, 'id'>) {
   return useDrizzle()
     .insert(tables.category)
     .values({
-      id: nanoId(),
+      id: useNanoId(),
       ...categoryData,
     })
     .returning({

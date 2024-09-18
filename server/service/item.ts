@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid'
 import {
   CreateItem,
   eq,
@@ -6,13 +5,13 @@ import {
   UpdateItem,
   useDrizzle,
 } from '../database/drizzle'
+import useNanoId from '../utils/nanoId'
 
 export default function getAllItems() {
   return useDrizzle().query.item.findMany({
     with: {
       category: true,
       seller: true,
-      guest: true,
     },
   })
 }
@@ -23,7 +22,6 @@ export function getItemById(itemId: string) {
     with: {
       category: true,
       seller: true,
-      guest: true,
     },
   })
 }
@@ -34,7 +32,6 @@ export function getItemsByCategory(categoryId: string) {
     with: {
       category: true,
       seller: true,
-      guest: true,
     },
   })
 }
@@ -45,37 +42,17 @@ export function getItemsBySeller(sellerId: string) {
     with: {
       category: true,
       seller: true,
-      guest: true,
     },
   })
 }
 
-export function getItemsByGuest(guestId: number) {
-  return useDrizzle().query.item.findMany({
-    where: eq(tables.item.guest_id, guestId),
-    with: {
-      category: true,
-      seller: true,
-      guest: true,
-    },
-  })
-}
-
-export function createItem(
-  itemData: Omit<CreateItem, 'id'>,
-  userId?: string,
-  guestId?: number
-) {
-  const values = {
-    ...itemData,
-    id: nanoid(),
-    seller_id: userId || undefined,
-    guest_id: !userId && guestId ? guestId : undefined,
-  }
-
+export function createItem(itemData: Omit<CreateItem, 'id'>) {
   return useDrizzle()
     .insert(tables.item)
-    .values(values)
+    .values({
+      ...itemData,
+      id: useNanoId(),
+    })
     .returning({
       id: tables.item.id,
       title: tables.item.title,

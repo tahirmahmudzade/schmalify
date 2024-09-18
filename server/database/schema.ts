@@ -3,23 +3,16 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const user = sqliteTable('user', {
   id: text('id').primaryKey().unique(),
-  email: text('email').unique().notNull(),
+  email: text('email').unique(),
   firstName: text('first_name'),
   lastName: text('last_name'),
-  password: text('password').notNull(),
-  username: text('username').notNull(),
+  password: text('password'),
+  username: text('username'),
   location: text('location'), // optional, could help filter by location
   avatar: text('avatar'), // optional profile picture
   phone: text('phone'), // optional contact number
   admin: integer('admin', { mode: 'boolean' }).default(false),
-  createdAt: text('created_at').default(sql`(datetime('now'))`),
-})
-
-export const guest = sqliteTable('guest', {
-  id: integer('id').primaryKey().unique(),
-  firstName: text('first_name'),
-  lastName: text('last_name'),
-  phone: text('phone').notNull(), // optional contact number
+  isGuest: integer('is_guest', { mode: 'boolean' }).default(false),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
 })
 
@@ -36,10 +29,6 @@ export const item = sqliteTable('item', {
     onDelete: 'cascade',
     onUpdate: 'cascade',
   }), // user selling the item
-  guest_id: integer('guest_id').references(() => guest.id, {
-    onDelete: 'cascade',
-    onUpdate: 'cascade',
-  }), // guest selling the item
   condition: text('condition', {
     enum: ['new', 'like new', 'very good', 'good', 'fair', 'poor'],
   }), // e.g., new, like new, used
@@ -62,10 +51,6 @@ export const userRelations = relations(user, ({ many }) => ({
   // reviews: many(review),
 }))
 
-export const guestRelations = relations(guest, ({ many }) => ({
-  items: many(item),
-}))
-
 export const itemRelations = relations(item, ({ one }) => ({
   category: one(category, {
     fields: [item.category_id], // link category_id to category.id
@@ -74,10 +59,6 @@ export const itemRelations = relations(item, ({ one }) => ({
   seller: one(user, {
     fields: [item.seller_id], // link seller_id to user.id
     references: [user.id], // link user.id to user.id
-  }),
-  guest: one(guest, {
-    fields: [item.guest_id], // link guest_id to guest.id
-    references: [guest.id], // link guest.id to guest.id
   }),
   // transaction: one(transaction),
 }))

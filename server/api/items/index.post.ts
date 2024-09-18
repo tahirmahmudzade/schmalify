@@ -1,6 +1,5 @@
 import z from 'zod'
 import { createItem } from '~/server/service/item'
-import { phoneRegex } from '~/utils/const'
 
 const itemSchema = z.object({
   title: z
@@ -20,52 +19,31 @@ const itemSchema = z.object({
   condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], {
     message: 'Condition is required',
   }),
-  firstName: z
-    .string()
-    .min(1, { message: 'First name is required' })
-    .optional(),
-  lastName: z.string().optional(),
-  phone: z
-    .string()
-    .min(10, { message: 'Phone number must be at least 10 digits' })
-    .max(15, { message: 'Phone number must be at most 15 digits' })
-    .regex(phoneRegex, {
-      message: 'Phone number must start with + and include the country code',
-    })
-    .optional(),
-  guestId: z.number().optional(),
   userId: z.string().optional(),
+  categoryId: z.string(),
 })
 
-export default defineEventHandler(
-  async (
-    event
-  ): Promise<{
-    statusCode: number
-    message: string
-  }> => {
+export default defineEventHandler(async (event) => {
+  try {
     const body = await readValidatedBody(event, itemSchema.parse)
 
-    if (body.guestId) {
-      const guest = await $fetch(`/api/guests/${body.guestId}`)
+    const decodedUserId = decodeId(body.userId!)
+    const decodedCategoryId = decodeId(body.categoryId)
 
-      if (!guest) {
-        await $fetch('/api/guests', {
-          method: 'POST',
-          body: {
-            firstName: body.firstName!,
-            lastName: body.lastName,
-            phone: body.phone!,
-          },
-        })
-      }
-    }
+    await createItem({
+      seller_id: decodedUserId,
+      price: body.price,
+      title: body.title,
+      description: body.description,
+      condition: body.condition,
+      category_id: decodedCategoryId,
+    })
+  } catch (err) {
+    console.log('Error: ', err)
 
-    const newItem = await createItem(body, body.userId, body.guestId)
-
-    return {
-      statusCode: 201,
-      message: `Item ${newItem.title} created successfully`,
-    }
+    throw createError({
+      statusCode: 400,
+      message: (err as string) || 'Something went wrong, please try again',
+    })
   }
-)
+})

@@ -27,7 +27,10 @@ export default defineEventHandler(
     return {
       statusCode: 201,
       message: `Category ${newCategory.name} created successfully`,
-      body: newCategory,
+      body: {
+        id: encodeId(newCategory.id),
+        name: newCategory.name,
+      },
     }
   }
 )
