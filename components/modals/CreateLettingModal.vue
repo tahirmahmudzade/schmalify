@@ -35,8 +35,8 @@ const schema = z.object({
     message: 'Condition is required',
   }),
   ...(asGuest && {
-    firstName: z.string().min(1, { message: 'First name is required' }),
-    lastName: z.string().optional(),
+    firstName: z.string().min(1, { message: 'First name is required' }).max(40),
+    lastName: z.string().max(50).optional(),
     phone: z
       .string()
       .min(10, { message: 'Phone number must be at least 10 digits' })
