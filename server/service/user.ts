@@ -7,27 +7,20 @@ import {
 } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
-export const getUsers = async (withItems: boolean = false) => {
+export const getUsers = async () => {
   return useDrizzle().query.user.findMany({
-    ...(withItems && {
-      with: {
-        items: true,
-      },
-    }),
+    with: {
+      items: true,
+    },
   })
 }
 
-export const getUserById = async (
-  userId: string,
-  withItems: boolean = false
-) => {
+export const getUserById = async (userId: string) => {
   return useDrizzle().query.user.findFirst({
     where: eq(tables.user.id, userId),
-    ...(withItems && {
-      with: {
-        items: true,
-      },
-    }),
+    with: {
+      items: true,
+    },
   })
 }
 
@@ -57,6 +50,8 @@ export const updateUserById = async (userId: string, userData: UpdateUser) => {
     .update(tables.user)
     .set(userData)
     .where(eq(tables.user.id, userId))
+    .returning()
+    .get()
 }
 
 export const deleteUserById = async (userId: string) => {
