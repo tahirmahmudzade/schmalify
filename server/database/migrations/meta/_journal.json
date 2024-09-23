@@ -8,6 +8,13 @@
       "when": 1726635430151,
       "tag": "0000_stormy_vision",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1727106778695,
+      "tag": "0001_same_vertigo",
+      "breakpoints": true
     }
   ]
 }

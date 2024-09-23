@@ -20,6 +20,7 @@ export const item = sqliteTable('item', {
   id: text('id').primaryKey().unique(),
   title: text('title', { length: 20 }).notNull(),
   description: text('description', { length: 100 }),
+  image: text('image').default('default-item.webp'), // optional image for item
   price: integer('price').notNull(), // store price as integer for cents (e.g., 1000 = €10.00)
   category_id: text('category_id').references(() => category.id, {
     onDelete: 'set null',
