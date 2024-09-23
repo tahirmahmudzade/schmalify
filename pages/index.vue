@@ -145,29 +145,19 @@ const items = [
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-100">
         Swap or Sell, Do It Well! - Student Deals in Schmalkalden!
       </h1>
-      <p
-        class="text-gray-400 dark:text-gray-400 mt-2 text-sm sm:text-base lg:text-lg"
-      >
+      <p class="text-gray-400 dark:text-gray-400 mt-2 text-sm sm:text-base lg:text-lg">
         Discover great deals and unique items for sale near you
       </p>
 
       <!-- Search Bar -->
-      <div
-        class="mt-6 relative mx-auto w-full max-w-xs sm:max-w-md lg:max-w-lg"
-      >
+      <div class="mt-6 relative mx-auto w-full max-w-xs sm:max-w-md lg:max-w-lg">
         <input
           type="text"
           placeholder="What are you looking for?"
           class="w-full py-3 pl-4 pr-10 rounded-full bg-gray-100 text-gray-900 focus:outline-none"
         />
         <button class="absolute right-0 top-0 mt-2 mr-4 text-gray-600">
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -181,11 +171,7 @@ const items = [
 
     <!-- Categories Section -->
     <div class="category-section">
-      <h2
-        class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center"
-      >
-        Categories
-      </h2>
+      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Categories</h2>
       <div class="categories-container">
         <NuxtLink
           v-for="category in categories"
@@ -193,15 +179,8 @@ const items = [
           :key="category.name"
           class="category-card flex flex-col items-center p-4 rounded-lg shadow-md"
         >
-          <NuxtImg
-            :src="category.image"
-            :alt="category.name"
-            class="category-image w-full object-cover"
-            format="webp"
-          />
-          <p
-            class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4"
-          >
+          <NuxtImg :src="category.image" :alt="category.name" class="category-image w-full object-cover" format="webp" />
+          <p class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4">
             {{ category.name }}
           </p>
         </NuxtLink>
@@ -210,26 +189,11 @@ const items = [
 
     <!-- Items Section -->
     <div class="items-section mt-12">
-      <h2
-        class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center"
-      >
-        Latest Items
-      </h2>
+      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Latest Items</h2>
       <div class="items-container">
-        <div
-          v-for="item in items"
-          :key="item.name"
-          class="item-card flex flex-col items-center p-4 rounded-lg shadow-md"
-        >
-          <NuxtImg
-            :src="item.image"
-            :alt="item.name"
-            class="item-image w-full object-cover"
-            format="webp"
-          />
-          <p
-            class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4"
-          >
+        <div v-for="item in items" :key="item.name" class="item-card flex flex-col items-center p-4 rounded-lg shadow-md">
+          <NuxtImg :src="item.image" :alt="item.name" class="item-image w-full object-cover" format="webp" />
+          <p class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4">
             {{ item.name }}
           </p>
           <p class="text-gray-400 text-center">{{ item.price }}</p>
@@ -241,17 +205,11 @@ const items = [
 
     <!-- New Section: Schmalify Description -->
     <div class="description-section text-center mt-12 px-4 sm:px-6 lg:px-8">
-      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">
-        What is Schmalify?
-      </h2>
-      <p
-        class="text-gray-400 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto"
-      >
-        Schmalify is a second-hand marketplace designed for students in
-        Schmalkalden, providing a dedicated platform to buy and sell items
-        within the local student community. Schmalify aims to simplify the
-        trading process and foster a more efficient way for students to connect
-        and exchange goods.
+      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">What is Schmalify?</h2>
+      <p class="text-gray-400 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
+        Schmalify is a second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy
+        and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more
+        efficient way for students to connect and exchange goods.
       </p>
     </div>
   </div>
