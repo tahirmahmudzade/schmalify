@@ -1,12 +1,60 @@
 <script setup lang="ts">
-import type { HorizontalNavigationLink } from '#ui/types'
+import type { HorizontalNavigationLink, DropdownItem } from '#ui/types'
 
 const route = useRoute()
-const { loggedIn, user } = useUserSession()
+const { loggedIn } = useUserSession()
 
-const links = computed<
-  HorizontalNavigationLink[] | HorizontalNavigationLink[][]
->(() => [
+const items: DropdownItem[][] = [
+  [
+    loggedIn.value
+      ? {
+          label: 'Profile',
+          icon: 'i-healthicons-ui-user-profile',
+          iconClass: 'text-green-500 dark:text-green-500',
+          click: () => {
+            navigateTo('/profile')
+          },
+        }
+      : {
+          label: 'Sign in',
+          icon: 'i-ri-login-circle-line',
+          iconClass: 'text-green-500 dark:text-green-500',
+          click: () => {
+            useLoginModal()
+          },
+        },
+  ],
+  [
+    {
+      label: 'Listings',
+      icon: 'i-material-symbols-receipt-long',
+      iconClass: 'text-orange-500 dark:text-orange-500',
+      click: () => {
+        navigateTo('/profile/listings')
+      },
+      disabled: !loggedIn.value,
+    },
+    {
+      label: 'Shopping Cart',
+      icon: 'i-mdi-light-cart',
+      iconClass: 'text-blue-500 dark:text-blue-500',
+      disabled: !loggedIn.value,
+    },
+  ],
+  [
+    {
+      label: 'Log out',
+      icon: 'i-ri-logout-circle-line',
+      iconClass: 'text-red-500 dark:text-red-500',
+      disabled: !loggedIn.value,
+      click: () => {
+        useLogout()
+      },
+    },
+  ],
+]
+
+const links = computed<HorizontalNavigationLink[] | HorizontalNavigationLink[][]>(() => [
   [
     {
       label: 'Schmalify',
@@ -25,60 +73,36 @@ const links = computed<
     {
       label: 'Sell Now',
       click: () => {
-        !loggedIn.value
-          ? useSellNowNotificationModal()
-          : useCreateLettingModal()
+        !loggedIn.value ? useSellNowNotificationModal() : useCreateLettingModal()
       },
     },
     {
       label: 'Profile',
-      // key: 'more',
-      click: () => {
-        console.log('user logged in ? ', loggedIn)
-
-        if (!loggedIn.value) {
-          useLoginModal()
-        } else {
-          loggedIn.value && !user.value?.isGuest
-            ? navigateTo('/profile')
-            : useRegisterModal(user.value)
-        }
-      },
     },
   ],
 ])
 </script>
 
 <template>
-  <div class="container mx-auto px-4">
+  <div class="container mx-auto">
     <!-- Added container with mx-auto and padding -->
     <UHorizontalNavigation
       :links="links"
       :ui="{
-        wrapper:
-          'fixed top-0 left-0 w-full bg-gray-900 z-50 shadow-lg mx-auto px-5', // Solid background color and shadow
+        wrapper: 'fixed top-0 left-0 w-full bg-gray-900 z-50 shadow-lg mx-auto px-5', // Solid background color and shadow
         after: '',
         before: 'hover:before:bg-gray-900 dark:hover:before:bg-gray-900',
-        inactive:
-          'text-gray-400 dark:text-gray-400 font-bold transition-colors duration-300', // add transition here
-        active:
-          'text-gray-400 dark:text-gray-400 font-bold transition-colors duration-300', // add transition here
+        inactive: 'text-gray-400 dark:text-gray-400 font-bold transition-colors duration-300', // add transition here
+        active: 'text-gray-400 dark:text-gray-400 font-bold transition-colors duration-300', // add transition here
       }"
     >
       <template #default="{ link }">
         <span class="relative">
-          <NuxtImg
-            v-if="link.label === 'Schmalify'"
-            width="150"
-            height="50"
-            src="img/main-logo.png"
-          />
+          <NuxtImg v-if="link.label === 'Schmalify'" width="150" height="50" src="img/main-logo.png" />
           <div v-if="route.path !== '/' && link.as === 'Search'">
             <div class="flex-1">
               <div class="relative">
-                <span
-                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                >
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg
                     class="h-6 w-6 text-gray-900"
                     fill="none"
@@ -109,7 +133,9 @@ const links = computed<
           </div>
           <div v-else-if="link.label === 'Profile'">
             <ClientOnly>
-              <ButtonsProfileButton :click="link.click as () => void" />
+              <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
+                <ButtonsProfileButton />
+              </UDropdown>
             </ClientOnly>
           </div>
         </span>
