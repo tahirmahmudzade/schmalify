@@ -1,23 +1,14 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import type { FormSubmitEvent } from '#ui/types'
 
 const toast = useToast()
 const { user } = useUserSession()
-
 // Fetch user data
-const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
-
+const { data: userData, refresh } = await useFetch(`/api/users/${user.value?.id}`)
 // Define the validation schema using Zod
 const schema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email' })
-    .max(40, { message: 'Email must be at most 40 characters long' }),
-  firstName: z
-    .string()
-    .max(40, { message: 'First name must be at most 40 characters long' })
-    .optional(),
+  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
+  firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
   lastName: z
     .string()
     .max(50, {
@@ -25,15 +16,10 @@ const schema = z.object({
     })
     .optional(),
   location: z.string().optional(),
-  phone: z
-    .string()
-    .max(15, { message: 'Phone number must be at most 15 digits' })
-    .optional(),
+  phone: z.string().max(15, { message: 'Phone number must be at most 15 digits' }).optional(),
   avatar: z.string().optional(),
 })
-
 type Schema = z.infer<typeof schema>
-
 // Initialize the state with user data
 const state = reactive<Schema>({
   email: userData?.value?.email || '',
@@ -68,12 +54,34 @@ const isFormUnchanged = computed(() => {
 })
 
 function logout() {
-  $fetch('/api/auth/logout').then(() => {
-    toast.add({
-      title: 'User logged out',
+  $fetch('/api/auth/logout')
+    .then(() => {
+      toast.add({ title: 'User logged out' })
+      reloadNuxtApp({ path: '/' })
     })
-    reloadNuxtApp({ path: '/' })
+    .catch(err => {
+      console.log('Error logging out', err)
+
+      toast.add({ title: 'Something went wrong, please try again later' })
+    })
+}
+
+async function uploadImage(e: Event) {
+  const input = e.target as HTMLInputElement
+  const formData = new FormData()
+
+  if (input.files && input.files[0]) {
+    formData.append('avatar', input.files[0])
+  }
+
+  await $fetch(`/api/users/${user.value?.id}/uploadImg`, {
+    method: 'POST',
+    body: formData,
+  }).catch(err => {
+    console.log('Failed to upload image:', err)
   })
+
+  reloadNuxtApp()
 }
 
 async function onSubmit() {
@@ -82,19 +90,12 @@ async function onSubmit() {
   console.log('Form submitted:', state)
   // Perform saveChanges logic here (e.g., send data to your API)
   try {
-    await $fetch(`/api/users/${user.value?.id}`, {
-      method: 'PATCH',
-      body: state,
-    })
-    toast.add({
-      title: 'Profile updated successfully',
-    })
+    await $fetch(`/api/users/${user.value?.id}`, { method: 'PATCH', body: state })
+    toast.add({ title: 'Profile updated successfully' })
     // Update initial data to match the new state
     Object.assign(initialData, state)
   } catch (error: any) {
-    toast.add({
-      title: 'Error updating profile',
-    })
+    toast.add({ title: 'Error updating profile' })
   } finally {
     loading.value = false // Re-enable the button after submission
   }
@@ -106,30 +107,24 @@ async function onSubmit() {
     <!-- Header Section -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-semibold">Profile</h1>
-      <button
-        @click="logout"
-        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-      >
-        Logout
-      </button>
+      <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Logout</button>
     </div>
 
     <!-- User Profile Section -->
-    <div
-      class="mt-8 flex flex-col lg:flex-row items-center lg:items-start space-y-8 lg:space-y-0 lg:space-x-8"
-    >
+    <div class="mt-8 flex flex-col lg:flex-row items-center lg:items-start space-y-8 lg:space-y-0 lg:space-x-8">
       <!-- Avatar and User Info -->
-      <div class="w-full lg:w-1/4 text-center lg:text-left">
-        <!-- Avatar Image -->
-        <div class="relative w-32 h-32 mx-auto lg:mx-0">
-          <img
-            :src="state.avatar || 'https://via.placeholder.com/150'"
-            alt="User Avatar"
-            class="w-full h-full object-cover rounded-full"
-          />
+      <div class="w-full lg:w-1/4 text-center lg:text-left flex flex-col items-center lg:items-start">
+        <!-- Avatar Image as Button -->
+        <div class="w-32 h-32">
+          <label for="avatarInput" class="relative cursor-pointer">
+            <img :src="`api/users/${user?.id}/serveImg`" alt="User Avatar" class="w-full h-full object-cover rounded-full" />
+          </label>
+
+          <!-- Hidden File Input -->
+          <input id="avatarInput" type="file" class="hidden" @change="uploadImage" accept="image/*" />
         </div>
 
-        <!-- Username -->
+        <!-- Username and details, stacked on small screens -->
         <h2 class="mt-4 text-xl font-bold">{{ userData?.username }}</h2>
         <p class="text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
         <p class="text-gray-400">{{ state.email }}</p>
@@ -147,7 +142,6 @@ async function onSubmit() {
         <div class="bg-gray-800 p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold mb-4">Account Details</h3>
 
-          <!-- Begin UForm -->
           <UForm :schema="schema" :state="state">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Email -->
@@ -188,14 +182,9 @@ async function onSubmit() {
 
             <!-- Save Button -->
             <div class="mt-6 text-right">
-              <UButton
-                @click="onSubmit"
-                :disabled="isFormInvalid || isFormUnchanged"
-                label="Save"
-              />
+              <UButton @click="onSubmit" :disabled="isFormInvalid || isFormUnchanged" label="Save" />
             </div>
           </UForm>
-          <!-- End UForm -->
         </div>
       </div>
     </div>

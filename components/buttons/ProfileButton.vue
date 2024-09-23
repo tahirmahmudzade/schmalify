@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 defineProps<{
   click: () => void
 }>()
-</script>
+</script> -->
 
 <template>
   <UButton
@@ -18,7 +18,6 @@ defineProps<{
         },
       },
     }"
-    @click="click"
   >
     <template #leading>
       <Icon name="i-healthicons-ui-user-profile" size="1.3em" />
