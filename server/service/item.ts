@@ -1,10 +1,4 @@
-import {
-  CreateItem,
-  eq,
-  tables,
-  UpdateItem,
-  useDrizzle,
-} from '../database/drizzle'
+import { CreateItem, eq, tables, UpdateItem, useDrizzle } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
 export default function getAllItems() {
@@ -61,12 +55,13 @@ export function createItem(itemData: Omit<CreateItem, 'id'>) {
 }
 
 export function updateItemById(itemId: string, itemData: UpdateItem) {
-  return useDrizzle()
-    .update(tables.item)
-    .set(itemData)
-    .where(eq(tables.item.id, itemId))
+  return useDrizzle().update(tables.item).set(itemData).where(eq(tables.item.id, itemId))
 }
 
 export function deleteItemById(itemId: string) {
   return useDrizzle().delete(tables.item).where(eq(tables.item.id, itemId))
+}
+
+export function updateItemPicture(itemId: string, fileName: string) {
+  return useDrizzle().update(tables.item).set({ image: fileName }).where(eq(tables.item.id, itemId))
 }

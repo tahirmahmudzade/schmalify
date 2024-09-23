@@ -1,10 +1,4 @@
-import {
-  CreateUser,
-  eq,
-  tables,
-  UpdateUser,
-  useDrizzle,
-} from '../database/drizzle'
+import { CreateUser, eq, tables, UpdateUser, useDrizzle } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
 export const getUsers = async () => {
@@ -34,8 +28,9 @@ export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
   return useDrizzle()
     .insert(tables.user)
     .values({
-      id: useNanoId(),
       ...userData,
+      id: useNanoId(),
+      avatar: 'default-user.jpg',
     })
     .returning({
       email: tables.user.email,
@@ -46,18 +41,18 @@ export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
 }
 
 export const updateUserById = async (userId: string, userData: UpdateUser) => {
-  return useDrizzle()
-    .update(tables.user)
-    .set(userData)
-    .where(eq(tables.user.id, userId))
-    .returning()
-    .get()
+  return useDrizzle().update(tables.user).set(userData).where(eq(tables.user.id, userId)).returning().get()
 }
 
 export const deleteUserById = async (userId: string) => {
+  return useDrizzle().delete(tables.user).where(eq(tables.user.id, userId)).returning().get()
+}
+
+export const updateProfilePicture = async (userId: string, fileName: string) => {
   return useDrizzle()
-    .delete(tables.user)
+    .update(tables.user)
+    .set({
+      avatar: fileName,
+    })
     .where(eq(tables.user.id, userId))
-    .returning()
-    .get()
 }

@@ -22,7 +22,7 @@ export default defineEventHandler(async (event): Promise<Item[]> => {
     })
   }
 
-  return user.items.map((item) => ({
+  return user.items.map(item => ({
     ...item,
     id: encodeId(item.id),
   }))
