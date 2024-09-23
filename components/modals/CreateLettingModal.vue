@@ -1,39 +1,27 @@
 <script setup lang="ts">
 import z from 'zod'
-import type { Category } from '~/server/database/drizzle'
+import type { Category, CreateItem } from '~/server/database/drizzle'
 
-const { categories, asGuest } = defineProps<{
-  categories: readonly Category[]
-  asGuest: boolean
-}>()
+const { categories, asGuest } = defineProps<{ categories: readonly Category[]; asGuest: boolean }>()
 
-const emit = defineEmits<{
-  (e: 'close', success?: boolean): void
-}>()
+const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const toast = useToast()
 const { user } = useUserSession()
 
 const userId = ref(user.value?.id)
 
+const imageFile = ref<File | null>(null)
+const imagePreview = ref<string | null>(null)
+
 const schema = z.object({
   title: z
     .string()
     .min(1, { message: 'Title is required' })
     .max(20, { message: 'Title must be at most 20 characters long' }),
-  description: z
-    .string()
-    .max(100, { message: 'Description must be at most 100 characters long' })
-    .optional(),
-  price: z
-    .number()
-    .min(1, { message: 'Price must be greater than 0' })
-    .max(5000, {
-      message: 'Price must be at most 5000',
-    }),
-  condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], {
-    message: 'Condition is required',
-  }),
+  description: z.string().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
+  price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
+  condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
   ...(asGuest && {
     firstName: z.string().min(1, { message: 'First name is required' }).max(40),
     lastName: z.string().max(50).optional(),
@@ -41,16 +29,14 @@ const schema = z.object({
       .string()
       .min(10, { message: 'Phone number must be at least 10 digits' })
       .max(15, { message: 'Phone number must be at most 15 digits' })
-      .regex(phoneRegex, {
-        message: 'Phone number must start with + and include the country code',
-      }),
+      .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
   }),
 })
 
 const itemData = reactive({
   title: '',
   description: '',
-  price: '',
+  price: 0,
   condition: 'new',
   firstName: '',
   lastName: '',
@@ -60,55 +46,81 @@ const itemData = reactive({
 
 const isFormInvalid = computed(() => {
   const result = schema.safeParse(itemData)
-  return !result.success
+  return !result.success || !imageFile.value
 })
 
-const categoryNames = computed(() => categories.map((c) => c.name))
+const categoryNames = computed(() => categories.map(c => c.name))
 
 function onClose() {
   emit('close', false)
 }
 
+function handleImgChange(e: Event) {
+  const target = e.target as HTMLInputElement
+
+  if (target.files && target.files[0]) {
+    const file = target.files[0]
+
+    // Check if file size exceeds 2 MB
+    if (file.size > 2 * 1024 * 1024) {
+      // Display an error message
+      toast.add({ color: 'red', title: 'Image size must be less than 2 MB' })
+
+      // Reset the file input
+      target.value = ''
+      imageFile.value = null
+      imagePreview.value = null
+      return
+    }
+
+    imageFile.value = file
+    const reader = new FileReader()
+    reader.onload = () => {
+      imagePreview.value = reader.result as string
+    }
+    reader.readAsDataURL(file)
+  } else {
+    // If no file is selected, reset the preview
+    imagePreview.value = null
+    imageFile.value = null
+  }
+}
+
 async function onSubmit() {
-  const categoryId = categories.find((c) => c.name === itemData.category)?.id
+  const categoryId = categories.find(c => c.name === itemData.category)?.id
+  console.log('Category ID:', categoryId)
 
   try {
     if (asGuest) {
       const newGuest = await $fetch('/api/auth/guestLogin', {
         method: 'POST',
-        body: {
-          firstName: itemData.firstName,
-          lastName: itemData.lastName || '',
-          phone: itemData.phone,
-        },
+        body: { firstName: itemData.firstName, lastName: itemData.lastName || '', phone: itemData.phone },
       })
 
       userId.value = newGuest.guest.id
     }
 
-    const body = {
+    const formData = new FormData()
+    if (imageFile.value && imageFile.value.size) {
+      formData.append('image', imageFile.value!)
+    }
+
+    const body: Omit<CreateItem, 'id'> = {
       title: itemData.title,
       description: itemData.description,
       price: itemData.price,
-      condition: itemData.condition,
-      categoryId,
-      userId: userId.value,
+      condition: itemData.condition as Condition,
+      category_id: categoryId,
     }
 
-    await $fetch<{ statusCode: number; message: string }>('/api/items', {
-      method: 'POST',
-      body,
-    })
+    const { item, message } = await $fetch('/api/items', { method: 'POST', body })
 
-    toast.add({
-      color: 'green',
-      title: 'Item created successfully',
-    })
+    await $fetch(`/api/items/${item.id}/uploadImg`, { method: 'POST', body: formData })
+
+    toast.add({ color: 'green', title: message })
   } catch (err) {
-    toast.add({
-      color: 'red',
-      title: 'Failed to create letting, please try again later with valid data',
-    })
+    console.log('Failed to create item:', err)
+    toast.add({ color: 'red', title: 'Failed to create letting, please try again later with valid data' })
   } finally {
     onClose()
   }
@@ -121,19 +133,11 @@ async function onSubmit() {
       <!-- Modal Overlay (provided by UModal) -->
       <div class="modal-container">
         <!-- Modal Content -->
-        <div
-          class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md"
-        >
+        <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
-              <h3
-                class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100"
-              >
-                Create Item
-              </h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">
-                Fill in the details to list an item
-              </p>
+              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Create Item</h3>
+              <p class="mb-4 text-gray-700 dark:text-gray-300">Fill in the details to list an item</p>
 
               <UForm :schema="schema" :state="itemData">
                 <!-- Display guest fields when asGuest is true -->
@@ -146,17 +150,11 @@ async function onSubmit() {
                           <span class="text-red-500">*</span>
                         </div>
                       </template>
-                      <UInput
-                        v-model="itemData.firstName"
-                        placeholder="First name"
-                      />
+                      <UInput v-model="itemData.firstName" placeholder="First name" />
                     </UFormGroup>
 
                     <UFormGroup label="Last Name" name="lastName" class="w-1/2">
-                      <UInput
-                        v-model="itemData.lastName"
-                        placeholder="Last name"
-                      />
+                      <UInput v-model="itemData.lastName" placeholder="Last name" />
                     </UFormGroup>
                   </div>
 
@@ -182,24 +180,28 @@ async function onSubmit() {
                       <span class="text-red-500">*</span>
                     </div>
                   </template>
-                  <UInput
-                    v-model="itemData.title"
-                    placeholder="Shot title (max 20 characters)"
-                  />
+                  <UInput v-model="itemData.title" placeholder="Shot title (max 20 characters)" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Description" name="description">
-                  <UInput
-                    v-model="itemData.description"
-                    placeholder="Item description (max length: 100 characters)"
-                  />
+                  <UInput v-model="itemData.description" placeholder="Item description (max length: 100 characters)" />
                 </UFormGroup>
                 <UFormGroup class="mt-3" label="Category" name="category">
-                  <USelectMenu
-                    v-model="itemData.category"
-                    :options="categoryNames"
-                  />
+                  <USelectMenu v-model="itemData.category" :options="categoryNames" />
                 </UFormGroup>
+
+                <div class="mt-3">
+                  <label for="imageInput" class="relative cursor-pointer">
+                    <div v-if="imagePreview">
+                      <img :src="imagePreview" alt="Item Image" class="w-full h-40 object-cover rounded-lg" />
+                    </div>
+                    <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
+                      <span class="text-gray-500">Click to upload image</span>
+                    </div>
+                  </label>
+                  <input id="imageInput" type="file" class="hidden" @change="handleImgChange" accept="image/*" />
+                  <p class="text-sm text-gray-500 mt-1">Maximum file size: 2 MB</p>
+                </div>
 
                 <UFormGroup class="mt-3" name="price">
                   <template #label>
@@ -208,24 +210,13 @@ async function onSubmit() {
                       <span class="text-red-500">*</span>
                     </div>
                   </template>
-                  <UInput
-                    v-model="itemData.price"
-                    type="number"
-                    placeholder="Price in euro (max 5000)"
-                  />
+                  <UInput v-model.number="itemData.price" type="number" placeholder="Price in euro (max 5000)" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Condition" name="condition">
                   <USelect
                     v-model="itemData.condition"
-                    :options="[
-                      'new',
-                      'like new',
-                      'very good',
-                      'good',
-                      'fair',
-                      'poor',
-                    ]"
+                    :options="['new', 'like new', 'very good', 'good', 'fair', 'poor']"
                   />
                 </UFormGroup>
               </UForm>
