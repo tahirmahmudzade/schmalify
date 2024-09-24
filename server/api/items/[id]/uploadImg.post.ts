@@ -7,8 +7,6 @@ export default defineEventHandler(
     statusCode: number
     message: string
   }> => {
-    console.log('uploading item img')
-
     const paramId = getRouterParam(event, 'id')
 
     if (!paramId) {
@@ -26,7 +24,6 @@ export default defineEventHandler(
     const form = await readFormData(event)
 
     const file = form.get('image') as File
-    console.log('file', file)
 
     if (!file || !file.size) {
       console.log('No file provided or file size is 0')
@@ -34,18 +31,10 @@ export default defineEventHandler(
       throw createError({ statusCode: 400, message: 'No file provided' })
     }
 
-    // log to the console the file size in mb
-    console.log('file size in mb', file.size / 1024 / 1024)
-
     ensureBlob(file, {
       maxSize: '2MB',
       types: ['image'],
     })
-
-    console.log('passed ensureBlob')
-
-    const item = await getItemById(decodedItemId)
-    console.log('item', item)
 
     try {
       await Promise.all([

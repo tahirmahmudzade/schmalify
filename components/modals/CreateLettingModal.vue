@@ -88,7 +88,6 @@ function handleImgChange(e: Event) {
 
 async function onSubmit() {
   const categoryId = categories.find(c => c.name === itemData.category)?.id
-  console.log('Category ID:', categoryId)
 
   try {
     if (asGuest) {
@@ -103,19 +102,14 @@ async function onSubmit() {
     const formData = new FormData()
     if (imageFile.value && imageFile.value.size) {
       formData.append('image', imageFile.value!)
+      formData.append('title', itemData.title)
+      formData.append('description', itemData.description)
+      formData.append('price', itemData.price.toString())
+      formData.append('condition', itemData.condition)
+      formData.append('category_id', categoryId!)
     }
 
-    const body: Omit<CreateItem, 'id'> = {
-      title: itemData.title,
-      description: itemData.description,
-      price: itemData.price,
-      condition: itemData.condition as Condition,
-      category_id: categoryId,
-    }
-
-    const { item, message } = await $fetch('/api/items', { method: 'POST', body })
-
-    await $fetch(`/api/items/${item.id}/uploadImg`, { method: 'POST', body: formData })
+    const { message } = await $fetch('/api/items', { method: 'POST', body: formData })
 
     toast.add({ color: 'green', title: message })
   } catch (err) {
