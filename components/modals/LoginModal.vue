@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import z from 'zod'
 
-const emit = defineEmits<{
-  (e: 'close', toRegister?: boolean): void
-}>()
+const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void }>()
 
 const toast = useToast()
 
 const schema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email' })
-    .max(40, { message: 'Email must be at most 40 characters long' }),
+  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
   password: z
     .string({ message: 'Invalid password' })
     .min(8, { message: 'Password must be at least 8 characters long' })
@@ -20,10 +15,7 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-const credentials = reactive<Schema>({
-  email: '',
-  password: '',
-})
+const credentials = reactive<Schema>({ email: '', password: '' })
 
 const isFormInvalid = computed(() => {
   const result = schema.safeParse(credentials)
@@ -36,18 +28,12 @@ function onClose() {
 
 async function onSubmit() {
   try {
-    await $fetch<{ statusCode: number; message: string }>('/api/auth/login', {
-      method: 'POST',
-      body: credentials,
-    })
+    await $fetch<{ statusCode: number; message: string }>('/api/auth/login', { method: 'POST', body: credentials })
 
     onClose()
   } catch (err) {
     credentials.password = ''
-    toast.add({
-      color: 'red',
-      title: 'Invalid email or password',
-    })
+    toast.add({ color: 'red', title: 'Invalid email or password' })
   }
 }
 
@@ -64,19 +50,11 @@ async function onRegister() {
       <!-- Modal Overlay (provided by UModal) -->
       <div class="modal-container">
         <!-- Modal Content -->
-        <div
-          class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md"
-        >
+        <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
-              <h3
-                class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100"
-              >
-                Sign In
-              </h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">
-                Enter your email and password
-              </p>
+              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Sign In</h3>
+              <p class="mb-4 text-gray-700 dark:text-gray-300">Enter your email and password</p>
               <UButton
                 icon="i-flat-color-icons-google"
                 color="white"
@@ -86,23 +64,17 @@ async function onRegister() {
                   base: 'max-w-lg',
                   rounded: 'rounded-lg',
                 }"
+                @click="reloadNuxtApp({ path: '/api/auth/google' })"
               />
               <div class="flex items-center my-3">
-                <hr
-                  class="h-0 border-b border-gray-500 dark:border-gray-600 grow"
-                />
+                <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
                 <p class="mx-4 text-gray-600 dark:text-gray-400">or</p>
-                <hr
-                  class="h-0 border-b border-gray-500 dark:border-gray-600 grow"
-                />
+                <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
               </div>
 
               <UForm :schema="schema" :state="credentials">
                 <UFormGroup label="Email" name="email">
-                  <UInput
-                    v-model="credentials.email"
-                    placeholder="your-email@example.com"
-                  />
+                  <UInput v-model="credentials.email" placeholder="your-email@example.com" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Password" name="password">
@@ -125,14 +97,9 @@ async function onRegister() {
                 :disabled="isFormInvalid"
                 @click="onSubmit"
               />
-              <p
-                class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300"
-              >
+              <p class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300">
                 Not registered yet?
-                <span
-                  @click="onRegister"
-                  class="font-bold cursor-pointer text-blue-500 dark:text-blue-400"
-                >
+                <span @click="onRegister" class="font-bold cursor-pointer text-blue-500 dark:text-blue-400">
                   Create an Account
                 </span>
               </p>

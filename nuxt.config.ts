@@ -14,6 +14,15 @@ export default defineNuxtConfig({
   ui: { global: true },
   image: { dir: 'public' },
 
+  runtimeConfig: {
+    oauth: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      },
+    },
+  },
+
   $development: { hub: { database: true, blob: true, kv: true, remote: true } },
   hub: { database: true, blob: true, kv: true, remote: true },
 
