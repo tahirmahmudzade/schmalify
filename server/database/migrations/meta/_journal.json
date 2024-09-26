@@ -15,6 +15,13 @@
       "when": 1727106778695,
       "tag": "0001_same_vertigo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1727245952153,
+      "tag": "0002_curious_terrax",
+      "breakpoints": true
     }
   ]
 }
