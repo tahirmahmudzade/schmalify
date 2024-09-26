@@ -26,8 +26,6 @@ export default defineEventHandler(
     const file = form.get('image') as File
 
     if (!file || !file.size) {
-      console.log('No file provided or file size is 0')
-
       throw createError({ statusCode: 400, message: 'No file provided' })
     }
 

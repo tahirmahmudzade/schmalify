@@ -30,12 +30,13 @@ export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
     .values({
       ...userData,
       id: useNanoId(),
-      avatar: 'default-user.jpg',
+      avatar: userData.avatar || 'default-user.jpg',
     })
     .returning({
       email: tables.user.email,
       id: tables.user.id,
       username: tables.user.username,
+      avatar: tables.user.avatar,
     })
     .get()
 }
@@ -53,6 +54,15 @@ export const updateProfilePicture = async (userId: string, fileName: string) => 
     .update(tables.user)
     .set({
       avatar: fileName,
+    })
+    .where(eq(tables.user.id, userId))
+}
+
+export const updatePassword = async (userId: string, password: string) => {
+  return useDrizzle()
+    .update(tables.user)
+    .set({
+      password,
     })
     .where(eq(tables.user.id, userId))
 }

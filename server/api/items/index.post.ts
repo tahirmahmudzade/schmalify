@@ -9,8 +9,6 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
     const { user } = await getUserSession(event)
 
     if (!user) {
-      console.log('No user found')
-
       throw createError({ statusCode: 401, message: 'Unauthorized' })
     }
 
