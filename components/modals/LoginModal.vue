@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import z from 'zod'
 
-const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void }>()
+const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void; (e: 'forgotPassword'): void }>()
 
 const toast = useToast()
 
@@ -38,9 +38,11 @@ async function onSubmit() {
 }
 
 async function onRegister() {
-  console.log('on register')
-
   emit('close', true)
+}
+
+function onForgotPassword() {
+  emit('forgotPassword')
 }
 </script>
 
@@ -80,6 +82,13 @@ async function onRegister() {
                 <UFormGroup class="mt-3" label="Password" name="password">
                   <UInput v-model="credentials.password" type="password" />
                 </UFormGroup>
+
+                <!-- Forgot Password Link -->
+                <div class="text-right mt-2">
+                  <a @click="onForgotPassword" class="text-sm text-blue-500 hover:underline cursor-pointer">
+                    Forgot Password?
+                  </a>
+                </div>
               </UForm>
               <UButton
                 color="white"

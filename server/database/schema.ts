@@ -35,6 +35,7 @@ export const item = sqliteTable('item', {
   }), // e.g., new, like new, used
   status: text('status', { enum: ['available', 'sold'] }).default('available'), // e.g., available, sold
   createdAt: text('created_at').default(sql`(datetime('now'))`),
+  pending: integer('pending', { mode: 'boolean' }).default(true),
 })
 
 export const category = sqliteTable('category', {

@@ -4,7 +4,7 @@ import { z } from 'zod'
 const toast = useToast()
 const { user } = useUserSession()
 // Fetch user data
-const { data: userData, refresh } = await useFetch(`/api/users/${user.value?.id}`)
+const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
 // Define the validation schema using Zod
 const schema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
@@ -66,6 +66,13 @@ function logout() {
     })
 }
 
+function profilePicUrl() {
+  const imgUrl = userData.value?.avatar?.startsWith('https') ? userData.value.avatar : `api/users/${user.value?.id}/serveImg`
+  console.log('imgUrl', imgUrl)
+
+  return imgUrl
+}
+
 async function uploadImage(e: Event) {
   const input = e.target as HTMLInputElement
   const formData = new FormData()
@@ -74,10 +81,7 @@ async function uploadImage(e: Event) {
     formData.append('avatar', input.files[0])
   }
 
-  await $fetch(`/api/users/${user.value?.id}/uploadImg`, {
-    method: 'POST',
-    body: formData,
-  }).catch(err => {
+  await $fetch(`/api/users/${user.value?.id}/uploadImg`, { method: 'POST', body: formData }).catch(err => {
     console.log('Failed to upload image:', err)
   })
 
@@ -117,7 +121,7 @@ async function onSubmit() {
         <!-- Avatar Image as Button -->
         <div class="w-32 h-32">
           <label for="avatarInput" class="relative cursor-pointer">
-            <img :src="`api/users/${user?.id}/serveImg`" alt="User Avatar" class="w-full h-full object-cover rounded-full" />
+            <img :src="profilePicUrl()" alt="User Avatar" class="w-full h-full object-cover rounded-full" />
           </label>
 
           <!-- Hidden File Input -->

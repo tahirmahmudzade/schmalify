@@ -24,5 +24,12 @@ export function useLoginModal() {
         }, 2100)
       }
     },
+    onForgotPassword: () => {
+      modal.close()
+
+      setTimeout(() => {
+        useForgotPasswordModal()
+      }, 500)
+    },
   })
 }
