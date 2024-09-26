@@ -1,6 +1,3 @@
-// @ts-ignore
-const isDev = import.meta.env.MODE === 'development'
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/image', '@nuxthub/core', '@nuxtjs/device', '@nuxt/icon', 'nuxt-auth-utils'],
@@ -15,6 +12,10 @@ export default defineNuxtConfig({
   image: { dir: 'public' },
 
   runtimeConfig: {
+    mailgunApiKey: process.env.MAILGUN_API_KEY,
+    mailgunDomain: process.env.MAILGUN_DOMAIN,
+    mailgunFromEmail: process.env.MAILGUN_FROM_EMAIL,
+    jwtSecret: process.env.JWT_SECRET,
     oauth: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID,
