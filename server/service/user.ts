@@ -30,7 +30,7 @@ export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
     .values({
       ...userData,
       id: useNanoId(),
-      avatar: userData.avatar || 'default-user.jpg',
+      avatar: userData.avatar || 'default-user.webp',
     })
     .returning({
       email: tables.user.email,

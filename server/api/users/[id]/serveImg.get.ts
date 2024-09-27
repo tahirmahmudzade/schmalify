@@ -15,7 +15,7 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, message: !user?.avatar ? 'User has no profile picture' : 'User not found' })
   }
 
-  const filename = user.avatar === 'default-user.webp' ? 'default-user.webp' : `${paramId}/${user.avatar}`
+  const filename = user.avatar || `${paramId}/${user.avatar}`
 
   return hubBlob().serve(event, filename)
 })
