@@ -1,57 +1,13 @@
 <script setup lang="ts">
-const categories = [
-  {
-    name: 'All',
-    image: '/img/categories/all.jpg',
-    to: 'categories/all',
-  },
-  {
-    name: 'For Free',
-    image: '/img/categories/free.jpg',
-    to: 'categories/free',
-  },
-  {
-    name: 'Electronics',
-    image: '/img/categories/electronics.avif',
-    to: 'categories/electronics',
-  },
-  { name: 'Books', image: '/img/categories/books.jpg', to: 'categories/books' },
-  {
-    name: 'Clothing',
-    image: '/img/categories/clothing.avif',
-    to: 'categories/clothing',
-  },
-  {
-    name: 'Furniture',
-    image: '/img/categories/furniture.avif',
-    to: 'categories/furniture',
-  },
-  {
-    name: 'Home & Garden',
-    image: '/img/categories/home-garden.avif',
-    to: 'categories/home-garden',
-  },
-  {
-    name: 'Sports & Outdoors',
-    image: '/img/categories/sport-outdoors.jpg',
-    to: 'categories/sports-outdoors',
-  },
-  {
-    name: 'Health & Beauty',
-    image: '/img/categories/health.jpg',
-    to: 'categories/health-beauty',
-  },
-  {
-    name: 'Jewelry & Accessories',
-    image: '/img/categories/accessories.jpg',
-    to: 'categories/accessories',
-  },
-  {
-    name: 'Leasure & Games',
-    image: '/img/categories/games.jpg',
-    to: 'categories/games',
-  },
-]
+import type { Category } from '~/server/database/drizzle'
+
+const { data: categoryRes } = await useFetch('/api/category')
+
+const categories = ref<Category[]>([])
+
+if (categoryRes.value) {
+  categories.value = categoryRes.value.categories
+}
 
 const items = [
   {
@@ -175,11 +131,16 @@ const items = [
       <div class="categories-container">
         <NuxtLink
           v-for="category in categories"
-          :to="category.to"
+          :to="`/categories/${category.name.toLowerCase().trim()}`"
           :key="category.name"
           class="category-card flex flex-col items-center p-4 rounded-lg shadow-md"
         >
-          <NuxtImg :src="category.image" :alt="category.name" class="category-image w-full object-cover" format="webp" />
+          <NuxtImg
+            :src="`/img/categories/${category.img!}`"
+            :alt="category.name"
+            class="category-image w-full object-cover"
+            format="webp"
+          />
           <p class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4">
             {{ category.name }}
           </p>
