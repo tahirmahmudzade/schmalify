@@ -22,12 +22,12 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 // Initialize the state with user data
 const state = reactive<Schema>({
-  email: userData?.value?.email || '',
-  firstName: userData?.value?.firstName || '',
-  lastName: userData?.value?.lastName || '',
-  location: userData?.value?.location || '',
-  phone: userData?.value?.phone || '',
-  avatar: userData?.value?.avatar || '',
+  email: userData.value?.email || '',
+  firstName: userData.value?.firstName || '',
+  lastName: userData.value?.lastName || '',
+  location: userData.value?.location || '',
+  phone: userData.value?.phone || '',
+  avatar: userData.value?.avatar || '',
 })
 
 // Store initial data for comparison
@@ -53,22 +53,27 @@ const isFormUnchanged = computed(() => {
   )
 })
 
-function logout() {
-  $fetch('/api/auth/logout')
-    .then(() => {
-      toast.add({ title: 'User logged out' })
-      reloadNuxtApp({ path: '/' })
-    })
-    .catch(err => {
-      console.log('Error logging out', err)
-
-      toast.add({ title: 'Something went wrong, please try again later' })
-    })
+async function handleLogout() {
+  if (user.value?.isGuest) {
+    const confirmTitle = 'Logout as Guest'
+    const confirmDescription = `You are logging out as a guest, you won't be able to log back in. Are you sure you want to continue?`
+    const confirmed = await useConfirmModal(confirmTitle, confirmDescription)
+    if (!confirmed) {
+      return // If the user cancels, stop the logout process
+    }
+  }
+  try {
+    await $fetch('/api/auth/logout')
+    toast.add({ title: 'User logged out' })
+    reloadNuxtApp({ path: '/' })
+  } catch (err) {
+    console.log('Error logging out', err)
+    toast.add({ title: 'Something went wrong, please try again later' })
+  }
 }
 
 function profilePicUrl() {
   const imgUrl = userData.value?.avatar?.startsWith('https') ? userData.value.avatar : `api/users/${user.value?.id}/serveImg`
-  console.log('imgUrl', imgUrl)
 
   return imgUrl
 }
@@ -90,9 +95,6 @@ async function uploadImage(e: Event) {
 
 async function onSubmit() {
   loading.value = true //
-  // Handle form submission
-  console.log('Form submitted:', state)
-  // Perform saveChanges logic here (e.g., send data to your API)
   try {
     await $fetch(`/api/users/${user.value?.id}`, { method: 'PATCH', body: state })
     toast.add({ title: 'Profile updated successfully' })
@@ -111,7 +113,9 @@ async function onSubmit() {
     <!-- Header Section -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-semibold">Profile</h1>
-      <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Logout</button>
+      <button @click="handleLogout" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+        Logout
+      </button>
     </div>
 
     <!-- User Profile Section -->

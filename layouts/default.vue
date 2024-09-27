@@ -2,7 +2,7 @@
 import type { HorizontalNavigationLink, DropdownItem } from '#ui/types'
 
 const route = useRoute()
-const { loggedIn } = useUserSession()
+const { loggedIn, user } = useUserSession()
 
 const items: DropdownItem[][] = [
   [
@@ -22,6 +22,20 @@ const items: DropdownItem[][] = [
           click: () => {
             useLoginModal()
           },
+        },
+    user.value && user.value.isGuest
+      ? {
+          label: 'Sign up as a user',
+          icon: 'i-ri-login-circle-line',
+          iconClass: 'text-green-500 dark:text-green-500',
+          click: () => {
+            useRegisterModal()
+          },
+        }
+      : {
+          label: '',
+          class: 'hidden',
+          disabled: true,
         },
   ],
   [
