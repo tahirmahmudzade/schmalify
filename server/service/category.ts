@@ -1,10 +1,4 @@
-import {
-  Category,
-  CreateCategory,
-  eq,
-  tables,
-  useDrizzle,
-} from '../database/drizzle'
+import { Category, CreateCategory, eq, tables, useDrizzle } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
 export function getAllCategories(): Promise<Category[]> {
@@ -27,8 +21,9 @@ export function createCategory(categoryData: Omit<CreateCategory, 'id'>) {
   return useDrizzle()
     .insert(tables.category)
     .values({
-      id: useNanoId(),
       ...categoryData,
+      id: useNanoId(),
+      img: categoryData.img || 'default-category.webp',
     })
     .returning({
       id: tables.category.id,
