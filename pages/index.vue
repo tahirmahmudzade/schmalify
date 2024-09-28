@@ -1,97 +1,19 @@
 <script setup lang="ts">
-import type { Category } from '~/server/database/drizzle'
+import type { Category, Item } from '~/server/database/drizzle'
 
 const { data: categoryRes } = await useFetch('/api/category')
+const { data: itemRes } = await useFetch('/api/items')
 
 const categories = ref<Category[]>([])
+const items = ref<(Item & { seller: { location: string | null } | null })[]>([])
 
 if (categoryRes.value) {
   categories.value = categoryRes.value.categories
 }
 
-const items = [
-  {
-    name: 'Laptop',
-    image: '/img/items/laptop.jpg',
-    price: '€500',
-    location: 'Schmalkalden',
-    category: 'Electronics',
-    date: '2022-01-01',
-    description: 'Brand new laptop for sale',
-  },
-  {
-    name: 'iPhone',
-    image: '/img/items/iphone.jpg',
-    price: '€300',
-    location: 'Schmalkalden',
-    category: 'Electronics',
-    date: '2022-01-01',
-    description: 'Used iPhone for sale',
-  },
-  {
-    name: 'Book',
-    image: '/img/items/book.jpg',
-    price: '€20',
-    location: 'Schmalkalden',
-    category: 'Books',
-    date: '2022-01-01',
-    description: 'Second-hand book for sale',
-  },
-  {
-    name: 'Shirt',
-    image: '/img/items/shirt.jpg',
-    price: '€10',
-    location: 'Schmalkalden',
-    category: 'Clothing',
-    date: '2022-01-01',
-    description: 'New shirt for sale',
-  },
-  {
-    name: 'Table',
-    image: '/img/items/table.jpg',
-    price: '€50',
-    location: 'Schmalkalden',
-    category: 'Furniture',
-    date: '2022-01-01',
-    description: 'Used table for sale',
-  },
-  {
-    name: 'Plant',
-    image: '/img/items/plant.jpg',
-    price: '€15',
-    location: 'Schmalkalden',
-    category: 'Home & Garden',
-    date: '2022-01-01',
-    description: 'Small plant for sale',
-  },
-  {
-    name: 'Bike',
-    image: '/img/items/bike.jpg',
-    price: '€100',
-    location: 'Schmalkalden',
-    category: 'Sports & Outdoors',
-    date: '2022-01-01',
-    description: 'Used bike for sale',
-  },
-  {
-    name: 'Perfume',
-    image: '/img/items/perfume.jpg',
-    price: '€30',
-    location: 'Schmalkalden',
-    category: 'Health & Beauty',
-    date: '2022-01-01',
-    description: 'New perfume for sale',
-  },
-  {
-    name: 'Necklace',
-    image: '/img/items/necklace.jpg',
-    price: '€25',
-    location: 'Schmalkalden',
-    category: 'Jewelry & Accessories',
-    date: '2022-01-01',
-    description: 'Used necklace for sale',
-  },
-]
+if (itemRes.value) {
+  items.value = itemRes.value.items
+}
 </script>
 
 <template>
@@ -152,14 +74,20 @@ const items = [
     <div class="items-section mt-12">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Latest Items</h2>
       <div class="items-container">
-        <div v-for="item in items" :key="item.name" class="item-card flex flex-col items-center p-4 rounded-lg shadow-md">
-          <NuxtImg :src="item.image" :alt="item.name" class="item-image w-full object-cover" format="webp" />
-          <p class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4">
-            {{ item.name }}
-          </p>
-          <p class="text-gray-400 text-center">{{ item.price }}</p>
-          <p class="text-gray-400 text-center">{{ item.location }}</p>
-          <p class="text-gray-400 text-center">{{ item.description }}</p>
+        <div v-for="item in items" :key="item.title" class="item-card rounded-lg overflow-hidden shadow-md">
+          <img :src="`api/items/${item.id}/serveImg`" :alt="item.title" class="item-image" />
+          <div class="item-details">
+            <h3 class="text-gray-100 mb-1 text-sm font-semibold">{{ item.title }}</h3>
+            <div class="flex justify-start space-x-1">
+              <Icon name="i-entypo-price-tag" style="color: #22c55e" />
+              <p class="text-gray-400">{{ item.price }}€</p>
+            </div>
+            <p class="text-gray-400">{{ item.seller?.location }}</p>
+            <div class="flex justify-start space-x-1">
+              <Icon name="i-lets-icons-date-range" style="color: #f97316" />
+              <p class="text-gray-400">{{ formatDateToDDMMYYYY(item.createdAt!) }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -177,8 +105,10 @@ const items = [
 </template>
 
 <style scoped>
+/* General container styling */
 .container {
   max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Horizontal scrolling for categories and items */
@@ -202,22 +132,84 @@ const items = [
   border-radius: 10px; /* Rounded scrollbar */
 }
 
-/* Card styling for categories and items */
-.category-card,
-.item-card {
+/* Card styling for categories */
+.category-card {
   flex: 0 0 150px; /* Each card takes up 150px in width */
   max-width: 150px; /* Limit the max width of each card */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.category-image,
-.item-image {
+.category-image {
   width: 100%;
   height: 150px; /* Adjust height */
   object-fit: cover;
   border-radius: 0.5rem; /* Consistent border radius */
 }
 
-/* Description section styling */
+/* Card styling for items */
+.item-card {
+  flex: 0 0 150px; /* Maintain original width */
+  max-width: 150px; /* Prevent cards from growing beyond 150px */
+  background-color: rgba(255, 255, 255, 0.05); /* Semi-transparent dark background */
+  backdrop-filter: blur(10px); /* Blur effect for smoothness */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.item-card:hover {
+  transform: translateY(-5px); /* Add a slight lift on hover */
+}
+
+/* Item Image Styling */
+.item-image {
+  width: 100%; /* Full width of the card */
+  height: 150px; /* Keep the original height */
+  object-fit: cover;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Details section with proper positioning */
+.item-details {
+  padding: 1rem; /* Padding for text */
+}
+
+.item-details p {
+  font-size: 0.875rem;
+  color: #a0aec0; /* Color for better contrast */
+  margin-bottom: 0.25rem;
+}
+
+/* Responsive layout for items */
+@media (max-width: 1023px) {
+  .items-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Two-column layout on mobile */
+  }
+}
+
+@media (min-width: 1024px) {
+  .items-container {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, auto);
+    grid-auto-columns: minmax(200px, 1fr);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .items-container::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .items-container::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+  }
+}
+
+/* Styling for the description section */
 .description-section {
   margin-top: 50px;
   padding: 20px;
