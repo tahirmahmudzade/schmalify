@@ -21,7 +21,7 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, message: !item?.image ? 'User has no profile picture' : 'User not found' })
   }
 
-  const filename = item.image === 'default-item.webp' ? 'default-item.webp' : `${user.id}/items/${item.image}`
+  const filename = `${user.id}/items/${item.image}`
 
   return hubBlob().serve(event, filename)
 })

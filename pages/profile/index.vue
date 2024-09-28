@@ -9,12 +9,7 @@ const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
 const schema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
   firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
-  lastName: z
-    .string()
-    .max(50, {
-      message: 'Last name must be at most 50 characters long',
-    })
-    .optional(),
+  lastName: z.string().max(50, { message: 'Last name must be at most 50 characters long' }).optional(),
   location: z.string().optional(),
   phone: z.string().max(15, { message: 'Phone number must be at most 15 digits' }).optional(),
   avatar: z.string().optional(),

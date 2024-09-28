@@ -5,7 +5,11 @@ export default function getAllItems() {
   return useDrizzle().query.item.findMany({
     with: {
       category: true,
-      seller: true,
+      seller: {
+        columns: {
+          location: true,
+        },
+      },
     },
   })
 }
@@ -15,7 +19,11 @@ export function getItemById(itemId: string) {
     where: eq(tables.item.id, itemId),
     with: {
       category: true,
-      seller: true,
+      seller: {
+        columns: {
+          location: true,
+        },
+      },
     },
   })
 }
