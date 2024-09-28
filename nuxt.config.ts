@@ -1,6 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/image', '@nuxthub/core', '@nuxtjs/device', '@nuxt/icon', 'nuxt-auth-utils'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/image',
+    '@nuxthub/core',
+    '@nuxtjs/device',
+    '@nuxt/icon',
+    'nuxt-auth-utils',
+    'nuxt-typed-router',
+  ],
 
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
