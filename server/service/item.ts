@@ -4,9 +4,10 @@ import useNanoId from '../utils/nanoId'
 export default function getAllItems() {
   return useDrizzle().query.item.findMany({
     with: {
-      category: true,
+      // category: true,
       seller: {
         columns: {
+          avatar: true,
           location: true,
         },
       },
@@ -19,11 +20,7 @@ export function getItemById(itemId: string) {
     where: eq(tables.item.id, itemId),
     with: {
       category: true,
-      seller: {
-        columns: {
-          location: true,
-        },
-      },
+      seller: true,
     },
   })
 }

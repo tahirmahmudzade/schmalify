@@ -16,32 +16,25 @@ const userSchema = z.object({
     .max(20, { message: 'Username must be at most 20 characters long' }),
 })
 
-export default defineEventHandler<{ body: CreateUser }>(
-  async (
-    event
-  ): Promise<{
-    statusCode: number
-    message: string
-  }> => {
-    const body = await readValidatedBody(event, userSchema.parse)
+export default defineEventHandler<{ body: CreateUser }>(async (event): Promise<{ statusCode: number; message: string }> => {
+  const body = await readValidatedBody(event, userSchema.parse)
 
-    const isUser = await getUserByEmail(body.email)
+  const isUser = await getUserByEmail(body.email)
 
-    if (isUser) {
-      throw createError({ statusCode: 400, message: 'User already exists, please login' })
-    }
-
-    const hashedPassword = hash({ password: body.password })
-
-    const userData: Omit<CreateUser, 'id'> = { ...body, password: hashedPassword }
-
-    const user = await createUser(userData)
-
-    await setUserSession(event, {
-      loggedInAt: new Date().toISOString(),
-      user: { email: user.email!, id: encodeId(user.id), username: user.username!, isGuest: false },
-    })
-
-    return { statusCode: 201, message: `Registration successful` }
+  if (isUser) {
+    throw createError({ statusCode: 400, message: 'User already exists, please login' })
   }
-)
+
+  const hashedPassword = hash({ password: body.password })
+
+  const userData: Omit<CreateUser, 'id'> = { ...body, password: hashedPassword }
+
+  const user = await createUser(userData)
+
+  await setUserSession(event, {
+    loggedInAt: new Date().toISOString(),
+    user: { email: user.email!, id: encodeId(user.id), username: user.username!, isGuest: false },
+  })
+
+  return { statusCode: 201, message: `Registration successful` }
+})
