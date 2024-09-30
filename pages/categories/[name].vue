@@ -30,7 +30,7 @@ const items = categoryData.value!.category.items
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">Items in {{ category.name }}</h2>
       <div class="items-container">
         <div v-for="item in items" :key="item.id" class="item-card rounded-lg overflow-hidden shadow-md">
-          <img :src="`/api/items/${item.id}/serveImg`" :alt="item.title" class="item-image w-full object-cover" />
+          <img :src="`/api/blob/${item.id}/serveImg`" :alt="item.title" class="item-image w-full object-cover" />
           <div class="p-4">
             <h3 class="text-gray-100 font-semibold text-sm mb-2">{{ item.title }}</h3>
             <p class="text-gray-300 text-xs mb-1">Price: {{ item.price }}€</p>

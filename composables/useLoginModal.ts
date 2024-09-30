@@ -20,7 +20,7 @@ export function useLoginModal() {
           timeout: 2000,
         })
         setTimeout(() => {
-          reloadNuxtApp({ path: '/', force: true })
+          reloadNuxtApp({ path: '/profile', force: true })
         }, 2100)
       }
     },

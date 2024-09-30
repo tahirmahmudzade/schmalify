@@ -67,12 +67,6 @@ async function handleLogout() {
   }
 }
 
-function profilePicUrl() {
-  const imgUrl = userData.value?.avatar?.startsWith('https') ? userData.value.avatar : `api/users/${user.value?.id}/serveImg`
-
-  return imgUrl
-}
-
 async function uploadImage(e: Event) {
   const input = e.target as HTMLInputElement
   const formData = new FormData()
@@ -120,7 +114,11 @@ async function onSubmit() {
         <!-- Avatar Image as Button -->
         <div class="w-32 h-32">
           <label for="avatarInput" class="relative cursor-pointer">
-            <img :src="profilePicUrl()" alt="User Avatar" class="w-full h-full object-cover rounded-full" />
+            <img
+              :src="getProfilePicUrl(userData?.avatar, user?.id)"
+              alt="User Avatar"
+              class="w-full h-full object-cover rounded-full"
+            />
           </label>
 
           <!-- Hidden File Input -->

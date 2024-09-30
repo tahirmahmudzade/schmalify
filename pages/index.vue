@@ -29,21 +29,7 @@ if (itemRes.value) {
 
       <!-- Search Bar -->
       <div class="mt-6 relative mx-auto w-full max-w-xs sm:max-w-md lg:max-w-lg">
-        <input
-          type="text"
-          placeholder="What are you looking for?"
-          class="w-full py-3 pl-4 pr-10 rounded-full bg-gray-100 text-gray-900 focus:outline-none"
-        />
-        <button class="absolute right-0 top-0 mt-2 mr-4 text-gray-600">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-4.35-4.35m1.86-5.86a7 7 0 11-14 0 7 7 0 0114 0z"
-            ></path>
-          </svg>
-        </button>
+        <SearchInput placeholder="What are you looking for ?" input-size="xl" />
       </div>
     </div>
 
@@ -74,8 +60,13 @@ if (itemRes.value) {
     <div class="items-section mt-12">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Latest Items</h2>
       <div class="items-container">
-        <div v-for="item in items" :key="item.title" class="item-card rounded-lg overflow-hidden shadow-md">
-          <img :src="`api/items/${item.id}/serveImg`" :alt="item.title" class="item-image" />
+        <div
+          v-for="item in items"
+          :key="item.title"
+          class="item-card rounded-lg overflow-hidden shadow-md cursor-pointer"
+          @click="navigateTo(`/items/${item.id}`)"
+        >
+          <img :src="`api/blob/${item.id}/serveImg`" :alt="item.title" class="item-image" />
           <div class="item-details">
             <h3 class="text-gray-100 mb-1 text-sm font-semibold">{{ item.title }}</h3>
             <div class="flex justify-start space-x-1">

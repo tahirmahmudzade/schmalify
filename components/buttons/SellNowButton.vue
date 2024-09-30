@@ -6,7 +6,6 @@ defineProps<{
 
 <template>
   <UButton
-    label="Sell Now"
     variant="solid"
     color="black"
     size="xs"
@@ -21,9 +20,11 @@ defineProps<{
     }"
     @click="click"
   >
+    <!-- Icon is always visible -->
     <template #leading>
       <Icon name="i-ep-sell" size="1.3em" />
-      <!-- Solves cloud flare UButton icon issue -->
     </template>
+    <!-- Text is hidden on small screens, visible on medium and up -->
+    <span class="hidden md:inline">Sell Now</span>
   </UButton>
 </template>
