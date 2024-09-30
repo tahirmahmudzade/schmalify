@@ -54,12 +54,6 @@ const items: DropdownItem[][] = [
       },
       disabled: !loggedIn.value,
     },
-    {
-      label: 'Shopping Cart',
-      icon: 'i-mdi-light-cart',
-      iconClass: 'text-blue-500 dark:text-blue-500',
-      disabled: !loggedIn.value,
-    },
   ],
   [
     {

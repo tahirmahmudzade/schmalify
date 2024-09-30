@@ -99,93 +99,84 @@ async function onSubmit() {
 
 <template>
   <div class="bg-gray-900 min-h-screen text-white p-4">
-    <!-- Header Section -->
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-semibold">Profile</h1>
-      <button @click="handleLogout" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-        Logout
-      </button>
-    </div>
+    <!-- Main Container for centering the whole profile section -->
+    <div class="flex flex-col items-center justify-center">
+      <!-- Container for the profile and account details -->
+      <div class="mt-8 flex flex-col lg:flex-row items-start lg:space-x-8 w-full max-w-6xl space-y-8 lg:space-y-0">
+        <!-- Avatar and User Info -->
+        <div class="w-full lg:w-1/4 text-center lg:text-left flex flex-col items-center lg:items-start">
+          <!-- Avatar Image as Button -->
+          <div class="w-32 h-32">
+            <label for="avatarInput" class="relative cursor-pointer">
+              <img
+                :src="getProfilePicUrl(userData?.avatar, user?.id)"
+                alt="User Avatar"
+                class="w-full h-full object-cover rounded-full"
+              />
+            </label>
 
-    <!-- User Profile Section -->
-    <div class="mt-8 flex flex-col lg:flex-row items-center lg:items-start space-y-8 lg:space-y-0 lg:space-x-8">
-      <!-- Avatar and User Info -->
-      <div class="w-full lg:w-1/4 text-center lg:text-left flex flex-col items-center lg:items-start">
-        <!-- Avatar Image as Button -->
-        <div class="w-32 h-32">
-          <label for="avatarInput" class="relative cursor-pointer">
-            <img
-              :src="getProfilePicUrl(userData?.avatar, user?.id)"
-              alt="User Avatar"
-              class="w-full h-full object-cover rounded-full"
-            />
-          </label>
+            <!-- Hidden File Input -->
+            <input id="avatarInput" type="file" class="hidden" @change="uploadImage" accept="image/*" />
+          </div>
 
-          <!-- Hidden File Input -->
-          <input id="avatarInput" type="file" class="hidden" @change="uploadImage" accept="image/*" />
+          <!-- Username and details, stacked on small screens -->
+          <h2 class="mt-4 text-xl font-bold">{{ userData?.username }}</h2>
+          <p class="text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
+          <p class="text-gray-400">{{ state.email }}</p>
+          <p class="text-gray-400">{{ state.location || 'Location not provided' }}</p>
+          <p class="text-gray-400">{{ state.phone || 'Phone number not provided' }}</p>
         </div>
 
-        <!-- Username and details, stacked on small screens -->
-        <h2 class="mt-4 text-xl font-bold">{{ userData?.username }}</h2>
-        <p class="text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
-        <p class="text-gray-400">{{ state.email }}</p>
-        <p class="text-gray-400">
-          {{ state.location || 'Location not provided' }}
-        </p>
-        <p class="text-gray-400">
-          {{ state.phone || 'Phone number not provided' }}
-        </p>
-      </div>
+        <!-- User Details -->
+        <div class="w-full lg:w-3/4">
+          <!-- User Info Cards -->
+          <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4">Account Details</h3>
 
-      <!-- User Details -->
-      <div class="w-full lg:w-3/4">
-        <!-- User Info Cards -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-md">
-          <h3 class="text-lg font-semibold mb-4">Account Details</h3>
+            <UForm :schema="schema" :state="state">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Email -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                  <UFormGroup label="Email" name="email">
+                    <UInput v-model="state.email" type="email" />
+                  </UFormGroup>
+                </div>
 
-          <UForm :schema="schema" :state="state">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Email -->
-              <div class="bg-gray-700 p-4 rounded-lg">
-                <UFormGroup label="Email" name="email">
-                  <UInput v-model="state.email" type="email" />
-                </UFormGroup>
+                <!-- First Name -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                  <UFormGroup label="First Name" name="firstName">
+                    <UInput v-model="state.firstName" type="text" />
+                  </UFormGroup>
+                </div>
+
+                <!-- Last Name -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                  <UFormGroup label="Last Name" name="lastName">
+                    <UInput v-model="state.lastName" type="text" />
+                  </UFormGroup>
+                </div>
+
+                <!-- Location -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                  <UFormGroup label="Location" name="location">
+                    <UInput v-model="state.location" type="text" />
+                  </UFormGroup>
+                </div>
+
+                <!-- Phone -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                  <UFormGroup label="Phone" name="phone">
+                    <UInput v-model="state.phone" type="text" />
+                  </UFormGroup>
+                </div>
               </div>
 
-              <!-- First Name -->
-              <div class="bg-gray-700 p-4 rounded-lg">
-                <UFormGroup label="First Name" name="firstName">
-                  <UInput v-model="state.firstName" type="text" />
-                </UFormGroup>
+              <!-- Save Button -->
+              <div class="mt-6 text-right">
+                <UButton @click="onSubmit" :disabled="isFormInvalid || isFormUnchanged" label="Save" />
               </div>
-
-              <!-- Last Name -->
-              <div class="bg-gray-700 p-4 rounded-lg">
-                <UFormGroup label="Last Name" name="lastName">
-                  <UInput v-model="state.lastName" type="text" />
-                </UFormGroup>
-              </div>
-
-              <!-- Location -->
-              <div class="bg-gray-700 p-4 rounded-lg">
-                <UFormGroup label="Location" name="location">
-                  <UInput v-model="state.location" type="text" />
-                </UFormGroup>
-              </div>
-
-              <!-- Phone -->
-              <div class="bg-gray-700 p-4 rounded-lg">
-                <UFormGroup label="Phone" name="phone">
-                  <UInput v-model="state.phone" type="text" />
-                </UFormGroup>
-              </div>
-            </div>
-
-            <!-- Save Button -->
-            <div class="mt-6 text-right">
-              <UButton @click="onSubmit" :disabled="isFormInvalid || isFormUnchanged" label="Save" />
-            </div>
-          </UForm>
+            </UForm>
+          </div>
         </div>
       </div>
     </div>
