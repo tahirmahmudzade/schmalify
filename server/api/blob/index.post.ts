@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const form = await readFormData(event)
 
   const file = form.get('file') as File
@@ -7,13 +7,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'No file provided' })
   }
 
-  ensureBlob(file, {
-    maxSize: '1MB',
-    types: ['image/avif', 'image/jpeg', 'image/png', 'image/webp'],
-  })
+  ensureBlob(file, { maxSize: '4MB', types: ['image/avif', 'image/jpeg', 'image/png', 'image/webp'] })
 
-  return hubBlob().put(file.name, file, {
-    addRandomSuffix: false,
-    prefix: 'images',
-  })
+  return hubBlob().put(file.name, file, { addRandomSuffix: false, prefix: 'images' })
 })

@@ -1,7 +1,7 @@
-import { getAllItems } from '~/server/service/item'
+import { getLatestItems } from '~/server/service/item'
 
 export default defineEventHandler(async () => {
-  const items = await getAllItems()
+  const items = await getLatestItems()
   return items.map(item => ({
     ...item,
     id: encodeId(item.id),

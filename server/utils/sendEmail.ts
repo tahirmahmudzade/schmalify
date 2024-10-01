@@ -18,9 +18,6 @@ export async function sendMail(to: string, subject: string, text: string) {
     return response
   } catch (error) {
     console.error('❌ Error sending email:', error)
-    throw createError({
-      statusCode: 500,
-      message: 'Error sending email',
-    })
+    throw createError({ statusCode: 500, message: 'Error sending email' })
   }
 }

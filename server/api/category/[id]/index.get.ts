@@ -4,22 +4,15 @@ export default defineEventHandler(async event => {
   const name = getRouterParam(event, 'id')
 
   if (!name) {
-    throw createError({
-      statusCode: 400,
-      message: 'Missing category name',
-    })
+    throw createError({ statusCode: 400, message: 'Missing category name' })
   }
 
   const categoryName = name.charAt(0).toUpperCase() + name.slice(1)
   const category = await getCategoryByName(categoryName)
 
   if (!category) {
-    throw createError({
-      statusCode: 404,
-      message: 'Category not found',
-    })
+    throw createError({ statusCode: 404, message: 'Category not found' })
   }
-  console.log('category', category)
 
   return {
     statusCode: 200,
