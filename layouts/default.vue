@@ -10,6 +10,8 @@ const uiHeader = reactive({
   logo: 'flex-shrink-0 font-bold text-xl text-gray-900 dark:text-white flex items-end gap-1.5 w-32 sm:w-40',
 })
 
+const path = computed(() => useRoute().path)
+
 const items: DropdownItem[][] = [
   [
     loggedIn.value
@@ -81,7 +83,7 @@ function handleSellNowClick() {
       </template>
 
       <template #center>
-        <SearchInput icon-size="1.2rem" />
+        <SearchInput :class="path === '/' ? 'hidden' : ''" text-size="xs" icon-size="1.2rem" />
       </template>
 
       <template #right>
