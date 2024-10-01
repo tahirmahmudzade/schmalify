@@ -2,7 +2,7 @@
 import type { Category, Item } from '~/server/database/drizzle'
 
 const { data: categoryRes } = await useFetch('/api/category')
-const { data: itemRes } = await useFetch('/api/items')
+const { data: itemRes } = await useLatestItems()
 
 const categories = ref<Category[]>([])
 const items = ref<(Item & { seller: { location: string | null } | null })[]>([])
@@ -12,7 +12,7 @@ if (categoryRes.value) {
 }
 
 if (itemRes.value) {
-  items.value = itemRes.value.items
+  items.value = itemRes.value
 }
 </script>
 
@@ -36,20 +36,20 @@ if (itemRes.value) {
     <!-- Categories Section -->
     <div class="category-section">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Categories</h2>
-      <div class="categories-container">
+      <div class="flex overflow-x-auto space-x-4 pb-4">
         <NuxtLink
           v-for="category in categories"
           :to="`/categories/${category.name.toLowerCase().trim()}`"
           :key="category.name"
-          class="category-card flex flex-col items-center p-4 rounded-lg shadow-md"
+          class="flex-none w-36 flex flex-col items-center p-4 rounded-lg shadow-md"
         >
           <NuxtImg
             :src="`/img/categories/${category.img!}`"
             :alt="category.name"
-            class="category-image w-full object-cover"
+            class="w-full h-36 object-cover rounded-lg"
             format="webp"
           />
-          <p class="text-gray-100 dark:text-gray-100 font-semibold text-center mt-4">
+          <p class="text-gray-100 font-semibold text-center mt-4">
             {{ category.name }}
           </p>
         </NuxtLink>
@@ -59,24 +59,25 @@ if (itemRes.value) {
     <!-- Items Section -->
     <div class="items-section mt-12">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Latest Items</h2>
-      <div class="items-container">
+      <div class="flex overflow-x-auto space-x-4 pb-4">
         <div
           v-for="item in items"
           :key="item.title"
-          class="item-card rounded-lg overflow-hidden shadow-md cursor-pointer"
+          class="flex-none w-36 bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg border border-white border-opacity-10 rounded-lg shadow-md cursor-pointer transform transition-transform duration-200 hover:-translate-y-1 flex flex-col"
           @click="navigateTo(`/items/${item.id}`)"
         >
-          <img :src="`api/blob/${item.id}/serveImg`" :alt="item.title" class="item-image" />
-          <div class="item-details">
-            <h3 class="text-gray-100 mb-1 text-sm font-semibold">{{ item.title }}</h3>
-            <div class="flex justify-start space-x-1">
-              <Icon name="i-entypo-price-tag" style="color: #22c55e" />
-              <p class="text-gray-400">{{ item.price }}€</p>
-            </div>
-            <p class="text-gray-400">{{ item.seller?.location }}</p>
-            <div class="flex justify-start space-x-1">
-              <Icon name="i-lets-icons-date-range" style="color: #f97316" />
-              <p class="text-gray-400">{{ formatDateToDDMMYYYY(item.createdAt!) }}</p>
+          <img :src="`api/blob/${item.id}/serveImg`" :alt="item.title" class="w-full h-36 object-cover rounded-t-lg" />
+          <div class="p-4 flex flex-col flex-grow">
+            <h3 class="text-gray-100 mb-1 text-sm font-semibold line-clamp-2">{{ item.title }}</h3>
+            <div class="mt-auto space-y-1">
+              <div class="flex items-center space-x-2 whitespace-nowrap">
+                <Icon name="i-entypo-price-tag" style="color: #22c55e" size="0.8rem" class="mt-0.5" />
+                <p class="text-gray-400 text-xs">{{ item.price }} €</p>
+              </div>
+              <div class="flex items-center space-x-2 whitespace-nowrap">
+                <Icon name="i-lets-icons-date-range" style="color: #f97316" size="0.8rem" class="mt-0.5" />
+                <p class="text-gray-400 text-xs">{{ formatDateToDDMMYYYY(item.createdAt!) }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -94,129 +95,3 @@ if (itemRes.value) {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* General container styling */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Horizontal scrolling for categories and items */
-.categories-container,
-.items-container {
-  display: flex; /* Flexbox for horizontal layout */
-  overflow-x: auto; /* Enable horizontal scrolling */
-  gap: 1rem; /* Add spacing between items */
-  padding-bottom: 1rem; /* Ensure the scrollbar is visible */
-}
-
-/* Styling for scrollbar */
-.categories-container::-webkit-scrollbar,
-.items-container::-webkit-scrollbar {
-  height: 6px; /* Horizontal scrollbar height */
-}
-
-.categories-container::-webkit-scrollbar-thumb,
-.items-container::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3); /* Scrollbar color */
-  border-radius: 10px; /* Rounded scrollbar */
-}
-
-/* Card styling for categories */
-.category-card {
-  flex: 0 0 150px; /* Each card takes up 150px in width */
-  max-width: 150px; /* Limit the max width of each card */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.category-image {
-  width: 100%;
-  height: 150px; /* Adjust height */
-  object-fit: cover;
-  border-radius: 0.5rem; /* Consistent border radius */
-}
-
-/* Card styling for items */
-.item-card {
-  flex: 0 0 150px; /* Maintain original width */
-  max-width: 150px; /* Prevent cards from growing beyond 150px */
-  background-color: rgba(255, 255, 255, 0.05); /* Semi-transparent dark background */
-  backdrop-filter: blur(10px); /* Blur effect for smoothness */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
-  border-radius: 0.5rem;
-  transition: transform 0.2s ease-in-out;
-}
-
-.item-card:hover {
-  transform: translateY(-5px); /* Add a slight lift on hover */
-}
-
-/* Item Image Styling */
-.item-image {
-  width: 100%; /* Full width of the card */
-  height: 150px; /* Keep the original height */
-  object-fit: cover;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-/* Details section with proper positioning */
-.item-details {
-  padding: 1rem; /* Padding for text */
-}
-
-.item-details p {
-  font-size: 0.875rem;
-  color: #a0aec0; /* Color for better contrast */
-  margin-bottom: 0.25rem;
-}
-
-/* Responsive layout for items */
-@media (max-width: 1023px) {
-  .items-container {
-    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Two-column layout on mobile */
-  }
-}
-
-@media (min-width: 1024px) {
-  .items-container {
-    grid-auto-flow: column;
-    grid-template-rows: repeat(2, auto);
-    grid-auto-columns: minmax(200px, 1fr);
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  .items-container::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .items-container::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-  }
-}
-
-/* Styling for the description section */
-.description-section {
-  margin-top: 50px;
-  padding: 20px;
-  text-align: center;
-}
-
-.description-section p {
-  max-width: 700px;
-  margin: 0 auto;
-  color: #a0aec0;
-}
-
-/* Increase the width for desktop screens */
-@media (min-width: 1024px) {
-  .description-section p {
-    max-width: 900px;
-  }
-}
-</style>

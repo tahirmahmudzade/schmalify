@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import z from 'zod'
-import type { Category, CreateItem } from '~/server/database/drizzle'
+import type { Category } from '~/server/database/drizzle'
 
 const { categories, asGuest } = defineProps<{ categories: readonly Category[]; asGuest: boolean }>()
 
@@ -8,8 +8,12 @@ const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const toast = useToast()
 const { user } = useUserSession()
+const store = useStore()
+
+const { refetchItems, refetchLatestItems } = storeToRefs(store)
 
 const userId = ref(user.value?.id)
+const buttonLoading = ref(false)
 
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
@@ -61,32 +65,55 @@ function handleImgChange(e: Event) {
   if (target.files && target.files[0]) {
     const file = target.files[0]
 
-    // Check if file size exceeds 2 MB
+    const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2)
+    console.log(`Original Image Size: ${originalSizeMB} MB`)
+
+    // Check if file size exceeds 2 MB (This is for the original file, we will still try to compress it)
     if (file.size > 2 * 1024 * 1024) {
-      // Display an error message
-      toast.add({ color: 'red', title: 'Image size must be less than 2 MB' })
+      // Compress the image before showing the preview and uploading
+      compressImage(file, 0.7) // Compress the image at 70% quality
+        .then(compressedBlob => {
+          const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
+          console.log(`Compressed Image Size: ${compressedSizeMB} MB`)
 
-      // Reset the file input
-      target.value = ''
-      imageFile.value = null
-      imagePreview.value = null
-      return
-    }
+          // Check if the compressed image size exceeds 4 MB
+          if (parseFloat(compressedSizeMB) > 4) {
+            toast.add({ color: 'red', title: 'Compressed image size must be less than 4 MB' })
+            // Reset the file input and the preview
+            target.value = ''
+            imageFile.value = null
+            imagePreview.value = null
+            return
+          }
 
-    imageFile.value = file
-    const reader = new FileReader()
-    reader.onload = () => {
-      imagePreview.value = reader.result as string
+          imageFile.value = new File([compressedBlob], file.name, { type: file.type })
+
+          const reader = new FileReader()
+          reader.onload = () => {
+            imagePreview.value = reader.result as string
+          }
+          reader.readAsDataURL(compressedBlob)
+        })
+        .catch(() => {
+          toast.add({ color: 'red', title: 'Failed to compress the image' })
+        })
+    } else {
+      // If file is within the size limit, just show the preview
+      imageFile.value = file
+      const reader = new FileReader()
+      reader.onload = () => {
+        imagePreview.value = reader.result as string
+      }
+      reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
   } else {
-    // If no file is selected, reset the preview
     imagePreview.value = null
     imageFile.value = null
   }
 }
 
 async function onSubmit() {
+  buttonLoading.value = true
   const categoryId = categories.find(c => c.name === itemData.category)?.id
 
   try {
@@ -112,6 +139,8 @@ async function onSubmit() {
     const { message } = await $fetch('/api/items', { method: 'POST', body: formData })
 
     toast.add({ color: 'green', title: message })
+    refetchItems.value = true
+    refetchLatestItems.value = true
   } catch (err) {
     console.log('Failed to create item:', err)
     toast.add({ color: 'red', title: 'Failed to create letting, please try again later with valid data' })
@@ -194,7 +223,7 @@ async function onSubmit() {
                     </div>
                   </label>
                   <input id="imageInput" type="file" class="hidden" @change="handleImgChange" accept="image/*" />
-                  <p class="text-sm text-gray-500 mt-1">Maximum file size: 2 MB</p>
+                  <p class="text-sm text-gray-500 mt-1">Maximum file size: 4 MB</p>
                 </div>
 
                 <UFormGroup class="mt-3" name="price">
@@ -217,6 +246,7 @@ async function onSubmit() {
 
               <UButton
                 color="white"
+                :loading="buttonLoading"
                 :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
                 class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
                 label="Create Item"
@@ -228,7 +258,7 @@ async function onSubmit() {
                     },
                   },
                 }"
-                :disabled="isFormInvalid"
+                :disabled="isFormInvalid || itemData.category === ''"
                 @click="onSubmit"
               />
             </form>
