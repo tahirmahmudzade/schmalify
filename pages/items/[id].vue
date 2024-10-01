@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router'
 import { useFetch } from 'nuxt/app'
 import { createError } from 'h3'
+import type { Category, Item, User } from '~/server/database/drizzle'
 
 const route = useRoute()
 
@@ -17,16 +18,16 @@ function closeModal() {
   isModalOpen.value = false
 }
 
-const { data: itemData, error } = await useFetch(`/api/items/${route.params.id}`)
+const { data: itemData, error } = await useFetch<{
+  statusCode: number
+  item: Item & { category: Category | null; seller: User | null }
+}>(`/api/items/${route.params.id}`)
 
-if (error.value) {
-  throw createError({
-    statusCode: 404,
-    message: 'Item might be already sold or removed, please check back later',
-  })
+if (error.value || !itemData.value) {
+  throw createError({ statusCode: 404, message: 'Item might be already sold or removed, please check back later' })
 }
 
-const { item } = itemData.value!
+const { item } = itemData.value
 
 const whatsappLink = computed(() => {
   const phone = item.seller?.phone || ''
@@ -69,13 +70,25 @@ const whatsappLink = computed(() => {
                 avatar: { src: getProfilePicUrl(item.seller?.avatar, item.seller_id), size: 'lg' },
               },
             ]"
-            :badge="{ label: formatDateToDDMMYYYY(item.createdAt!), size: 'lg' }"
             :ui="{
               title:
                 'text-gray-900 dark:text-gray-900 text-xl font-semibold truncate group-hover:text-gray-900 dark:group-hover:text-gray-900',
               description: 'text-base text-gray-700 dark:text-gray-700 mt-1',
             }"
-          />
+          >
+            <template #badge>
+              <div class="flex justify-between">
+                <UBadge :label="formatDateToDDMMYYYY(item.createdAt!)" size="lg" variant="soft" color="sky" />
+                <UButton
+                  :label="item.category?.name"
+                  variant="solid"
+                  color="emerald"
+                  class="dark:text-white"
+                  :to="`/categories/${item.category?.name.toLowerCase().trim()}`"
+                />
+              </div>
+            </template>
+          </UBlogPost>
 
           <!-- Item Details -->
           <div class="mt-4 space-y-2">
