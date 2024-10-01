@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     'nuxt-auth-utils',
     'nuxt-typed-router',
+    '@pinia/nuxt',
   ],
 
   app: {
