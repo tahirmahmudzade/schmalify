@@ -1,7 +1,7 @@
 import { createUser, getUserByEmail } from '~/server/service/user'
 import { generateRandomToken } from '~/server/utils/generateRandomToken'
 
-export default oauthGoogleEventHandler({
+export default defineOAuthGoogleEventHandler({
   config: {
     scope: ['email', 'profile'],
   },

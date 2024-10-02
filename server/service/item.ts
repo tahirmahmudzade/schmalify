@@ -12,7 +12,7 @@ export function getLatestItems() {
   return useDrizzle().query.item.findMany({
     with: { seller: { columns: { avatar: true, location: true } } },
     orderBy: [desc(tables.item.createdAt)], // Order by createdAt in descending order
-    limit: 15, // Limit the result to 15 items
+    limit: 10, // Limit the result to 15 items
   })
 }
 
