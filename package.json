@@ -14,31 +14,40 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/icon": "^1.5.1",
+    "@nuxt/icon": "^1.5.2",
     "@nuxt/image": "^1.8.0",
     "@nuxt/ui-pro": "^1.4.3",
     "@nuxthub/core": "npm:@nuxthub/core@nightly",
-    "@nuxtjs/device": "^3.2.2",
     "@pinia/nuxt": "^0.5.5",
     "drizzle-orm": "^0.33.0",
     "form-data": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
     "mailgun.js": "^10.2.3",
     "nanoid": "^5.0.7",
-    "nuxt": "^3.12.2",
-    "nuxt-auth-utils": "^0.3.8",
+    "nuxt": "^3.13.2",
+    "nuxt-auth-utils": "^0.4.2",
     "nuxt-typed-router": "^3.7.0",
-    "ohash": "^1.1.3",
-    "tailwindcss": "^3.4.11",
+    "ohash": "^1.1.4",
+    "tailwindcss": "^3.4.13",
     "vue": "latest",
-    "vue-router": "^4.4.4",
+    "vue-router": "^4.4.5",
     "zod": "^3.23.8"
   },
-  "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1",
+  "packageManager": "pnpm@9.12.0",
   "devDependencies": {
+    "@iconify-json/entypo": "^1.2.0",
+    "@iconify-json/flat-color-icons": "^1.2.0",
+    "@iconify-json/healthicons": "^1.2.0",
+    "@iconify-json/heroicons": "^1.2.0",
+    "@iconify-json/material-symbols": "^1.2.2",
+    "@iconify-json/mdi": "^1.2.0",
+    "@iconify-json/ri": "^1.2.0",
     "@types/jsonwebtoken": "^9.0.7",
     "drizzle-kit": "^0.24.2",
     "tsx": "^4.19.1",
-    "wrangler": "^3.76.0"
+    "wrangler": "^3.79.0"
+  },
+  "resolutions": {
+    "@nuxtjs/tailwindcss": "nightly"
   }
 }
