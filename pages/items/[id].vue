@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { useFetch } from 'nuxt/app'
-import { createError } from 'h3'
 import type { Category, Item, User } from '~/server/database/drizzle'
 
-const route = useRoute()
+const route = useRoute('items-id')
 
 const isModalOpen = ref(false)
 

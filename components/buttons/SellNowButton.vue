@@ -1,7 +1,5 @@
 <script setup lang="ts">
-defineProps<{
-  click: () => void
-}>()
+defineProps<{ click: () => void }>()
 </script>
 
 <template>
@@ -20,11 +18,10 @@ defineProps<{
     }"
     @click="click"
   >
-    <!-- Icon is always visible -->
     <template #leading>
-      <Icon name="i-ep-sell" size="1.3em" />
+      <Icon name="i-mdi-shopping-basket-plus-outline" size="1.3em" />
     </template>
-    <!-- Text is hidden on small screens, visible on medium and up -->
+
     <span class="hidden md:inline">Sell Now</span>
   </UButton>
 </template>

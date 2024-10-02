@@ -24,24 +24,16 @@ function onContinueAsGuest() {
     >
       <template #header>
         <div class="flex items-center justify-start space-x-1">
-          <Icon name="i-ep-sell" style="color: turquoise" />
+          <Icon name="i-mdi-shopping-basket-plus-outline" style="color: turquoise" />
           <h1>Sell Now</h1>
         </div>
       </template>
 
       <div class="flex items-center justify-start space-x-1">
-        <Icon
-          name="i-heroicons-exclamation-circle"
-          size="5.0em"
-          style="color: orange"
-        />
+        <Icon name="i-heroicons-exclamation-circle" size="5.0em" style="color: orange" />
         <p>
-          In order to get the best experience, it is recommended to sign up to
-          your own account, or you can
-          <span
-            class="font-bold cursor-pointer text-blue-500 dark:text-blue-400 hover:underline"
-            @click="onContinueAsGuest"
-          >
+          In order to get the best experience, it is recommended to sign up to your own account, or you can
+          <span class="font-bold cursor-pointer text-blue-500 dark:text-blue-400 hover:underline" @click="onContinueAsGuest">
             continue as guest
           </span>
           (guest access is limited to 1 week).
@@ -65,11 +57,7 @@ function onContinueAsGuest() {
             @click="onSignUp"
           >
             <template #leading>
-              <Icon
-                name="i-ri-login-circle-line"
-                style="color: #22c55e"
-                size="1.3em"
-              />
+              <Icon name="i-ri-login-circle-line" style="color: #22c55e" size="1.3em" />
             </template>
           </UButton>
           <ButtonsCancelButton :click="onCancel" />

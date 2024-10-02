@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
 
-const { data: categoryRes } = await useFetch('/api/category')
-const { data: itemRes } = await useLatestItems()
+const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: itemsError }] = await Promise.all([
+  useFetch('/api/category'),
+  useLatestItems(),
+])
 
 const categories = ref<Category[]>([])
 const items = ref<(Item & { seller: { location: string | null } | null })[]>([])
 
-if (categoryRes.value) {
+if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.value) {
   categories.value = categoryRes.value.categories
-}
-
-if (itemRes.value) {
   items.value = itemRes.value
+} else {
+  throw createError({
+    statusCode: 500,
+    message: 'Something went wrong loading the page, please try again later or contact support.',
+  })
 }
 </script>
 
@@ -57,8 +61,17 @@ if (itemRes.value) {
     </div>
 
     <!-- Items Section -->
+    <!-- Items Section -->
     <div class="items-section mt-12">
-      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Latest Items</h2>
+      <div class="relative text-center mb-4">
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100">Latest Items</h2>
+        <NuxtLink
+          to="/items"
+          class="absolute right-0 top-1/2 transform -translate-y-1/2 text-sm sm:text-base lg:text-lg font-medium text-blue-500 hover:text-blue-400 transition-colors"
+        >
+          Explore All
+        </NuxtLink>
+      </div>
       <div class="flex overflow-x-auto space-x-4 pb-4">
         <div
           v-for="item in items"
@@ -75,7 +88,7 @@ if (itemRes.value) {
                 <p class="text-gray-400 text-xs">{{ item.price }} €</p>
               </div>
               <div class="flex items-center space-x-2 whitespace-nowrap">
-                <Icon name="i-lets-icons-date-range" style="color: #f97316" size="0.8rem" class="mt-0.5" />
+                <Icon name="i-heroicons-calendar-date-range-16-solid" style="color: #f97316" size="0.8rem" class="mt-0.5" />
                 <p class="text-gray-400 text-xs">{{ formatDateToDDMMYYYY(item.createdAt!) }}</p>
               </div>
             </div>
@@ -83,7 +96,6 @@ if (itemRes.value) {
         </div>
       </div>
     </div>
-
     <!-- New Section: Schmalify Description -->
     <div class="description-section text-center mt-12 px-4 sm:px-6 lg:px-8">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">What is Schmalify?</h2>

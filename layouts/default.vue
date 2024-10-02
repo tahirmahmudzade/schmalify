@@ -3,6 +3,7 @@ import type { DropdownItem } from '#ui/types'
 const { loggedIn, user } = useUserSession()
 
 const uiHeader = reactive({
+  wrapper: 'bg-background border-b border-gray-200 dark:border-gray-800 -mb-px sticky top-0 z-50',
   container: 'flex items-center justify-between h-auto py-2', // Added vertical padding
   left: 'flex-shrink-0 flex items-center gap-1.5',
   center: 'flex-grow flex-shrink min-w-0 mx-2',

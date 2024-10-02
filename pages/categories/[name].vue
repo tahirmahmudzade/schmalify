@@ -5,7 +5,7 @@ const { data: categoryData, error } = await useFetch(`/api/category/${route.para
 if (error.value) {
   throw createError({
     statusCode: error.value.statusCode || 500, // Use the actual status code or fallback to 500
-    message: 'Category not found or another error occurred',
+    message: 'Category not found or another error occurred, please try again later or contact support.',
   })
 }
 

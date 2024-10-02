@@ -3,10 +3,10 @@ import CreateLettingModal from '~/components/modals/CreateLettingModal.vue'
 export const useCreateLettingModal = async (asGuest: boolean = false) => {
   const modal = useModal()
   // const categories = useCategoryData()
-  const { data } = await useFetch('/api/category')
+  const data = await $fetch('/api/category')
 
   modal.open(CreateLettingModal, {
-    categories: data.value?.categories!,
+    categories: data.categories,
     asGuest,
     onClose: () => {
       modal.close()
