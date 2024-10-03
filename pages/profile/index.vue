@@ -137,36 +137,41 @@ async function onSubmit() {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Email -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                  <UFormGroup label="Email" name="email">
-                    <UInput v-model="state.email" type="email" />
+                  <UFormGroup>
+                    <h4 class="block mb-2">Email</h4>
+                    <UInput v-model="state.email" type="email" id="email" />
                   </UFormGroup>
                 </div>
 
                 <!-- First Name -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                  <UFormGroup label="First Name" name="firstName">
-                    <UInput v-model="state.firstName" type="text" />
+                  <UFormGroup>
+                    <h4 class="block mb-2">First Name</h4>
+                    <UInput v-model="state.firstName" type="text" id="first-name" />
                   </UFormGroup>
                 </div>
 
                 <!-- Last Name -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                  <UFormGroup label="Last Name" name="lastName">
-                    <UInput v-model="state.lastName" type="text" />
+                  <UFormGroup>
+                    <h4 class="block mb-2">Last Name</h4>
+                    <UInput v-model="state.lastName" type="text" id="last-name" />
                   </UFormGroup>
                 </div>
 
                 <!-- Location -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                  <UFormGroup label="Location" name="location">
-                    <UInput v-model="state.location" type="text" />
+                  <UFormGroup>
+                    <h4 class="block mb-2">Location</h4>
+                    <UInput v-model="state.location" type="text" id="location" />
                   </UFormGroup>
                 </div>
 
                 <!-- Phone -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                  <UFormGroup label="Phone" name="phone">
-                    <UInput v-model="state.phone" type="text" />
+                  <UFormGroup>
+                    <h4 class="block mb-2">Phone</h4>
+                    <UInput v-model="state.phone" type="text" id="phone" class="w-full" />
                   </UFormGroup>
                 </div>
               </div>
