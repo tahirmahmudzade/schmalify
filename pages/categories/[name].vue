@@ -32,7 +32,12 @@ const items = categoryData.value!.category.items
           class="item-card rounded-lg overflow-hidden shadow-md cursor-pointer"
           @click="navigateTo(`/items/${item.id}`)"
         >
-          <img :src="`/api/blob/${item.id}/serveImg`" :alt="item.title" class="item-image w-full object-cover" />
+          <img
+            :src="`/api/blob/${item.id}/serveImg`"
+            :alt="item.title"
+            loading="lazy"
+            class="item-image w-full object-cover"
+          />
           <div class="p-4">
             <h3 class="text-gray-100 font-semibold text-sm mb-2">{{ item.title }}</h3>
             <p class="text-gray-300 text-xs mb-1">Price: {{ item.price }}€</p>

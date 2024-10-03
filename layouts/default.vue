@@ -72,7 +72,7 @@ const items: DropdownItem[][] = [
 ]
 
 function handleSellNowClick() {
-  !loggedIn.value ? useSellNowNotificationModal() : useCreateLettingModal()
+  !loggedIn.value && !user.value ? useSellNowNotificationModal() : useCreateLettingModal(user.value!)
 }
 </script>
 

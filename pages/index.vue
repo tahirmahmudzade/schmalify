@@ -50,6 +50,7 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
           <NuxtImg
             :src="`/img/categories/${category.img!}`"
             :alt="category.name"
+            loading="lazy"
             class="w-full h-36 object-cover rounded-lg"
             format="webp"
           />
@@ -60,7 +61,6 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
       </div>
     </div>
 
-    <!-- Items Section -->
     <!-- Items Section -->
     <div class="items-section mt-12">
       <div class="relative text-center mb-4">
@@ -79,7 +79,12 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
           class="flex-none w-36 bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg border border-white border-opacity-10 rounded-lg shadow-md cursor-pointer transform transition-transform duration-200 hover:-translate-y-1 flex flex-col"
           @click="navigateTo(`/items/${item.id}`)"
         >
-          <img :src="`api/blob/${item.id}/serveImg`" :alt="item.title" class="w-full h-36 object-cover rounded-t-lg" />
+          <img
+            :src="`api/blob/${item.id}/serveImg`"
+            loading="lazy"
+            :alt="item.title"
+            class="w-full h-36 object-cover rounded-t-lg"
+          />
           <div class="p-4 flex flex-col flex-grow">
             <h3 class="text-gray-100 mb-1 text-sm font-semibold line-clamp-2">{{ item.title }}</h3>
             <div class="mt-auto space-y-1">

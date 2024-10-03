@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import type { User } from '#auth-utils'
 import z from 'zod'
 import type { Category } from '~/server/database/drizzle'
 
-const { categories, asGuest } = defineProps<{ categories: readonly Category[]; asGuest: boolean }>()
+const { user, categories, asGuest } = defineProps<{ user: User; categories: readonly Category[]; asGuest: boolean }>()
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const toast = useToast()
-const { user } = useUserSession()
 const store = useStore()
 
-const { refetchItems, refetchLatestItems } = storeToRefs(store)
+const { refetchItems, refetchMyItems, refetchLatestItems } = storeToRefs(store)
 
-const userId = ref(user.value?.id)
+const userId = ref(user.id)
 const buttonLoading = ref(false)
 
 const imageFile = ref<File | null>(null)
@@ -140,6 +140,7 @@ async function onSubmit() {
 
     toast.add({ color: 'green', title: message })
     refetchItems.value = true
+    refetchMyItems.value = true
     refetchLatestItems.value = true
   } catch (err) {
     console.log('Failed to create item:', err)
@@ -151,7 +152,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UModal :transition="true">
+  <UModal>
     <template #default>
       <!-- Modal Overlay (provided by UModal) -->
       <div class="modal-container">
@@ -209,7 +210,7 @@ async function onSubmit() {
                 <UFormGroup class="mt-3" label="Description" name="description">
                   <UInput v-model="itemData.description" placeholder="Item description (max length: 100 characters)" />
                 </UFormGroup>
-                <UFormGroup class="mt-3" label="Category" name="category">
+                <UFormGroup class="mt-3" label="Category" name="category" required>
                   <USelectMenu v-model="itemData.category" :options="categoryNames" />
                 </UFormGroup>
 
