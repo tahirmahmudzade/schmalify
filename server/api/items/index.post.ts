@@ -6,11 +6,7 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
   try {
     const body = await readFormData(event)
 
-    const { user } = await getUserSession(event)
-
-    if (!user) {
-      throw createError({ statusCode: 401, message: 'Unauthorized' })
-    }
+    const { user } = await requireUserSession(event)
 
     const title = body.get('title')!.toString()
     const description = body.get('description')?.toString()

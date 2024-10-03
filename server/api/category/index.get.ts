@@ -6,8 +6,6 @@ export default defineCachedEventHandler(
     const categories = await getAllCategories()
 
     categories.sort((a, b) => {
-      if (a.name === 'All') return -1
-      if (b.name === 'All') return 1
       if (a.name === 'Free') return -1
       if (b.name === 'Free') return 1
       return 0
@@ -18,5 +16,7 @@ export default defineCachedEventHandler(
       categories: categories.map(c => ({ ...c, id: encodeId(c.id) })),
     }
   },
-  { maxAge: 60 * 60 * 24 * 7, swr: true }
+  {
+    maxAge: 60 * 60 * 24 * 7,
+  },
 )

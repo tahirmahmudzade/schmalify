@@ -13,7 +13,15 @@ export const getUserById = async (userId: string) => {
   return useDrizzle().query.user.findFirst({
     where: eq(tables.user.id, userId),
     with: {
-      items: true,
+      items: {
+        with: {
+          category: {
+            columns: {
+              name: true,
+            },
+          },
+        },
+      },
     },
   })
 }

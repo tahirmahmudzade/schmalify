@@ -1,7 +1,7 @@
 import { Item } from '~/server/database/drizzle'
 import { getUserById } from '~/server/service/user'
 
-export default defineEventHandler(async (event): Promise<Item[]> => {
+export default defineEventHandler(async (event): Promise<(Item & { category: { name: string } | null })[]> => {
   const paramId = getRouterParam(event, 'id')
 
   if (!paramId) {
