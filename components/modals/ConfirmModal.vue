@@ -16,17 +16,25 @@ function onConfirm() {
 
 <template>
   <UModal>
-    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-      <template #header>
-        {{ title }}
-      </template>
+    <UCard class="p-6 text-center">
+      <!-- Centered Delete Icon -->
+      <div class="text-red-500 text-5xl mb-4">
+        <Icon name="i-material-symbols-cancel-outline" size="4rem" />
+      </div>
 
-      <p>{{ description }}</p>
+      <!-- Title and Description -->
+      <h3 class="text-xl font-semibold mb-2">{{ title }}</h3>
+      <p class="text-gray-400 mb-6">{{ description }}</p>
 
-      <template #footer>
-        <UButton label="Confirm" @click="onConfirm" />
-        <UButton label="Cancel" color="gray" @click="onClose" />
-      </template>
+      <!-- Buttons Section -->
+      <div class="flex justify-center space-x-4">
+        <UButton label="Cancel" color="gray" class="px-4 py-2 rounded-md" @click="onClose" />
+        <UButton
+          label="Delete"
+          class="dark:bg-red-500 dark:text-white px-4 py-2 rounded-md dark:hover:bg-red-600"
+          @click="onConfirm"
+        />
+      </div>
     </UCard>
   </UModal>
 </template>
