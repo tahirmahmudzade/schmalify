@@ -2,17 +2,11 @@
 import z from 'zod'
 import type { Item } from '~/server/database/drizzle'
 
-const { item } = defineProps<{
-  item: Item & { category: { name: string } | null }
-  refreshItems: () => Promise<void>
-}>()
+const { item } = defineProps<{ item: Item & { category: { name: string } | null }; refreshItems: () => Promise<void> }>()
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const toast = useToast()
-const store = useStore()
-
-const { refetchItems, refetchMyItems, refetchLatestItems } = storeToRefs(store)
 
 const buttonLoading = ref(false)
 const imageFile = ref<File | null>(null)
@@ -129,7 +123,7 @@ async function onSubmit() {
 
     toast.add({ color: 'green', title: message })
     setTimeout(() => {
-      reloadNuxtApp({ path: '/profile/listings' })
+      reloadNuxtApp({ path: '/profile/listings', force: true })
     }, 500)
   } catch (err) {
     console.log('Error:', err)
