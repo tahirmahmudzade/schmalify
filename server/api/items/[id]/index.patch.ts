@@ -27,14 +27,14 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
     if (!isItem) {
       throw createError({ statusCode: 404, message: 'Item not found' })
     }
-    if (user.id !== isItem.seller_id) {
+    if (decodeId(user.id) !== isItem.seller_id) {
       throw createError({ statusCode: 403, message: 'Unauthorized to update this item' })
     }
     // 9. If the user is not the seller of the item, return a 403 error
     const itemData: UpdateItem = { price, title, description, condition: condition as Condition, image: image?.name }
     // 10. Update the item
     await updateItemById(decodedItemId, itemData)
-    // 11. If the image exists and has a size, process the image, delete the old image, and upload the new image
+    // 11. If the image exists and has a size, process the image and upload the new image
     if (image && image.size) {
       processImage(image)
       await hubBlob().put(image.name, image, { prefix: `${user.id}/items` })
