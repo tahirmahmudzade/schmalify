@@ -55,13 +55,13 @@ function onForgotPassword() {
         <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
-              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Sign In</h3>
+              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Log in</h3>
               <p class="mb-4 text-gray-700 dark:text-gray-300">Enter your email and password</p>
               <UButton
                 icon="i-flat-color-icons-google"
                 color="white"
                 class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                label="Sign In With Google"
+                label="Log in With Google"
                 :ui="{
                   base: 'max-w-lg',
                   rounded: 'rounded-lg',
@@ -94,7 +94,7 @@ function onForgotPassword() {
                 color="white"
                 :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
                 class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                label="Sign In"
+                label="Log in"
                 :ui="{
                   rounded: 'rounded-lg',
                   color: {

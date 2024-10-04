@@ -121,7 +121,7 @@ async function onSubmit() {
       body: formData,
     })
 
-    toast.add({ color: 'green', title: message })
+    toast.add({ color: 'green', title: message, timeout: 500 })
     setTimeout(() => {
       reloadNuxtApp({ path: '/profile/listings', force: true })
     }, 500)
@@ -138,7 +138,14 @@ async function onSubmit() {
 <template>
   <UModal>
     <div class="modal-container">
-      <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
+      <div class="relative modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
+        <button
+          @click="onClose"
+          class="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent p-1 rounded-full focus:outline-none"
+        >
+          <Icon name="mdi:close" class="w-6 h-6" />
+        </button>
+
         <div class="p-6">
           <form class="flex flex-col w-full text-center">
             <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Edit Item</h3>

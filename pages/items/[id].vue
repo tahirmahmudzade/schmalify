@@ -5,12 +5,10 @@ const route = useRoute('items-id')
 
 const isModalOpen = ref(false)
 
-// Function to open the modal
 function openModal() {
   isModalOpen.value = true
 }
 
-// Function to close the modal
 function closeModal() {
   isModalOpen.value = false
 }
@@ -30,7 +28,6 @@ const whatsappLink = computed(() => {
   const phone = item.seller?.phone || ''
   const message = `Hi, I'm interested in your item "${item.title}". Is it still available?`
 
-  // Ensure phone number is in international format without any special characters
   const formattedPhone = phone.replace(/[^0-9]/g, '')
 
   return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`
@@ -75,11 +72,11 @@ const whatsappLink = computed(() => {
           >
             <template #badge>
               <div class="flex justify-between">
-                <UBadge :label="formatDateToDDMMYYYY(item.createdAt!)" size="lg" variant="soft" color="sky" />
+                <UBadge :label="formatDateToDDMMYYYY(item.createdAt!)" size="lg" variant="outline" color="orange" />
                 <UButton
                   :label="item.category?.name"
                   variant="solid"
-                  color="emerald"
+                  color="green"
                   class="dark:text-white"
                   :to="`/categories/${item.category?.name.toLowerCase().trim()}`"
                 />
@@ -98,6 +95,11 @@ const whatsappLink = computed(() => {
               <Icon name="mdi:map-marker" class="text-red-500 mr-2" />
               <span class="font-semibold text-gray-700">Location:</span>
               <span class="ml-1 text-gray-600">{{ item.seller?.location || 'Not specified' }}</span>
+            </div>
+            <div class="flex items-center">
+              <Icon name="i-entypo-price-tag" class="text-green-500 mr-2" />
+              <span class="font-semibold text-gray-700">Price:</span>
+              <span class="ml-1 text-gray-600">{{ item.price }} €</span>
             </div>
           </div>
 
