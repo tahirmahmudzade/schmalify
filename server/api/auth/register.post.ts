@@ -1,5 +1,5 @@
 import z from 'zod'
-import { hash } from 'ohash'
+
 import { createUser, getUserByEmail } from '~/server/service/user'
 import { CreateUser } from '~/server/database/drizzle'
 import { encodeId } from '~/server/utils/encrypt'
@@ -25,7 +25,7 @@ export default defineEventHandler<{ body: CreateUser }>(async (event): Promise<{
     throw createError({ statusCode: 400, message: 'User already exists, please login' })
   }
 
-  const hashedPassword = hash({ password: body.password })
+  const hashedPassword = await hashPassword(body.password)
 
   const userData: Omit<CreateUser, 'id'> = { ...body, password: hashedPassword }
 

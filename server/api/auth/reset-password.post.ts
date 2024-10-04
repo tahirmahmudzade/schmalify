@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { getUserByEmail, updatePassword } from '~/server/service/user'
-import { hash } from 'ohash'
 
 const resetSchema = z
   .object({
@@ -31,7 +30,7 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, message: 'Reset token is invalid' })
   }
 
-  const hashedPassword = hash(body.password)
+  const hashedPassword = await hashPassword(body.password)
 
   await updatePassword(user.id, hashedPassword)
 

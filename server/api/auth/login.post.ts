@@ -1,5 +1,4 @@
 import z from 'zod'
-import { hash } from 'ohash'
 import { getUserByEmail } from '~/server/service/user'
 import { encodeId } from '~/server/utils/encrypt'
 
@@ -11,27 +10,25 @@ const userSchema = z.object({
     .max(15, { message: 'Password must be at most 15 characters long' }),
 })
 
-export default defineEventHandler<{ body: { email: string; password: string } }>(
-  async (event): Promise<{ statusCode: number; message: string }> => {
-    const body = await readValidatedBody(event, userSchema.parse)
+export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
+  const body = await readValidatedBody(event, userSchema.parse)
 
-    const isUser = await getUserByEmail(body.email)
+  const isUser = await getUserByEmail(body.email)
 
-    if (!isUser) {
-      throw createError({ statusCode: 401, message: 'Invalid email or password' })
-    }
-
-    const passwordMatch = hash(body.password) === isUser.password
-
-    if (!passwordMatch) {
-      throw createError({ statusCode: 401, message: 'Invalid email or password' })
-    }
-
-    await setUserSession(event, {
-      loggedInAt: new Date().toISOString(),
-      user: { email: isUser.email!, id: encodeId(isUser.id), username: isUser.username!, isGuest: false },
-    })
-
-    return { statusCode: 200, message: 'Login successful' }
+  if (!isUser) {
+    throw createError({ statusCode: 401, message: 'Invalid email or password' })
   }
-)
+
+  const passwordMatch = await verifyPassword(isUser.password!, body.password)
+
+  if (!passwordMatch) {
+    throw createError({ statusCode: 401, message: 'Invalid email or password' })
+  }
+
+  await setUserSession(event, {
+    loggedInAt: new Date().toISOString(),
+    user: { email: isUser.email!, id: encodeId(isUser.id), username: isUser.username!, isGuest: false },
+  })
+
+  return { statusCode: 200, message: 'Login successful' }
+})
