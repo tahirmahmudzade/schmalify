@@ -23,7 +23,7 @@ const items = categoryData.value!.category.items
     </div>
 
     <!-- Items Section -->
-    <div class="items-section">
+    <div v-if="category.items.length" class="items-section">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4">Items in {{ category.name }}</h2>
       <div class="items-container">
         <div
@@ -47,6 +47,7 @@ const items = categoryData.value!.category.items
         </div>
       </div>
     </div>
+    <NoItems v-else :title="`No items found in ${category.name}, check back later for more items!`" />
   </div>
 </template>
 

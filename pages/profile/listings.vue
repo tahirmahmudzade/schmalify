@@ -33,6 +33,7 @@ function handleDelete(itemId: string) {
     <div class="items-section">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Your Listings</h2>
       <div
+        v-if="itemsData.length"
         class="grid gap-4 grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 lg:auto-rows-fr lg:overflow-x-auto lg:overflow-y-hidden"
       >
         <div
@@ -82,6 +83,7 @@ function handleDelete(itemId: string) {
           </div>
         </div>
       </div>
+      <NoItems v-else />
     </div>
   </div>
 </template>

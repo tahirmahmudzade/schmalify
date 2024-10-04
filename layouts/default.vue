@@ -25,7 +25,7 @@ const items: DropdownItem[][] = [
           },
         }
       : {
-          label: 'Sign in',
+          label: 'Log in',
           icon: 'i-ri-login-circle-line',
           iconClass: 'text-green-500 dark:text-green-500',
           click: () => {
