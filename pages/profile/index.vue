@@ -3,8 +3,8 @@ import { z } from 'zod'
 
 const toast = useToast()
 const { user } = useUserSession()
-// Fetch user data
 const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
+
 // Define the validation schema using Zod
 const schema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
@@ -29,6 +29,7 @@ const state = reactive<Schema>({
 const initialData = reactive<Schema>({ ...state })
 
 const loading = ref(false)
+const showTooltip = ref(true)
 
 // Check if any required fields are missing or invalid
 const isFormInvalid = computed(() => {
@@ -95,6 +96,12 @@ async function onSubmit() {
     loading.value = false // Re-enable the button after submission
   }
 }
+
+onMounted(() => {
+  setTimeout(() => {
+    showTooltip.value = false
+  }, 2000) // Tooltip disappears after 2 seconds
+})
 </script>
 
 <template>
@@ -105,9 +112,23 @@ async function onSubmit() {
       <div class="mt-8 flex flex-col lg:flex-row items-start lg:space-x-8 w-full max-w-6xl space-y-8 lg:space-y-0">
         <!-- Avatar and User Info -->
         <div class="w-full lg:w-1/4 text-center lg:text-left flex flex-col items-center lg:items-start">
-          <!-- Avatar Image as Button -->
-          <div class="w-32 h-32">
-            <label for="avatarInput" class="relative cursor-pointer">
+          <!-- Avatar Image Container with Tooltip -->
+          <div class="w-32 h-32 relative">
+            <!-- Tooltip -->
+            <div
+              v-if="showTooltip"
+              class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs rounded px-2 py-1"
+              style="white-space: nowrap"
+            >
+              Click to change your profile picture.
+              <!-- Tooltip Arrow -->
+              <div
+                class="absolute left-1/2 transform -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-700"
+              ></div>
+            </div>
+
+            <!-- Avatar Image as Button -->
+            <label for="avatarInput" class="cursor-pointer">
               <img
                 :src="getProfilePicUrl(userData?.avatar, user?.id)"
                 alt="User Avatar"
@@ -153,8 +174,8 @@ async function onSubmit() {
 
                 <!-- Last Name -->
                 <div class="bg-gray-700 p-4 rounded-lg">
-                  <UFormGroup>
-                    <h4 class="block mb-2">Last Name</h4>
+                  <UFormGroup
+                    ><h4 class="block mb-2">Last Name</h4>
                     <UInput v-model="state.lastName" type="text" id="last-name" />
                   </UFormGroup>
                 </div>
