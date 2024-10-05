@@ -1,9 +1,12 @@
-import { desc } from 'drizzle-orm'
-import { CreateItem, eq, tables, UpdateItem, useDrizzle } from '../database/drizzle'
+import { desc, like } from 'drizzle-orm'
+import { CreateItem, eq, Item, tables, UpdateItem, useDrizzle } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
-export function getAllItems() {
+export function getAllItems(
+  searchQuery: string,
+): Promise<(Item & { seller: { avatar: string | null; location: string | null } | null })[]> {
   return useDrizzle().query.item.findMany({
+    where: like(tables.item.title, `%${searchQuery}%`),
     with: { seller: { columns: { avatar: true, location: true } } },
   })
 }
