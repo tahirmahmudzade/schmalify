@@ -16,29 +16,37 @@ const {
   textSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl'
 }>()
 
-const route = useRoute()
-const { data: items } = useItems()
-
-const path = computed(() => route.path)
-
-watch(path, () => {
-  searchQuery.value = ''
-  hideDropdown()
-})
-
+// Reactive variables
 const searchQuery = ref('')
+const debouncedSearchQuery = refDebounced(searchQuery, 500) // Debouncing to avoid too many requests
+const items = ref<Item[]>([]) // Empty array to store the fetched items
 const dropdownVisible = ref(false)
 
-// UI styles for input
-const uiInput = reactive({
-  base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-75 focus:outline-none border-0 bg-gray-200 dark:bg-gray-200 text-black dark:!text-black',
-  rounded: 'rounded-2xl',
+// Fetch items based on search query
+const fetchItems = async () => {
+  if (debouncedSearchQuery.value.trim() === '') {
+    items.value = []
+    return
+  }
+
+  const data = await $fetch('/api/items', { query: { searchQuery: debouncedSearchQuery.value } })
+
+  items.value = data || [] // Store the fetched items
+}
+
+// Watch the debounced search query and fetch items when it changes
+watch(debouncedSearchQuery, () => {
+  fetchItems()
+})
+
+watch(searchQuery, val => {
+  if (!val.trim()) {
+    items.value = []
+  }
 })
 
 // Filter items based on the search query
-const filteredItems = computed(() =>
-  items.value.filter(item => item.title.toLowerCase().includes(searchQuery.value.toLowerCase())),
-)
+const filteredItems = computed(() => items.value)
 
 // Functions to handle dropdown visibility
 const showDropdown = () => {
@@ -52,14 +60,12 @@ const hideDropdown = () => {
     dropdownVisible.value = false
   }, 200) // slight delay to allow item click
 }
-
 // Handle item selection
 const selectItem = (item: Item) => {
   searchQuery.value = item.title
   hideDropdown()
   navigateTo(`/items/${item.id}`)
 }
-
 // Input handler
 const onInput = () => {
   if (searchQuery.value) {
@@ -78,7 +84,10 @@ const onInput = () => {
       variant="outline"
       :color="inputColor"
       :size="inputSize"
-      :ui="uiInput"
+      :ui="{
+        base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-75 focus:outline-none border-0 bg-gray-200 dark:bg-gray-200 text-black dark:!text-black',
+        rounded: 'rounded-2xl',
+      }"
       v-model="searchQuery"
       @input="onInput"
       @blur="hideDropdown"

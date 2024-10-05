@@ -1,7 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
-  modules: ['@nuxt/ui', '@nuxt/image', '@nuxthub/core', '@nuxt/icon', 'nuxt-auth-utils', 'nuxt-typed-router', '@pinia/nuxt'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/image',
+    '@nuxthub/core',
+    '@nuxt/icon',
+    'nuxt-auth-utils',
+    'nuxt-typed-router',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+  ],
 
   app: { pageTransition: { name: 'page', mode: 'out-in' }, layoutTransition: { name: 'layout', mode: 'out-in' } },
 
