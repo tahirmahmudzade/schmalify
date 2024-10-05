@@ -2,9 +2,7 @@ import { createUser, getUserByEmail } from '~/server/service/user'
 import { generateRandomToken } from '~/server/utils/generateRandomToken'
 
 export default defineOAuthGoogleEventHandler({
-  config: {
-    scope: ['email', 'profile'],
-  },
+  config: { scope: ['email', 'profile'] },
   async onSuccess(event, { user }) {
     const userInfo = user as GoogleUser
 

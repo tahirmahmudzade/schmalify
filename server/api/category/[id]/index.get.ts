@@ -7,7 +7,13 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 400, message: 'Missing category name' })
   }
 
-  const categoryName = name.charAt(0).toUpperCase() + name.slice(1)
+  const categoryName = name.includes('-')
+    ? name
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('-')
+    : name.charAt(0).toUpperCase() + name.slice(1)
+
   const category = await getCategoryByName(categoryName)
 
   if (!category) {
