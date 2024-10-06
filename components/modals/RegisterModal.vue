@@ -2,19 +2,14 @@
 import type { User } from '#auth-utils'
 import z from 'zod'
 
-const { user = null } = defineProps<{
-  user?: User | null
-}>()
+const { user = null } = defineProps<{ user?: User | null }>()
 
-const emit = defineEmits<{
-  (e: 'close', toLogin?: boolean): void
-}>()
+const emit = defineEmits<{ (e: 'close', toLogin?: boolean): void }>()
+
+const toast = useToast()
 
 const schema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email' })
-    .max(40, { message: 'Email must be at most 40 characters long' }),
+  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
   password: z
     .string({ message: 'Invalid password' })
     .min(8, { message: 'Password must be at least 8 characters long' })
@@ -27,45 +22,33 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-const credentials = reactive<Schema>({
-  email: '',
-  password: '',
-  username: '',
-})
+const credentials = reactive<Schema>({ email: '', password: '', username: '' })
 
 const isFormInvalid = computed(() => {
   const result = schema.safeParse(credentials)
   return !result.success
 })
 
+async function onSubmit() {
+  try {
+    if (user?.isGuest && user.id) {
+      await $fetch(`/api/users/${user.id}/upgrade`, { method: 'PATCH', body: credentials })
+    } else {
+      await $fetch<{ statusCode: number; message: string }>('/api/auth/register', { method: 'POST', body: credentials })
+    }
+  } catch (err: any) {
+    console.error(err)
+    toast.add({ color: 'red', title: err.data.message || 'Something went wrong, please try again later or contact support' })
+  } finally {
+    onClose()
+  }
+}
+
 function onClose() {
   emit('close')
 }
 
-async function onSubmit() {
-  try {
-    if (user?.isGuest && user.id) {
-      await $fetch(`/api/users/${user.id}/upgrade`, {
-        method: 'PATCH',
-        body: credentials,
-      })
-    } else {
-      await $fetch<{ statusCode: number; message: string }>(
-        '/api/auth/register',
-        {
-          method: 'POST',
-          body: credentials,
-        }
-      )
-    }
-
-    onClose()
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-async function onLogin() {
+function onLogin() {
   emit('close', true)
 }
 </script>
@@ -76,19 +59,11 @@ async function onLogin() {
       <!-- Modal Overlay (provided by UModal) -->
       <div class="modal-container">
         <!-- Modal Content -->
-        <div
-          class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md"
-        >
+        <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
-              <h3
-                class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100"
-              >
-                Sign Up
-              </h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">
-                Create your account
-              </p>
+              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Sign Up</h3>
+              <p class="mb-4 text-gray-700 dark:text-gray-300">Create your account</p>
               <UButton
                 icon="i-flat-color-icons-google"
                 color="white"
@@ -100,38 +75,22 @@ async function onLogin() {
                 }"
               />
               <div class="flex items-center my-3">
-                <hr
-                  class="h-0 border-b border-gray-500 dark:border-gray-600 grow"
-                />
+                <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
                 <p class="mx-4 text-gray-600 dark:text-gray-400">or</p>
-                <hr
-                  class="h-0 border-b border-gray-500 dark:border-gray-600 grow"
-                />
+                <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
               </div>
 
               <UForm :schema="schema" :state="credentials">
                 <UFormGroup label="Email" name="email">
-                  <UInput
-                    v-model="credentials.email"
-                    required
-                    placeholder="your-email@example.com"
-                  />
+                  <UInput v-model="credentials.email" required placeholder="your-email@example.com" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Password" name="password">
-                  <UInput
-                    v-model="credentials.password"
-                    required
-                    type="password"
-                  />
+                  <UInput v-model="credentials.password" required type="password" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Username" name="username">
-                  <UInput
-                    v-model="credentials.username"
-                    required
-                    placeholder="yourusername"
-                  />
+                  <UInput v-model="credentials.username" required placeholder="yourusername" />
                 </UFormGroup>
               </UForm>
               <UButton
@@ -150,16 +109,9 @@ async function onLogin() {
                 :disabled="isFormInvalid"
                 @click="onSubmit"
               />
-              <p
-                class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300"
-              >
+              <p class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300">
                 Already have an account?
-                <span
-                  @click="onLogin"
-                  class="font-bold cursor-pointer text-blue-500 dark:text-blue-400"
-                >
-                  Log In
-                </span>
+                <span @click="onLogin" class="font-bold cursor-pointer text-blue-500 dark:text-blue-400"> Log In </span>
               </p>
             </form>
           </div>
