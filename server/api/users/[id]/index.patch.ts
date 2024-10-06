@@ -11,11 +11,17 @@ const userSchema = z.object({
 })
 
 export default defineEventHandler(async event => {
-  try {
-    const paramId = getRouterParam(event, 'id')
+  const paramId = getRouterParam(event, 'id')
 
-    if (!paramId) {
-      throw createError({ statusCode: 400, message: 'Missing required parameter id' })
+  if (!paramId) {
+    throw createError({ statusCode: 400, message: 'Missing required parameter id' })
+  }
+
+  try {
+    const { user } = await requireUserSession(event)
+
+    if (user.isGuest) {
+      throw createError({ statusCode: 403, message: 'Guests are not allowed to update user profile' })
     }
 
     const decodedUserId = decodeId(paramId)
