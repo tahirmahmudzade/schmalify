@@ -39,15 +39,6 @@ const onInput = () => {
 }
 </script>
 
-<style scoped>
-.input-class {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-}
-</style>
-
 <template>
   <div class="relative">
     <input
@@ -72,3 +63,12 @@ const onInput = () => {
     </ul>
   </div>
 </template>
+
+<style scoped>
+.input-class {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+</style>

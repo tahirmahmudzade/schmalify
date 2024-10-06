@@ -22,17 +22,9 @@ export const item = sqliteTable('item', {
   description: text('description', { length: 100 }),
   image: text('image').default('default-item.webp'), // optional image for item
   price: integer('price').notNull(), // store price as integer for cents (e.g., 1000 = €10.00)
-  category_id: text('category_id').references(() => category.id, {
-    onDelete: 'set null',
-    onUpdate: 'cascade',
-  }), // link to category table
-  seller_id: text('seller_id').references(() => user.id, {
-    onDelete: 'cascade',
-    onUpdate: 'cascade',
-  }), // user selling the item
-  condition: text('condition', {
-    enum: ['new', 'like new', 'very good', 'good', 'fair', 'poor'],
-  }), // e.g., new, like new, used
+  category_id: text('category_id').references(() => category.id, { onDelete: 'set null', onUpdate: 'cascade' }), // link to category table
+  seller_id: text('seller_id').references(() => user.id, { onDelete: 'cascade', onUpdate: 'cascade' }), // user selling the item
+  condition: text('condition', { enum: ['new', 'like new', 'very good', 'good', 'fair', 'poor'] }), // e.g., new, like new, used
   status: text('status', { enum: ['available', 'sold'] }).default('available'), // e.g., available, sold
   createdAt: text('created_at').default(sql`(datetime('now'))`),
   pending: integer('pending', { mode: 'boolean' }).default(true),
@@ -55,7 +47,7 @@ export const userRelations = relations(user, ({ many }) => ({
 
 export const itemRelations = relations(item, ({ one }) => ({
   category: one(category, {
-    fields: [item.category_id], // link category_id to category.id
+    fields: [item.category_id],
     references: [category.id], // link category.id to category.id
   }),
   seller: one(user, {

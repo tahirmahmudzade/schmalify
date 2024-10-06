@@ -69,10 +69,7 @@ function onLogin() {
                 color="white"
                 class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
                 label="Sign Up With Google"
-                :ui="{
-                  base: 'max-w-lg',
-                  rounded: 'rounded-lg',
-                }"
+                :ui="{ base: 'max-w-lg', rounded: 'rounded-lg' }"
               />
               <div class="flex items-center my-3">
                 <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
@@ -100,11 +97,7 @@ function onLogin() {
                 label="Sign Up"
                 :ui="{
                   rounded: 'rounded-lg',
-                  color: {
-                    white: {
-                      solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600',
-                    },
-                  },
+                  color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
                 }"
                 :disabled="isFormInvalid"
                 @click="onSubmit"

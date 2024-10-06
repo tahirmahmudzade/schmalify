@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import z from 'zod'
-import { ref } from 'vue'
 
 const emit = defineEmits<{ (e: 'close'): void }>()
 
@@ -51,10 +50,7 @@ function onClose() {
 
 async function onSubmitEmail() {
   try {
-    const res = await $fetch('/api/auth/forgot-password', {
-      method: 'POST',
-      body: emailState,
-    })
+    const res = await $fetch('/api/auth/forgot-password', { method: 'POST', body: emailState })
 
     if (res.statusCode === 404) {
       toast.add({ color: 'red', title: res.message })
@@ -72,10 +68,7 @@ async function onSubmitEmail() {
 
 async function onSubmitReset() {
   try {
-    await $fetch('/api/auth/reset-password', {
-      method: 'POST',
-      body: resetState,
-    })
+    await $fetch('/api/auth/reset-password', { method: 'POST', body: resetState })
     toast.add({ color: 'green', title: 'Password reset successfully' })
     onClose()
   } catch (err: any) {

@@ -97,11 +97,7 @@ function onForgotPassword() {
                 label="Log in"
                 :ui="{
                   rounded: 'rounded-lg',
-                  color: {
-                    white: {
-                      solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600',
-                    },
-                  },
+                  color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
                 }"
                 :disabled="isFormInvalid"
                 @click="onSubmit"

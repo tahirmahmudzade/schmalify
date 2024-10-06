@@ -1,9 +1,3 @@
-<!-- <script setup lang="ts">
-defineProps<{
-  click: () => void
-}>()
-</script> -->
-
 <template>
   <UButton
     variant="solid"

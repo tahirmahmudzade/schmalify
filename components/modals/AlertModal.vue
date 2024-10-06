@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ButtonColor } from '#ui/types'
+
 const emits = defineEmits(['close'])
+
 const {
   title = 'Alert',
   description = '',

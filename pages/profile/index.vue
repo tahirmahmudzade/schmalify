@@ -196,7 +196,7 @@ onMounted(() => {
                 <!-- Location -->
                 <div v-if="!user?.isGuest" class="bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
-                    <h4 class="block mb-2">Location</h4>
+                    <h4 class="block mb-2">Address</h4>
                     <UInput v-model="state.location" type="text" id="location" />
                   </UFormGroup>
                 </div>
