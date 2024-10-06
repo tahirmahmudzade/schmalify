@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { User } from '#auth-utils'
 import z from 'zod'
 import type { Category } from '~/server/database/drizzle'
 
-const { user, categories, asGuest } = defineProps<{ user: User; categories: readonly Category[]; asGuest: boolean }>()
+const { categories, asGuest } = defineProps<{ categories: readonly Category[]; asGuest: boolean }>()
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const toast = useToast()
 
-const userId = ref(user.id)
 const buttonLoading = ref(false)
 
 const imageFile = ref<File | null>(null)
@@ -91,8 +89,8 @@ function handleImgChange(e: Event) {
           }
           reader.readAsDataURL(compressedBlob)
         })
-        .catch(() => {
-          toast.add({ color: 'red', title: 'Failed to compress the image' })
+        .catch(err => {
+          toast.add({ color: 'red', title: err.data.message || 'Failed to compress the image' })
         })
     } else {
       // If file is within the size limit, just show the preview
@@ -115,12 +113,10 @@ async function onSubmit() {
 
   try {
     if (asGuest) {
-      const newGuest = await $fetch('/api/auth/guestLogin', {
+      await $fetch('/api/auth/guestLogin', {
         method: 'POST',
         body: { firstName: itemData.firstName, lastName: itemData.lastName || '', phone: itemData.phone },
       })
-
-      userId.value = newGuest.guest.id
     }
 
     const formData = new FormData()
@@ -139,9 +135,12 @@ async function onSubmit() {
     setTimeout(() => {
       reloadNuxtApp({ path: '/profile/listings', force: true })
     }, 500)
-  } catch (err) {
+  } catch (err: any) {
     console.log('Failed to create item:', err)
-    toast.add({ color: 'red', title: 'Failed to create letting, please try again later with valid data' })
+    toast.add({
+      color: 'red',
+      title: err.data.message || 'Failed to create letting, please try again later with valid data',
+    })
   } finally {
     onClose()
   }
