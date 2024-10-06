@@ -76,9 +76,15 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
         <div
           v-for="item in items"
           :key="item.title"
-          class="flex-none w-36 bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg border border-white border-opacity-10 rounded-lg shadow-md cursor-pointer transform transition-transform duration-200 hover:-translate-y-1 flex flex-col"
+          class="flex-none w-36 bg-white bg-opacity-5 backdrop-filter backdrop-blur-lg border border-white border-opacity-10 rounded-lg shadow-md cursor-pointer transform transition-transform duration-200 hover:-translate-y-1 flex flex-col relative"
           @click="navigateTo(`/items/${item.id}`)"
         >
+          <!-- Sold Badge (conditionally rendered) -->
+          <div v-if="item.status === 'sold'" class="absolute top-2 right-2">
+            <UBadge label="Sold" color="red" size="md" />
+          </div>
+
+          <!-- Item Image -->
           <img
             :src="`api/blob/${item.id}/serveImg`"
             loading="lazy"

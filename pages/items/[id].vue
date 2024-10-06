@@ -38,9 +38,9 @@ const whatsappLink = computed(() => {
   <div>
     <div class="flex justify-center p-4">
       <div
-        class="w-full max-w-5xl bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row h-auto md:h-[400px]"
+        class="w-full max-w-5xl bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row h-auto md:h-[400px] relative"
       >
-        <div class="w-full md:w-1/2 h-64 md:h-[400px]">
+        <div class="w-full md:w-1/2 h-64 md:h-[400px] relative">
           <!-- Make the image clickable -->
           <img
             :src="`/api/blob/${item.id}/serveImg`"
@@ -74,6 +74,7 @@ const whatsappLink = computed(() => {
               <div class="flex justify-between">
                 <UBadge :label="formatDateToDDMMYYYY(item.createdAt!)" size="lg" variant="outline" color="orange" />
                 <UButton
+                  v-if="item.category"
                   :label="item.category?.name"
                   variant="solid"
                   color="green"
@@ -93,7 +94,7 @@ const whatsappLink = computed(() => {
             </div>
             <div class="flex items-center">
               <Icon name="mdi:map-marker" class="text-red-500 mr-2" />
-              <span class="font-semibold text-gray-700">Location:</span>
+              <span class="font-semibold text-gray-700">Address:</span>
               <span class="ml-1 text-gray-600">{{ item.seller?.location || 'Not specified' }}</span>
             </div>
             <div class="flex items-center">
@@ -103,13 +104,22 @@ const whatsappLink = computed(() => {
             </div>
           </div>
 
-          <!-- Contact Seller Button -->
+          <!-- Conditional "Sold" or "Contact Seller" Button -->
           <div class="mt-6 flex justify-end">
-            <a :href="whatsappLink" target="_blank">
-              <button class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
-                Contact Seller
+            <template v-if="item.status === 'sold'">
+              <!-- Sold Button (disabled to indicate item is sold) -->
+              <button class="bg-red-500 cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg opacity-50">
+                This item is sold
               </button>
-            </a>
+            </template>
+            <template v-else>
+              <!-- Contact Seller Button -->
+              <a :href="whatsappLink" target="_blank">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
+                  Contact Seller
+                </button>
+              </a>
+            </template>
           </div>
         </div>
       </div>

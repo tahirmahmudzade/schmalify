@@ -42,13 +42,14 @@ function handleDelete(itemId: string) {
           class="relative rounded-lg overflow-hidden shadow-md bg-white/5 backdrop-blur-[10px] border border-white/10 transition-transform duration-200 ease-in-out flex flex-col hover:-translate-y-1 cursor-pointer"
           @click="navigateTo(`/items/${item.id}`)"
         >
-          <!-- Delete Icon in Top Right -->
-          <UButton
-            class="absolute top-2 right-2 dark:bg-red-600 hover:dark:bg-white dark:text-white hover:dark:text-red-500 transition duration-200 z-10"
-            @click.stop="handleDelete(item.id)"
-          >
-            <Icon name="i-material-symbols-delete-outline" size="1rem" />
-          </UButton>
+          <!-- Sold Badge -->
+          <UBadge
+            v-if="item.status === 'sold'"
+            label="Sold"
+            color="red"
+            size="md"
+            class="absolute top-2 right-2 z-10 font-bold"
+          />
 
           <!-- Item Image -->
           <img
@@ -69,17 +70,32 @@ function handleDelete(itemId: string) {
               <p class="text-gray-400 text-xs text-left break-words">{{ item.description }}</p>
             </div>
 
-            <!-- Edit Button at the Bottom -->
-            <button
-              class="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full hover:from-blue-600 hover:to-purple-700 shadow-lg transform hover:scale-105 transition-transform duration-200 w-full"
-              @click.stop="handleEdit(item)"
-            >
-              <span
-                class="text-white text-sm flex items-center justify-center font-extrabold text-transparent bg-clip-text bg-gradient-to-r drop-shadow-lg"
+            <!-- Edit and Delete Buttons at the Bottom -->
+            <div class="mt-4 flex flex-col space-y-2">
+              <!-- Edit Button -->
+              <button
+                class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full hover:from-blue-600 hover:to-purple-700 shadow-lg transform hover:scale-105 transition-transform duration-200 w-full"
+                @click.stop="handleEdit(item)"
               >
-                Edit
-              </span>
-            </button>
+                <span
+                  class="text-white text-xs flex items-center justify-center font-extrabold text-transparent bg-clip-text bg-gradient-to-r drop-shadow-lg"
+                >
+                  Edit
+                </span>
+              </button>
+
+              <!-- Delete Button Styled Like Edit -->
+              <button
+                class="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full hover:from-red-600 hover:to-red-700 shadow-lg transform hover:scale-105 transition-transform duration-200 w-full"
+                @click.stop="handleDelete(item.id)"
+              >
+                <span
+                  class="text-white text-xs flex items-center justify-center font-extrabold text-transparent bg-clip-text bg-gradient-to-r drop-shadow-lg"
+                >
+                  Delete
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
