@@ -1,5 +1,7 @@
 type Condition = 'new' | 'like new' | 'very good' | 'good' | 'fair' | 'poor'
 
+type Status = 'available' | 'sold'
+
 type GoogleUser = {
   sub: string
   name: string

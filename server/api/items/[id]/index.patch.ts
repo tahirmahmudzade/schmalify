@@ -18,8 +18,10 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
     const title = body.get('title')!.toString()
     const description = body.get('description')?.toString()
     const price = parseInt(body.get('price')!.toString())
-    const condition = body.get('condition')!.toString()
+    const condition = body.get('condition')!.toString() as Condition
+    const status = body.get('status')!.toString() as Status
     const image = body.get('image') as File
+
     // 6. Decode the item id
     const decodedItemId = decodeId(paramId)
     // 7. Get the item by id
@@ -32,7 +34,7 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       throw createError({ statusCode: 403, message: 'Unauthorized to update this item' })
     }
     // 9. If the user is not the seller of the item, return a 403 error
-    const itemData: UpdateItem = { price, title, description, condition: condition as Condition, image: image?.name }
+    const itemData: UpdateItem = { price, title, description, condition: condition, image: image?.name, status }
     // 10. Update the item
     await updateItemById(decodedItemId, itemData)
     // 11. If the image exists and has a size, process the image and upload the new image

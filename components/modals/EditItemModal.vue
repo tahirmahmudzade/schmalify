@@ -21,13 +21,15 @@ const schema = z.object({
   description: z.string().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
   price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
   condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
+  status: z.enum(['available', 'sold'], { message: 'Status is required' }),
 })
 
 const itemData = reactive({
   title: item.title,
   description: item.description || '',
   price: item.price,
-  condition: item.condition || 'new',
+  condition: item.condition || ('new' as Condition),
+  status: item.status || ('available' as Status),
   category: item.category?.name,
 })
 
@@ -44,6 +46,7 @@ const isFormUnchanged = computed(() => {
     itemData.description === initialData.description &&
     itemData.price === initialData.price &&
     itemData.condition === initialData.condition &&
+    itemData.status === initialData.status &&
     imageFile.value === null // Check if no new image has been uploaded
   )
 })
@@ -115,6 +118,7 @@ async function onSubmit() {
     formData.append('description', itemData.description)
     formData.append('price', itemData.price.toString())
     formData.append('condition', itemData.condition)
+    formData.append('status', itemData.status)
 
     const { message } = await $fetch<{ statusCode: number; message: string }>(`/api/items/${item.id}`, {
       method: 'PATCH',
@@ -166,6 +170,10 @@ async function onSubmit() {
                 <UInput v-model="itemData.description" placeholder="Edit description (max length: 100 characters)" />
               </UFormGroup>
 
+              <UFormGroup class="mt-3" label="Status" name="status">
+                <USelect v-model="itemData.status" :options="['available', 'sold']" />
+              </UFormGroup>
+
               <div class="mt-3">
                 <label for="imageInput" class="relative cursor-pointer">
                   <div v-if="imagePreview">
@@ -194,14 +202,7 @@ async function onSubmit() {
               :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
               class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
               label="Update Item"
-              :ui="{
-                rounded: 'rounded-lg',
-                color: {
-                  white: {
-                    solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600',
-                  },
-                },
-              }"
+              :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } } }"
               :disabled="isFormInvalid || isFormUnchanged"
               @click="onSubmit"
             />
