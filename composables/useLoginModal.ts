@@ -14,14 +14,10 @@ export function useLoginModal() {
           useRegisterModal()
         }, 500)
       } else {
-        toast.add({
-          id: 'login-success',
-          title: 'Successfully logged in',
-          timeout: 2000,
-        })
+        toast.add({ id: 'login-success', title: 'Successfully logged in', timeout: 1500 })
         setTimeout(() => {
           reloadNuxtApp({ path: '/profile', force: true })
-        }, 2100)
+        }, 1600)
       }
     },
     onForgotPassword: () => {

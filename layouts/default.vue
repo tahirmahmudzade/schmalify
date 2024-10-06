@@ -34,7 +34,7 @@ const items: DropdownItem[][] = [
         },
     user.value && user.value.isGuest
       ? {
-          label: 'Sign up as a user',
+          label: 'Sign in as user',
           icon: 'i-ri-login-circle-line',
           iconClass: 'text-green-500 dark:text-green-500',
           click: () => {
@@ -72,7 +72,7 @@ const items: DropdownItem[][] = [
 ]
 
 function handleSellNowClick() {
-  !loggedIn.value && !user.value ? useSellNowNotificationModal() : useCreateLettingModal(user.value!)
+  !loggedIn.value && !user.value ? useSellNowNotificationModal() : useCreateLettingModal()
 }
 </script>
 
