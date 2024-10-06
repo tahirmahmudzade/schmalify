@@ -11,18 +11,18 @@ if (!itemsData.value && getItemsError.value) {
 function handleEdit(item: Item & { category: { name: string } | null }) {
   try {
     useEditItem(item, refreshItems)
-  } catch (err) {
+  } catch (err: any) {
     console.log('Error editing item:', err)
-    toast.add({ title: 'Something went wrong, please try again later or contact support.' })
+    toast.add({ title: err.data.message || 'Something went wrong, please try again later or contact support.' })
   }
 }
 
 function handleDelete(itemId: string) {
   try {
     useDeleteItem(itemId, refreshItems)
-  } catch (err) {
+  } catch (err: any) {
     console.log('Error deleting item:', err)
-    toast.add({ title: 'Something went wrong, please try again later or contact support.' })
+    toast.add({ title: err.data.message || 'Something went wrong, please try again later or contact support.' })
   }
 }
 </script>

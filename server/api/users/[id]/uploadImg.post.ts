@@ -9,32 +9,25 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
 
   const decodedUserId = decodeId(paramId)
 
-  const form = await readFormData(event)
-
-  const file = form.get('avatar') as File
-
-  if (!file || !file.size) {
-    throw createError({ statusCode: 400, message: 'No file provided' })
-  }
-
-  ensureBlob(file, { maxSize: '4MB', types: ['image'] })
-
-  const fileName = file.name
-
-  const user = await getUserById(decodedUserId)
-
-  if (user?.avatar && user.avatar !== 'default-user.webp') {
-    try {
-      await hubBlob().delete(`${paramId}/${user.avatar}`)
-    } catch (e) {
-      console.log('error deleting', e)
-    }
-  }
   try {
+    const form = await readFormData(event)
+
+    const file = form.get('avatar') as File
+
+    processImage(file)
+
+    const fileName = file.name
+
+    const user = await getUserById(decodedUserId)
+
+    if (user?.avatar && user.avatar !== 'default-user.webp') {
+      await hubBlob().delete(`${paramId}/${user.avatar}`)
+    }
+
     await Promise.all([updateProfilePicture(decodedUserId, fileName), hubBlob().put(fileName, file, { prefix: paramId })])
     return { statusCode: 200, message: 'Profile picture updated' }
   } catch (err) {
     console.log('error updating profile picture', err)
-    throw createError({ statusCode: 500, message: 'Error updating profile picture' })
+    throw createError({ statusCode: 500, message: (err as string) || 'Error updating profile picture' })
   }
 })

@@ -31,9 +31,9 @@ async function onSubmit() {
     await $fetch<{ statusCode: number; message: string }>('/api/auth/login', { method: 'POST', body: credentials })
 
     onClose()
-  } catch (err) {
+  } catch (err: any) {
     credentials.password = ''
-    toast.add({ color: 'red', title: 'Invalid email or password' })
+    toast.add({ color: 'red', title: err.data.message || 'Invalid email or password' })
   }
 }
 

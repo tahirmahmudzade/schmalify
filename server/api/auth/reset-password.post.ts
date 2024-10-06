@@ -11,28 +11,30 @@ const resetSchema = z
     confirmPassword: z.string(),
     token: z.string({ message: 'Token is required' }),
   })
-  .refine(data => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  })
+  .refine(data => data.password === data.confirmPassword, { message: 'Passwords do not match', path: ['confirmPassword'] })
 
 export default defineEventHandler(async event => {
-  const config = useRuntimeConfig()
+  try {
+    const config = useRuntimeConfig()
 
-  const body = await readValidatedBody(event, resetSchema.parse)
+    const body = await readValidatedBody(event, resetSchema.parse)
 
-  const decoded = jwt.verify(body.token, config.jwtSecret)
-  const { email } = decoded as { email: string }
+    const decoded = jwt.verify(body.token, config.jwtSecret)
+    const { email } = decoded as { email: string }
 
-  const user = await getUserByEmail(email)
+    const user = await getUserByEmail(email)
 
-  if (!user) {
-    throw createError({ statusCode: 404, message: 'Reset token is invalid' })
+    if (!user) {
+      throw createError({ statusCode: 404, message: 'Reset token is invalid' })
+    }
+
+    const hashedPassword = await hashPassword(body.password)
+
+    await updatePassword(user.id, hashedPassword)
+
+    return { statusCode: 200, message: 'Password reset successfully' }
+  } catch (err) {
+    console.log('error resetting password', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error resetting password' })
   }
-
-  const hashedPassword = await hashPassword(body.password)
-
-  await updatePassword(user.id, hashedPassword)
-
-  return { statusCode: 200, message: 'Password reset successfully' }
 })

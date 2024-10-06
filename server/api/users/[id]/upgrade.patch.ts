@@ -21,39 +21,44 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
   }
   const decodedUserId = decodeId(paramId)
 
-  const body = await readValidatedBody(event, userSchema.parse)
+  try {
+    const body = await readValidatedBody(event, userSchema.parse)
 
-  const guestUser = await getUserById(decodedUserId)
+    const guestUser = await getUserById(decodedUserId)
 
-  if (!guestUser) {
-    throw createError({ statusCode: 404, message: 'User not found' })
-  }
+    if (!guestUser) {
+      throw createError({ statusCode: 404, message: 'User not found' })
+    }
 
-  const isUniqueUserEmail = await getUserByEmail(body.email)
+    const isUniqueUserEmail = await getUserByEmail(body.email)
 
-  if (isUniqueUserEmail) {
-    throw createError({
-      statusCode: 400,
-      message: 'User with given email already exists, please login or use different email',
+    if (isUniqueUserEmail) {
+      throw createError({
+        statusCode: 400,
+        message: 'User with given email already exists, please login or use different email',
+      })
+    }
+
+    const hashedPassword = await hashPassword(body.password)
+
+    await updateUserById(decodedUserId, {
+      email: body.email,
+      username: body.username,
+      firstName: guestUser.firstName,
+      lastName: guestUser.lastName,
+      password: hashedPassword,
+      isGuest: false,
+      phone: guestUser.phone,
     })
+
+    await replaceUserSession(event, {
+      loggedInAt: new Date().toISOString(),
+      user: { id: paramId, isGuest: false, email: body.email, username: body.username },
+    })
+
+    return { statusCode: 200, message: 'User created successfully' }
+  } catch (err) {
+    console.log('error updating user', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error updating' })
   }
-
-  const hashedPassword = await hashPassword(body.password)
-
-  await updateUserById(decodedUserId, {
-    email: body.email,
-    username: body.username,
-    firstName: guestUser.firstName,
-    lastName: guestUser.lastName,
-    password: hashedPassword,
-    isGuest: false,
-    phone: guestUser.phone,
-  })
-
-  await setUserSession(event, {
-    loggedInAt: new Date().toISOString(),
-    user: { id: paramId, isGuest: false, email: body.email, username: body.username },
-  })
-
-  return { statusCode: 200, message: 'User created successfully' }
 })

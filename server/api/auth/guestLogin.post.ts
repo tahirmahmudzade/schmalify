@@ -9,12 +9,10 @@ const guestSchema = z.object({
     .string()
     .min(10, { message: 'Phone number must be at least 10 digits' })
     .max(15, { message: 'Phone number must be at most 15 digits' })
-    .regex(phoneRegex, {
-      message: 'Phone number must start with + and include the country code',
-    }),
+    .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
 })
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   try {
     const body = await readValidatedBody(event, guestSchema.parse)
 
@@ -25,34 +23,16 @@ export default defineEventHandler(async (event) => {
       lastName: body.lastName,
     })
 
-    await setUserSession(
+    await replaceUserSession(
       event,
-      {
-        loggedInAt: new Date().toISOString(),
-        user: {
-          isGuest: true,
-          id: encodeId(newUser.id),
-        },
-      },
-      {
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      }
+      { loggedInAt: new Date().toISOString(), user: { isGuest: true, id: encodeId(newUser.id) } },
+      { maxAge: 60 * 60 * 24 * 3 }, // 3 days
     )
 
-    return {
-      statusCode: 200,
-      guest: {
-        ...newUser,
-        id: encodeId(newUser.id),
-      },
-      message: 'Guest login successful',
-    }
+    return { statusCode: 200, guest: { ...newUser, id: encodeId(newUser.id) }, message: 'Guest login successful' }
   } catch (err) {
     console.log('Error: ', err)
 
-    throw createError({
-      statusCode: 400,
-      message: (err as string) || 'Something went wrong, please try again',
-    })
+    throw createError({ statusCode: 400, message: (err as string) || 'Something went wrong, please try again' })
   }
 })

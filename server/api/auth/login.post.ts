@@ -11,24 +11,29 @@ const userSchema = z.object({
 })
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
-  const body = await readValidatedBody(event, userSchema.parse)
+  try {
+    const body = await readValidatedBody(event, userSchema.parse)
 
-  const isUser = await getUserByEmail(body.email)
+    const isUser = await getUserByEmail(body.email)
 
-  if (!isUser) {
-    throw createError({ statusCode: 401, message: 'Invalid email or password' })
+    if (!isUser) {
+      throw createError({ statusCode: 401, message: 'Invalid email or password' })
+    }
+
+    const passwordMatch = await verifyPassword(isUser.password!, body.password)
+
+    if (!passwordMatch) {
+      throw createError({ statusCode: 401, message: 'Invalid email or password' })
+    }
+
+    await setUserSession(event, {
+      loggedInAt: new Date().toISOString(),
+      user: { email: isUser.email!, id: encodeId(isUser.id), username: isUser.username!, isGuest: false },
+    })
+
+    return { statusCode: 200, message: 'Login successful' }
+  } catch (err) {
+    console.log('error creating user', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error logging in' })
   }
-
-  const passwordMatch = await verifyPassword(isUser.password!, body.password)
-
-  if (!passwordMatch) {
-    throw createError({ statusCode: 401, message: 'Invalid email or password' })
-  }
-
-  await setUserSession(event, {
-    loggedInAt: new Date().toISOString(),
-    user: { email: isUser.email!, id: encodeId(isUser.id), username: isUser.username!, isGuest: false },
-  })
-
-  return { statusCode: 200, message: 'Login successful' }
 })

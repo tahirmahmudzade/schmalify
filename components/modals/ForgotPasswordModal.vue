@@ -62,8 +62,11 @@ async function onSubmitEmail() {
       toast.add({ color: 'green', title: 'Reset link sent to your email' })
       step.value = 'reset'
     }
-  } catch (err) {
-    toast.add({ color: 'red', title: 'Something  went wrong, please try again later or contact support.' })
+  } catch (err: any) {
+    toast.add({
+      color: 'red',
+      title: err.data.message || 'Something  went wrong, please try again later or contact support.',
+    })
   }
 }
 
@@ -75,10 +78,10 @@ async function onSubmitReset() {
     })
     toast.add({ color: 'green', title: 'Password reset successfully' })
     onClose()
-  } catch (err) {
+  } catch (err: any) {
     console.log('Error resetting password', err)
 
-    toast.add({ color: 'red', title: 'Error resetting password' })
+    toast.add({ color: 'red', title: err.data.message || 'Error resetting password' })
   }
 }
 </script>

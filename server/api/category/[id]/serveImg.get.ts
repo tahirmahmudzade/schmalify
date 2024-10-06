@@ -9,13 +9,18 @@ export default defineEventHandler(async event => {
 
   const decodedCategoryId = decodeId(paramId)
 
-  const category = await getCategoryById(decodedCategoryId)
+  try {
+    const category = await getCategoryById(decodedCategoryId)
 
-  if (!category || !category.img) {
-    throw createError({ statusCode: 404, message: !category?.img ? 'Category has no img' : 'Category not found' })
+    if (!category || !category.img) {
+      throw createError({ statusCode: 404, message: !category?.img ? 'Category has no img' : 'Category not found' })
+    }
+
+    const filename = category.img || `${paramId}/${category.img}`
+
+    return hubBlob().serve(event, filename)
+  } catch (err) {
+    console.log('error getting category', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error getting category data' })
   }
-
-  const filename = category.img || `${paramId}/${category.img}`
-
-  return hubBlob().serve(event, filename)
 })

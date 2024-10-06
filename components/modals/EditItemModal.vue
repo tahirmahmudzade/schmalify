@@ -125,9 +125,9 @@ async function onSubmit() {
     setTimeout(() => {
       reloadNuxtApp({ path: '/profile/listings', force: true })
     }, 500)
-  } catch (err) {
+  } catch (err: any) {
     console.log('Error:', err)
-    toast.add({ color: 'red', title: 'Failed to update item, please try again.' })
+    toast.add({ color: 'red', title: err.data.message || 'Failed to update item, please try again.' })
   } finally {
     onClose()
     buttonLoading.value = false

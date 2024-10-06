@@ -8,6 +8,6 @@ export const useLogout = () => {
     .catch(err => {
       console.log('Error logging out', err)
 
-      toast.add({ title: 'Something went wrong, please try again later' })
+      toast.add({ title: err.data.message || 'Something went wrong, please try again later' })
     })
 }

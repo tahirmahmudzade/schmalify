@@ -2,13 +2,14 @@ import { UpdateItem } from '~/server/database/drizzle'
 import { getItemById, updateItemById } from '~/server/service/item'
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
+  // 1. Get the item id from the URL
+  const paramId = getRouterParam(event, 'id')
+  // 2. If the item id is missing, return a 400 error
+  if (!paramId) {
+    throw createError({ statusCode: 400, message: 'Missing item id' })
+  }
+
   try {
-    // 1. Get the item id from the URL
-    const paramId = getRouterParam(event, 'id')
-    // 2. If the item id is missing, return a 400 error
-    if (!paramId) {
-      throw createError({ statusCode: 400, message: 'Missing item id' })
-    }
     // 3. Read the form data from the request
     const body = await readFormData(event)
     // 4. Get the user session
@@ -38,10 +39,6 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
     if (image && image.size) {
       processImage(image)
       await hubBlob().put(image.name, image, { prefix: `${user.id}/items` })
-      // await Promise.all([
-      //   hubBlob().put(image.name, image, { prefix: `${user.id}/items` }),
-      //   hubBlob().del(`${user.id}/items/${isItem.image}`),
-      // ])
     }
     // 12. Return a 204 status code and a success message
     return { statusCode: 204, message: 'Item updated successfully' }

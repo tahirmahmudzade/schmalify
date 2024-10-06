@@ -17,10 +17,13 @@ export default defineEventHandler(
         seller_id: encodeId(item.seller_id!),
         category_id: encodeId(item.category_id!),
       }))
-    } catch (e) {
-      console.log(e)
+    } catch (err) {
+      console.log('error getting items', err)
 
-      throw createError({ statusCode: 500, message: 'Something went wrong, please try again later or contact support' })
+      throw createError({
+        statusCode: 500,
+        message: (err as string) || 'Something went wrong, please try again later or contact support',
+      })
     }
   },
 )

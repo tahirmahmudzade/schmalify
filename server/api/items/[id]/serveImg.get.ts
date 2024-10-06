@@ -7,21 +7,22 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 400, message: 'No id provided' })
   }
 
-  const { user } = await getUserSession(event)
+  try {
+    const { user } = await requireUserSession(event)
 
-  if (!user) {
-    throw createError({ statusCode: 401, message: 'Unauthorized' })
+    const decodedItemId = decodeId(paramId)
+
+    const item = await getItemById(decodedItemId)
+
+    if (!item || !item.image) {
+      throw createError({ statusCode: 404, message: !item?.image ? 'User has no profile picture' : 'User not found' })
+    }
+
+    const filename = `${user.id}/items/${item.image}`
+
+    return hubBlob().serve(event, filename)
+  } catch (err) {
+    console.log('error updating profile picture', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error updating profile picture' })
   }
-
-  const decodedItemId = decodeId(paramId)
-
-  const item = await getItemById(decodedItemId)
-
-  if (!item || !item.image) {
-    throw createError({ statusCode: 404, message: !item?.image ? 'User has no profile picture' : 'User not found' })
-  }
-
-  const filename = `${user.id}/items/${item.image}`
-
-  return hubBlob().serve(event, filename)
 })

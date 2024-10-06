@@ -11,24 +11,26 @@ export default defineEventHandler(
 
     const decodedItemId = decodeId(paramId)
 
-    const item = await getItemById(decodedItemId)
+    try {
+      const item = await getItemById(decodedItemId)
 
-    if (!item) {
-      throw createError({ statusCode: 404, message: 'Item not found' })
-    }
+      if (!item) {
+        throw createError({ statusCode: 404, message: 'Item not found' })
+      }
 
-    return {
-      statusCode: 200,
-      item: {
-        ...item,
-        category_id: encodeId(item.category_id!),
-        seller_id: encodeId(item.seller_id!),
-        id: encodeId(item.id),
-        seller: {
-          ...item.seller!,
-          id: encodeId(item.seller!.id),
+      return {
+        statusCode: 200,
+        item: {
+          ...item,
+          category_id: encodeId(item.category_id!),
+          seller_id: encodeId(item.seller_id!),
+          id: encodeId(item.id),
+          seller: { ...item.seller!, id: encodeId(item.seller!.id) },
         },
-      },
+      }
+    } catch (err) {
+      console.log('error getting item', err)
+      throw createError({ statusCode: 500, message: (err as string) || 'Error getting item data' })
     }
   },
 )

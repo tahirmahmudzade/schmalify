@@ -9,13 +9,18 @@ export default defineEventHandler(async event => {
 
   const decodedItemId = decodeId(paramId)
 
-  const item = await getItemById(decodedItemId)
+  try {
+    const item = await getItemById(decodedItemId)
 
-  if (!item || !item.image) {
-    throw createError({ statusCode: 404, message: !item?.image ? 'Item has no image' : 'Item not found' })
+    if (!item || !item.image) {
+      throw createError({ statusCode: 404, message: !item?.image ? 'Item has no image' : 'Item not found' })
+    }
+
+    const filename = `${encodeId(item.seller_id!)}/items/${item.image}`
+
+    return hubBlob().serve(event, filename)
+  } catch (err) {
+    console.log('error updating profile picture', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error updating profile picture' })
   }
-
-  const filename = `${encodeId(item.seller_id!)}/items/${item.image}`
-
-  return hubBlob().serve(event, filename)
 })

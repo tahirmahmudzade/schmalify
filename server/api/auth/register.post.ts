@@ -17,24 +17,29 @@ const userSchema = z.object({
 })
 
 export default defineEventHandler<{ body: CreateUser }>(async (event): Promise<{ statusCode: number; message: string }> => {
-  const body = await readValidatedBody(event, userSchema.parse)
+  try {
+    const body = await readValidatedBody(event, userSchema.parse)
 
-  const isUser = await getUserByEmail(body.email)
+    const isUser = await getUserByEmail(body.email)
 
-  if (isUser) {
-    throw createError({ statusCode: 400, message: 'User already exists, please login' })
+    if (isUser) {
+      throw createError({ statusCode: 400, message: 'User already exists, please login' })
+    }
+
+    const hashedPassword = await hashPassword(body.password)
+
+    const userData: Omit<CreateUser, 'id'> = { ...body, password: hashedPassword }
+
+    const user = await createUser(userData)
+
+    await setUserSession(event, {
+      loggedInAt: new Date().toISOString(),
+      user: { email: user.email!, id: encodeId(user.id), username: user.username!, isGuest: false },
+    })
+
+    return { statusCode: 201, message: `Registration successful` }
+  } catch (err) {
+    console.log('error creating user', err)
+    throw createError({ statusCode: 500, message: (err as string) || 'Error creating user' })
   }
-
-  const hashedPassword = await hashPassword(body.password)
-
-  const userData: Omit<CreateUser, 'id'> = { ...body, password: hashedPassword }
-
-  const user = await createUser(userData)
-
-  await setUserSession(event, {
-    loggedInAt: new Date().toISOString(),
-    user: { email: user.email!, id: encodeId(user.id), username: user.username!, isGuest: false },
-  })
-
-  return { statusCode: 201, message: `Registration successful` }
 })
