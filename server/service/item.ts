@@ -3,10 +3,17 @@ import { CreateItem, eq, Item, tables, UpdateItem, useDrizzle } from '../databas
 import useNanoId from '../utils/nanoId'
 
 export function getAllItems(
-  searchQuery: string,
+  searchQuery: string | undefined,
+  limit: number,
+  offset: number,
 ): Promise<(Item & { seller: { avatar: string | null; location: string | null } | null })[]> {
+  const whereClause = searchQuery ? like(tables.item.title, `%${searchQuery}%`) : undefined
+
   return useDrizzle().query.item.findMany({
-    where: like(tables.item.title, `%${searchQuery}%`),
+    where: whereClause,
+    limit,
+    offset,
+    orderBy: [desc(tables.item.createdAt)],
     with: { seller: { columns: { avatar: true, location: true } } },
   })
 }
