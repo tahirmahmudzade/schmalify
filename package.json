@@ -14,7 +14,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/icon": "^1.5.3",
+    "@headlessui/vue": "^1.7.23",
+    "@nuxt/icon": "^1.5.4",
     "@nuxt/image": "^1.8.1",
     "@nuxt/ui-pro": "^1.4.3",
     "@nuxthub/core": "npm:@nuxthub/core@nightly",
