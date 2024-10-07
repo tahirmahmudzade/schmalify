@@ -1,5 +1,10 @@
 <script setup lang="ts">
-console.log('jhi')
+// Function to load items
 </script>
 
-<template><div>HI</div></template>
+<template>
+  <div>
+    <ProductFilter />
+    <ProductList />
+  </div>
+</template>
