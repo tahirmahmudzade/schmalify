@@ -9,28 +9,37 @@ const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 const toast = useToast()
 
 const buttonLoading = ref(false)
-
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
 
-const schema = z.object({
-  title: z
-    .string()
-    .min(1, { message: 'Title is required' })
-    .max(20, { message: 'Title must be at most 20 characters long' }),
-  description: z.string().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
-  price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
-  condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
-  ...(asGuest && {
-    firstName: z.string().min(1, { message: 'First name is required' }).max(40),
-    lastName: z.string().max(50).optional(),
-    phone: z
+const schema = computed(() =>
+  z.object({
+    title: z
       .string()
-      .min(10, { message: 'Phone number must be at least 10 digits' })
-      .max(15, { message: 'Phone number must be at most 15 digits' })
-      .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
+      .trim()
+      .min(1, { message: 'Title is required' })
+      .max(20, { message: 'Title must be at most 20 characters long' }),
+    description: z.string().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
+    // Conditionally validate the price field if the category is not "free"
+    ...(itemData.category !== 'Free' && {
+      price: z
+        .number()
+        .min(1, { message: 'Price must be greater than 0' })
+        .max(5000, { message: 'Price must be at most 5000' }),
+    }),
+    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
+    ...(asGuest && {
+      firstName: z.string().trim().min(1, { message: 'First name is required' }).max(40),
+      lastName: z.string().trim().max(50).optional(),
+      phone: z
+        .string()
+        .trim()
+        .min(10, { message: 'Phone number must be at least 10 digits' })
+        .max(15, { message: 'Phone number must be at most 15 digits' })
+        .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
+    }),
   }),
-})
+)
 
 const itemData = reactive({
   title: '',
@@ -44,7 +53,7 @@ const itemData = reactive({
 })
 
 const isFormInvalid = computed(() => {
-  const result = schema.safeParse(itemData)
+  const result = schema.value.safeParse(itemData)
   return !result.success || !imageFile.value
 })
 
@@ -144,6 +153,15 @@ async function onSubmit() {
   } finally {
     onClose()
   }
+
+  watch(
+    () => itemData.category,
+    newCategory => {
+      if (newCategory === 'free') {
+        itemData.price = 0
+      }
+    },
+  )
 }
 </script>
 
@@ -229,7 +247,7 @@ async function onSubmit() {
                   <p class="text-sm text-gray-500 mt-1">Maximum file size: 4 MB</p>
                 </div>
 
-                <UFormGroup class="mt-3" name="price">
+                <UFormGroup v-if="itemData.category !== 'Free'" class="mt-3" name="price">
                   <template #label>
                     <div class="flex items-center justify-start space-x-1">
                       <span>Price</span>

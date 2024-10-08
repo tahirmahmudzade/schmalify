@@ -9,13 +9,19 @@ const emit = defineEmits<{ (e: 'close', toLogin?: boolean): void }>()
 const toast = useToast()
 
 const schema = z.object({
-  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
+  email: z
+    .string()
+    .trim()
+    .email({ message: 'Invalid email' })
+    .max(40, { message: 'Email must be at most 40 characters long' }),
   password: z
     .string({ message: 'Invalid password' })
+    .trim()
     .min(8, { message: 'Password must be at least 8 characters long' })
     .max(15, { message: 'Password must be at most 15 characters long' }),
   username: z
     .string()
+    .trim()
     .min(3, { message: 'Username must be at least 3 characters long' })
     .max(20, { message: 'Username must be at most 20 characters long' }),
 })
@@ -23,6 +29,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const credentials = reactive<Schema>({ email: '', password: '', username: '' })
+const loading = ref(false)
 
 const isFormInvalid = computed(() => {
   const result = schema.safeParse(credentials)
@@ -30,11 +37,23 @@ const isFormInvalid = computed(() => {
 })
 
 async function onSubmit() {
+  loading.value = true
   try {
+    const body = { email: credentials.email, password: credentials.password, username: credentials.username }
+    console.log('sending body', body)
+
     if (user?.isGuest && user.id) {
-      await $fetch(`/api/users/${user.id}/upgrade`, { method: 'PATCH', body: credentials })
+      console.log('user is guest')
+
+      await $fetch<{ statusCode: number; message: string }>(`/api/users/${user.id}/upgrade`, {
+        method: 'PATCH',
+        body: { email: credentials.email, password: credentials.password, username: credentials.username },
+      })
     } else {
-      await $fetch<{ statusCode: number; message: string }>('/api/auth/register', { method: 'POST', body: credentials })
+      await $fetch<{ statusCode: number; message: string }>('/api/auth/register', {
+        method: 'POST',
+        body: { email: credentials.email, password: credentials.password, username: credentials.username },
+      })
     }
   } catch (err: any) {
     console.error(err)
@@ -99,6 +118,7 @@ function onLogin() {
                   rounded: 'rounded-lg',
                   color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
                 }"
+                :loading="loading"
                 :disabled="isFormInvalid"
                 @click="onSubmit"
               />

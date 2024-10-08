@@ -16,9 +16,10 @@ const imagePreview = ref<string | null>(null)
 const schema = z.object({
   title: z
     .string()
+    .trim()
     .min(1, { message: 'Title is required' })
     .max(20, { message: 'Title must be at most 20 characters long' }),
-  description: z.string().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
+  description: z.string().trim().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
   price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
   condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
   status: z.enum(['available', 'sold'], { message: 'Status is required' }),

@@ -13,12 +13,13 @@ const emailSchema = z.object({ email: z.string().email({ message: 'Invalid email
 
 const resetSchema = z
   .object({
-    token: z.string().nonempty({ message: 'Token is required' }),
+    token: z.string().trim(),
     password: z
       .string()
+      .trim()
       .min(8, { message: 'Password must be at least 8 characters long' })
       .max(15, { message: 'Password must be at most 15 characters long' }),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().trim(),
   })
   .refine(data => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

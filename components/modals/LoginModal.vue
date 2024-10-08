@@ -6,9 +6,14 @@ const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void; (e: 'forgot
 const toast = useToast()
 
 const schema = z.object({
-  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
+  email: z
+    .string()
+    .trim()
+    .email({ message: 'Invalid email' })
+    .max(40, { message: 'Email must be at most 40 characters long' }),
   password: z
     .string({ message: 'Invalid password' })
+    .trim()
     .min(8, { message: 'Password must be at least 8 characters long' })
     .max(15, { message: 'Password must be at most 15 characters long' }),
 })
@@ -16,6 +21,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const credentials = reactive<Schema>({ email: '', password: '' })
+const loading = ref(false)
 
 const isFormInvalid = computed(() => {
   const result = schema.safeParse(credentials)
@@ -27,6 +33,7 @@ function onClose() {
 }
 
 async function onSubmit() {
+  loading.value = true
   try {
     await $fetch<{ statusCode: number; message: string }>('/api/auth/login', { method: 'POST', body: credentials })
 
@@ -99,6 +106,7 @@ function onForgotPassword() {
                   rounded: 'rounded-lg',
                   color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
                 }"
+                :loading="loading"
                 :disabled="isFormInvalid"
                 @click="onSubmit"
               />
