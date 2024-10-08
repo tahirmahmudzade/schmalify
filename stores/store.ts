@@ -4,10 +4,5 @@ export const useStore = defineStore('store', () => {
   const refetchCategories = ref(false)
   const refetchLatestItems = ref(false)
 
-  return {
-    refetchItems,
-    refetchMyItems,
-    refetchCategories,
-    refetchLatestItems,
-  }
+  return { refetchItems, refetchMyItems, refetchCategories, refetchLatestItems }
 })
