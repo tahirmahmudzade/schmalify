@@ -17,51 +17,45 @@ import {
   TransitionRoot,
 } from '@headlessui/vue'
 
+const { data } = useFetch('/api/category')
+const itemStore = useItemStore()
+const { itemFilters } = storeToRefs(itemStore)
+const { setCategoryFilter, setConditionFilter } = itemStore
+
+const open = ref(false)
+
 const sortOptions = [
-  { name: 'Most Popular', href: '#' },
-  { name: 'Best Rating', href: '#' },
+  { name: 'Lowest Price', href: '#' },
+  { name: 'Highest Price', href: '#' },
   { name: 'Newest', href: '#' },
 ]
-const filters = [
+const filters = computed(() => [
   {
     id: 'category',
     name: 'Category',
-    options: [
-      { value: 'tees', label: 'Tees' },
-      { value: 'crewnecks', label: 'Crewnecks' },
-      { value: 'hats', label: 'Hats' },
-    ],
+    options: data.value?.categories.map(category => ({ value: category.id, label: category.name })) || [],
   },
   {
-    id: 'brand',
-    name: 'Brand',
+    id: 'condition',
+    name: 'Condition',
     options: [
-      { value: 'clothing-company', label: 'Clothing Company' },
-      { value: 'fashion-inc', label: 'Fashion Inc.' },
-      { value: 'shoes-n-more', label: "Shoes 'n More" },
+      { value: 'new', label: 'New' },
+      { value: 'like new', label: 'Like New' },
+      { value: 'very good', label: 'Very Good' },
+      { value: 'good', label: 'Good' },
+      { value: 'fair', label: 'Fair' },
+      { value: 'poor', label: 'Poor' },
     ],
   },
-  {
-    id: 'color',
-    name: 'Color',
-    options: [
-      { value: 'white', label: 'White' },
-      { value: 'black', label: 'Black' },
-      { value: 'grey', label: 'Grey' },
-    ],
-  },
-  {
-    id: 'sizes',
-    name: 'Sizes',
-    options: [
-      { value: 's', label: 'S' },
-      { value: 'm', label: 'M' },
-      { value: 'l', label: 'L' },
-    ],
-  },
-]
+])
 
-const open = ref(false)
+function handleCategoryChange(categoryId: string) {
+  setCategoryFilter(categoryId) // Update Pinia store for category filter
+}
+
+function handleConditionChange(condition: Condition) {
+  setConditionFilter(condition) // Update Pinia store for condition filter
+}
 </script>
 
 <template>
@@ -112,7 +106,6 @@ const open = ref(false)
                   v-for="section in filters"
                   :key="section.name"
                   class="border-t border-gray-200 px-4 py-6"
-                  v-slot="{ open }"
                 >
                   <h3 class="-mx-2 -my-3 flow-root">
                     <DisclosureButton class="flex w-full items-center justify-between px-2 py-3 text-sm">
@@ -126,8 +119,18 @@ const open = ref(false)
                           :id="`filter-mobile-${section.id}-${optionIdx}`"
                           :name="`${section.id}[]`"
                           :value="option.value"
+                          :checked="
+                            section.id === 'category'
+                              ? itemFilters.category.includes(option.value)
+                              : itemFilters.condition.includes(option.value as Condition)
+                          "
                           type="checkbox"
                           class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          @change="
+                            section.id === 'category'
+                              ? handleCategoryChange(option.value)
+                              : handleConditionChange(option.value as Condition)
+                          "
                         />
                         <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 text-sm text-gray-900">
                           {{ option.label }}
@@ -144,7 +147,7 @@ const open = ref(false)
     </TransitionRoot>
 
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:max-w-7xl lg:px-8">
-      <div class="py-20">
+      <div class="py-8">
         <h1 class="text-4xl font-bold tracking-tight text-white">All Products</h1>
         <p class="mx-auto mt-4 max-w-3xl text-base text-gray-300">Find unique second-hand items just for you</p>
       </div>
@@ -201,7 +204,7 @@ const open = ref(false)
             <Popover
               as="div"
               v-for="(section, sectionIdx) in filters"
-              :key="section.name"
+              :key="section.id"
               :id="`desktop-menu-${sectionIdx}`"
               class="relative inline-block text-left"
             >
@@ -210,12 +213,6 @@ const open = ref(false)
                   class="group inline-flex justify-center text-sm font-medium text-gray-200 hover:text-gray-300"
                 >
                   <span>{{ section.name }}</span>
-                  <span
-                    v-if="sectionIdx === 0"
-                    class="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-900"
-                  >
-                    1
-                  </span>
                   <Icon class="ml-1 h-5 w-5 flex-shrink-0" name="i-mdi-chevron-down" />
                 </PopoverButton>
               </div>
@@ -237,8 +234,18 @@ const open = ref(false)
                         :id="`filter-${section.id}-${optionIdx}`"
                         :name="`${section.id}[]`"
                         :value="option.value"
+                        :checked="
+                          section.id === 'category'
+                            ? itemFilters.category.includes(option.value)
+                            : itemFilters.condition.includes(option.value as Condition)
+                        "
                         type="checkbox"
                         class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        @change="
+                          section.id === 'category'
+                            ? handleCategoryChange(option.value)
+                            : handleConditionChange(option.value as Condition)
+                        "
                       />
                       <label
                         :for="`filter-${section.id}-${optionIdx}`"

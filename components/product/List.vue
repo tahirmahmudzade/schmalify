@@ -3,6 +3,10 @@ import type { Item } from '~/server/database/drizzle'
 
 const { limit = 20 } = defineProps<{ limit?: number }>()
 
+const itemStore = useItemStore()
+
+const { itemFilters } = storeToRefs(itemStore)
+
 const offset = ref(0)
 const items = ref<(Item & { seller: { avatar: string | null; location: string | null } | null })[]>([])
 const loadingMore = ref(false)
@@ -40,6 +44,22 @@ const loadItems = async () => {
 // Initial load
 await loadItems()
 
+const filteredItems = computed(() => {
+  let filtered = [...items.value]
+
+  // Apply category filter (if multiple categories are selected)
+  if (itemFilters.value.category.length) {
+    filtered = filtered.filter(item => itemFilters.value.category.includes(item.category_id!))
+  }
+
+  // Apply condition filter (if multiple conditions are selected)
+  if (itemFilters.value.condition.length) {
+    filtered = filtered.filter(item => itemFilters.value.condition.includes(item.condition!))
+  }
+
+  return filtered
+})
+
 // Infinite Scrolling using Scroll Event Listener
 const scrollContainer = ref(null)
 
@@ -74,15 +94,13 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
-    <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8" ref="scrollContainer">
-      <div class="md:flex md:items-center md:justify-between">
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900">All Products</h2>
-        <!-- Optionally, add a link or additional content here -->
-      </div>
-
+    <div class="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8" ref="scrollContainer">
       <!-- Products Grid -->
-      <div v-if="items && items.length" class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 lg:gap-x-8">
-        <div v-for="item in items" :key="item.id" class="group relative">
+      <div
+        v-if="filteredItems && filteredItems.length"
+        class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 lg:gap-x-8"
+      >
+        <div v-for="item in filteredItems" :key="item.id" class="group relative">
           <div class="h-56 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:h-72 xl:h-80">
             <img
               :src="`/api/blob/${item.id}/serveImg` || 'img/items/default-item.webp'"
@@ -96,8 +114,8 @@ onBeforeUnmount(() => {
               {{ item.title }}
             </NuxtLink>
           </h3>
-          <p class="mt-1 text-sm font-medium text-green-500">${{ item.price }}</p>
-          <p class="mt-1 text-sm text-orange-500">{{ formatDateToDDMMYYYY(item.createdAt!) || '' }}</p>
+          <p class="mt-1 text-sm font-medium text-gray-100">${{ item.price }}</p>
+          <p class="mt-1 text-sm text-gray-100">{{ formatDateToDDMMYYYY(item.createdAt!) || '' }}</p>
         </div>
       </div>
 
