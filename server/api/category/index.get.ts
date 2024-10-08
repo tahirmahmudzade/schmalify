@@ -11,12 +11,7 @@ export default defineCachedEventHandler(
       return 0
     })
 
-    return {
-      statusCode: 200,
-      categories: categories.map(c => ({ ...c, id: encodeId(c.id) })),
-    }
+    return { statusCode: 200, categories: categories.map(c => ({ ...c, id: encodeId(c.id) })) }
   },
-  {
-    maxAge: 60 * 60 * 24 * 7,
-  },
+  { maxAge: 60 * 60 * 24 * 7 },
 )

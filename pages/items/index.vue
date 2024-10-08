@@ -5,6 +5,6 @@
 <template>
   <div>
     <ProductFilter />
-    <ProductList />
+    <ProductList :limit="20" />
   </div>
 </template>
