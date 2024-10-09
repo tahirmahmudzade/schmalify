@@ -69,16 +69,12 @@ function handleImgChange(e: Event) {
   if (target.files && target.files[0]) {
     const file = target.files[0]
 
-    const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2)
-    console.log(`Original Image Size: ${originalSizeMB} MB`)
-
     // Check if file size exceeds 2 MB (This is for the original file, we will still try to compress it)
     if (file.size > 2 * 1024 * 1024) {
       // Compress the image before showing the preview and uploading
       compressImage(file, 0.7) // Compress the image at 70% quality
         .then(compressedBlob => {
           const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
-          console.log(`Compressed Image Size: ${compressedSizeMB} MB`)
 
           // Check if the compressed image size exceeds 4 MB
           if (parseFloat(compressedSizeMB) > 4) {

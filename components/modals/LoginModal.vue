@@ -39,6 +39,7 @@ async function onSubmit() {
 
     onClose()
   } catch (err: any) {
+    loading.value = false
     credentials.password = ''
     toast.add({ color: 'red', title: err.data.message || 'Invalid email or password' })
   }

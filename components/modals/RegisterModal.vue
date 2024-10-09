@@ -39,12 +39,7 @@ const isFormInvalid = computed(() => {
 async function onSubmit() {
   loading.value = true
   try {
-    const body = { email: credentials.email, password: credentials.password, username: credentials.username }
-    console.log('sending body', body)
-
     if (user?.isGuest && user.id) {
-      console.log('user is guest')
-
       await $fetch<{ statusCode: number; message: string }>(`/api/users/${user.id}/upgrade`, {
         method: 'PATCH',
         body: { email: credentials.email, password: credentials.password, username: credentials.username },
@@ -59,6 +54,7 @@ async function onSubmit() {
     console.error(err)
     toast.add({ color: 'red', title: err.data.message || 'Something went wrong, please try again later or contact support' })
   } finally {
+    loading.value = false
     onClose()
   }
 }

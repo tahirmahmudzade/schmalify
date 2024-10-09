@@ -2,15 +2,6 @@
 import type { DropdownItem } from '#ui/types'
 const { loggedIn, user } = useUserSession()
 
-const uiHeader = reactive({
-  wrapper: 'bg-background border-b border-gray-200 dark:border-gray-800 -mb-px sticky top-0 z-50',
-  container: 'flex items-center justify-between h-auto py-2', // Added vertical padding
-  left: 'flex-shrink-0 flex items-center gap-1.5',
-  center: 'flex-grow flex-shrink min-w-0 mx-2',
-  right: 'flex-shrink-0 flex items-center gap-1.5',
-  logo: 'flex-shrink-0 font-bold text-xl text-gray-900 dark:text-white flex items-end gap-1.5 w-32 sm:w-40',
-})
-
 const path = computed(() => useRoute().path)
 
 const items: DropdownItem[][] = [
@@ -78,7 +69,16 @@ function handleSellNowClick() {
 
 <template>
   <div>
-    <UHeader :ui="uiHeader">
+    <UHeader
+      :ui="{
+        wrapper: 'bg-background border-b border-gray-200 dark:border-gray-800 -mb-px sticky top-0 z-50',
+        container: 'flex items-center justify-between h-auto py-2', // Added vertical padding
+        left: 'flex-shrink-0 flex items-center gap-1.5',
+        center: 'flex-grow flex-shrink min-w-0 mx-2',
+        right: 'flex-shrink-0 flex items-center gap-1.5',
+        logo: 'flex-shrink-0 font-bold text-xl text-gray-900 dark:text-white flex items-end gap-1.5 w-32 sm:w-40',
+      }"
+    >
       <template #logo>
         <NuxtImg width="150" height="50" src="img/main-logo.png" />
       </template>
