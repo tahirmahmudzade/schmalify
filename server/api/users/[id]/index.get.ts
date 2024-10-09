@@ -3,6 +3,8 @@ import { getUserById } from '~/server/service/user'
 export default defineEventHandler(async event => {
   const paramId = getRouterParam(event, 'id')
 
+  await requireUserSession(event)
+
   if (!paramId) {
     throw createError({ statusCode: 400, message: 'Missing required id' })
   }

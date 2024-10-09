@@ -11,8 +11,6 @@ const querySchema = z.object({
 export default defineEventHandler(
   async (event): Promise<(Item & { seller: { avatar: string | null; location: string | null } | null })[]> => {
     try {
-      console.log(getQuery(event))
-
       const { searchQuery, limit, offset } = await getValidatedQuery(event, querySchema.parse)
 
       const items = await getAllItems(searchQuery, limit, offset)

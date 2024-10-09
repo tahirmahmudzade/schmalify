@@ -2,50 +2,29 @@ import { CreateUser, eq, tables, UpdateUser, useDrizzle } from '../database/driz
 import useNanoId from '../utils/nanoId'
 
 export const getUsers = async () => {
-  return useDrizzle().query.user.findMany({
-    with: {
-      items: true,
-    },
-  })
+  return useDrizzle().query.user.findMany({ with: { items: true } })
 }
 
 export const getUserById = async (userId: string) => {
   return useDrizzle().query.user.findFirst({
     where: eq(tables.user.id, userId),
-    with: {
-      items: {
-        with: {
-          category: {
-            columns: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
+    with: { items: { with: { category: { columns: { name: true } } } } },
   })
 }
 
 export const getUserByEmail = async (userEmail: string) => {
-  return useDrizzle().query.user.findFirst({
-    where: eq(tables.user.email, userEmail),
-  })
+  return useDrizzle().query.user.findFirst({ where: eq(tables.user.email, userEmail) })
+}
+
+export const getUserPhone = async (userId: string) => {
+  return useDrizzle().query.user.findFirst({ where: eq(tables.user.id, userId), columns: { phone: true } })
 }
 
 export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
   return useDrizzle()
     .insert(tables.user)
-    .values({
-      ...userData,
-      id: useNanoId(),
-      avatar: userData.avatar || 'default-user.webp',
-    })
-    .returning({
-      email: tables.user.email,
-      id: tables.user.id,
-      username: tables.user.username,
-      avatar: tables.user.avatar,
-    })
+    .values({ ...userData, id: useNanoId(), avatar: userData.avatar || 'default-user.webp' })
+    .returning({ email: tables.user.email, id: tables.user.id, username: tables.user.username, avatar: tables.user.avatar })
     .get()
 }
 
@@ -58,19 +37,9 @@ export const deleteUserById = async (userId: string) => {
 }
 
 export const updateProfilePicture = async (userId: string, fileName: string) => {
-  return useDrizzle()
-    .update(tables.user)
-    .set({
-      avatar: fileName,
-    })
-    .where(eq(tables.user.id, userId))
+  return useDrizzle().update(tables.user).set({ avatar: fileName }).where(eq(tables.user.id, userId))
 }
 
 export const updatePassword = async (userId: string, password: string) => {
-  return useDrizzle()
-    .update(tables.user)
-    .set({
-      password,
-    })
-    .where(eq(tables.user.id, userId))
+  return useDrizzle().update(tables.user).set({ password }).where(eq(tables.user.id, userId))
 }
