@@ -22,14 +22,32 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
       },
     })
   } else {
-    const data = await $fetch('/api/category')
+    const { phone } = await $fetch(`/api/users/${user.value?.id}/phone`)
 
-    modal.open(CreateLettingModal, {
-      categories: data.categories,
-      asGuest,
-      onClose: () => {
-        modal.close()
-      },
-    })
+    if (!phone) {
+      modal.open(AlertModal, {
+        title: 'Phone Number Required',
+        description: 'Please add a phone number to your account before creating a listing.',
+        confirmLabel: 'Add Phone Number',
+        confirmColor: 'green',
+        confirmAction() {
+          modal.close()
+          navigateTo('/profile')
+        },
+        onClose: () => {
+          modal.close()
+        },
+      })
+    } else {
+      const data = await $fetch('/api/category')
+
+      modal.open(CreateLettingModal, {
+        categories: data.categories,
+        asGuest,
+        onClose: () => {
+          modal.close()
+        },
+      })
+    }
   }
 }
