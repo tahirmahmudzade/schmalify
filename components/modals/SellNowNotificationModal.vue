@@ -16,7 +16,7 @@ function onContinueAsGuest() {
 
 <template>
   <UModal>
-    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }" class="modal-container">
       <template #header>
         <div class="flex items-center justify-start space-x-1">
           <Icon name="i-mdi-shopping-basket-plus-outline" style="color: turquoise" />
@@ -43,6 +43,7 @@ function onContinueAsGuest() {
         </ul>
         <p class="mt-2">You can log in anytime by clicking "Sign in as user" on the menu bar.</p>
       </div>
+
       <template #footer>
         <div class="flex items-center justify-between">
           <UButton
@@ -62,3 +63,22 @@ function onContinueAsGuest() {
     </UCard>
   </UModal>
 </template>
+
+<style scoped>
+/* Ensure modal is centered on small screens */
+@media (max-width: 640px) {
+  .modal-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%; /* Ensure the modal is responsive */
+    max-width: 400px; /* Set a maximum width */
+    pointer-events: none; /* Disable pointer events outside the modal content */
+  }
+
+  .modal-content {
+    pointer-events: auto; /* Re-enable pointer events inside the modal content */
+  }
+}
+</style>
