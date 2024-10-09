@@ -57,6 +57,21 @@ const filteredItems = computed(() => {
     filtered = filtered.filter(item => itemFilters.value.condition.includes(item.condition!))
   }
 
+  // Apply sorting based on the selected sort option
+  switch (itemFilters.value.selectedSort) {
+    case 'lowest-price':
+      filtered.sort((a, b) => a.price - b.price)
+      break
+    case 'highest-price':
+      filtered.sort((a, b) => b.price - a.price)
+      break
+    case 'newest':
+      filtered.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+      break
+    default:
+      break
+  }
+
   return filtered
 })
 

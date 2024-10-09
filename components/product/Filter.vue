@@ -20,15 +20,16 @@ import {
 const { data } = useFetch('/api/category')
 const itemStore = useItemStore()
 const { itemFilters } = storeToRefs(itemStore)
-const { setCategoryFilter, setConditionFilter } = itemStore
+const { setCategoryFilter, setConditionFilter, setSortOption } = itemStore
 
 const open = ref(false)
 
 const sortOptions = [
-  { name: 'Lowest Price', href: '#' },
-  { name: 'Highest Price', href: '#' },
-  { name: 'Newest', href: '#' },
+  { name: 'Lowest Price', value: 'lowest-price' },
+  { name: 'Highest Price', value: 'highest-price' },
+  { name: 'Newest', value: 'newest' },
 ]
+
 const filters = computed(() => [
   {
     id: 'category',
@@ -48,6 +49,10 @@ const filters = computed(() => [
     ],
   },
 ])
+
+function handleSortChange(option: string) {
+  setSortOption(option) // Update the sort option in the store
+}
 
 function handleCategoryChange(categoryId: string) {
   setCategoryFilter(categoryId) // Update Pinia store for category filter
@@ -177,13 +182,13 @@ function handleConditionChange(condition: Condition) {
                 class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
                 <div class="py-1">
-                  <MenuItem v-for="option in sortOptions" :key="option.name" v-slot="{ active }">
-                    <a
-                      :href="option.href"
+                  <MenuItem v-for="option in sortOptions" :key="option.value" v-slot="{ active }">
+                    <button
+                      @click="handleSortChange(option.value)"
                       :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm font-medium text-gray-900']"
                     >
                       {{ option.name }}
-                    </a>
+                    </button>
                   </MenuItem>
                 </div>
               </MenuItems>

@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
 
 export const useItemStore = defineStore('item-store', () => {
-  const itemFilters = reactive({
-    category: [] as string[], // Change to array of strings to handle multiple categories
-    condition: [] as Condition[], // Change to array of conditions
-  })
+  const itemFilters = reactive({ category: [] as string[], condition: [] as Condition[], selectedSort: 'newest' })
 
   function setCategoryFilter(categoryId: string) {
     // Toggle the category in the array (add/remove)
@@ -26,5 +23,9 @@ export const useItemStore = defineStore('item-store', () => {
     }
   }
 
-  return { itemFilters, setCategoryFilter, setConditionFilter }
+  function setSortOption(option: string) {
+    itemFilters.selectedSort = option // Set the selected sort option
+  }
+
+  return { itemFilters, setCategoryFilter, setConditionFilter, setSortOption }
 })
