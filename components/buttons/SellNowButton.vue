@@ -1,12 +1,17 @@
 <script setup lang="ts">
-defineProps<{ click: () => void }>()
+import type { ButtonSize } from '#ui/types'
+const { buttonSize = 'xs', isLabelHidden = true } = defineProps<{
+  buttonSize?: ButtonSize
+  isLabelHidden?: boolean
+  click: () => void
+}>()
 </script>
 
 <template>
   <UButton
     variant="solid"
     color="black"
-    size="xs"
+    :size="buttonSize"
     :ui="{
       color: {
         black: {
@@ -22,6 +27,6 @@ defineProps<{ click: () => void }>()
       <Icon name="i-mdi-shopping-basket-plus-outline" size="1.3em" />
     </template>
 
-    <span class="hidden md:inline">Sell Now</span>
+    <span :class="isLabelHidden ? 'hidden md:inline' : ''">Sell Now</span>
   </UButton>
 </template>
