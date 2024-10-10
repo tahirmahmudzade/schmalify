@@ -1,4 +1,4 @@
-export function getProfilePicUrl(avatar?: string | null, userId?: string | null) {
+export function getProfilePicUrl(avatar?: string | null, userId?: string | null): string {
   return avatar?.startsWith('https') ? avatar : `/api/users/${userId}/serveImg`
 }
 
