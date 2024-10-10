@@ -74,11 +74,6 @@ function onContinueAsGuest() {
     transform: translate(-50%, -50%);
     width: 90%; /* Ensure the modal is responsive */
     max-width: 400px; /* Set a maximum width */
-    pointer-events: none; /* Disable pointer events outside the modal content */
-  }
-
-  .modal-content {
-    pointer-events: auto; /* Re-enable pointer events inside the modal content */
   }
 }
 </style>
