@@ -16,8 +16,20 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
+import type { Category } from '~/server/database/drizzle'
 
-const { data } = useFetch('/api/category')
+const {
+  title = 'All Products',
+  description = 'Find unique second-hand items just for you',
+  hideCategory = false,
+  categories,
+} = defineProps<{
+  categories?: Category[]
+  title?: string
+  description?: string
+  hideCategory?: boolean
+}>()
+
 const itemStore = useItemStore()
 const { itemFilters } = storeToRefs(itemStore)
 const { setCategoryFilter, setConditionFilter, setSortOption } = itemStore
@@ -30,25 +42,32 @@ const sortOptions = [
   { name: 'Newest', value: 'newest' },
 ]
 
-const filters = computed(() => [
-  {
-    id: 'category',
-    name: 'Category',
-    options: data.value?.categories.map(category => ({ value: category.id, label: category.name })) || [],
-  },
-  {
-    id: 'condition',
-    name: 'Condition',
-    options: [
-      { value: 'new', label: 'New' },
-      { value: 'like new', label: 'Like New' },
-      { value: 'very good', label: 'Very Good' },
-      { value: 'good', label: 'Good' },
-      { value: 'fair', label: 'Fair' },
-      { value: 'poor', label: 'Poor' },
-    ],
-  },
-])
+const filters = computed(() => {
+  const baseFilters = [
+    {
+      id: 'condition',
+      name: 'Condition',
+      options: [
+        { value: 'new', label: 'New' },
+        { value: 'like new', label: 'Like New' },
+        { value: 'very good', label: 'Very Good' },
+        { value: 'good', label: 'Good' },
+        { value: 'fair', label: 'Fair' },
+        { value: 'poor', label: 'Poor' },
+      ],
+    },
+  ]
+
+  if (!hideCategory) {
+    baseFilters.unshift({
+      id: 'category',
+      name: 'Category',
+      options: categories?.map(category => ({ value: category.id, label: category.name })) || [],
+    })
+  }
+
+  return baseFilters
+})
 
 function handleSortChange(option: string) {
   setSortOption(option) // Update the sort option in the store
@@ -153,8 +172,8 @@ function handleConditionChange(condition: Condition) {
 
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:max-w-7xl lg:px-8">
       <div class="py-8">
-        <h1 class="text-4xl font-bold tracking-tight text-white">All Products</h1>
-        <p class="mx-auto mt-4 max-w-3xl text-base text-gray-300">Find unique second-hand items just for you</p>
+        <h1 class="text-4xl font-bold tracking-tight text-white">{{ title }}</h1>
+        <p class="mx-auto mt-4 max-w-3xl text-base text-gray-300">{{ description }}</p>
       </div>
 
       <section aria-labelledby="filter-heading" class="border-t border-gray-200 py-6">
