@@ -99,7 +99,7 @@ function handleDelete(itemId: string) {
           </div>
         </div>
       </div>
-      <NoItems v-else />
+      <NoItems :show-recommendations="true" v-else />
     </div>
   </div>
 </template>

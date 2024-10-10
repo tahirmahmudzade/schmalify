@@ -35,7 +35,7 @@ const showTooltip = ref(true)
 // Check if any required fields are missing or invalid
 const isFormInvalid = computed(() => {
   const validation = schema.safeParse(state)
-  return !validation.success || loading.value
+  return !validation.success || loading.value || state.phone === ''
 })
 
 // Check if the form data has changed
