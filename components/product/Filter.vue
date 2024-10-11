@@ -32,7 +32,7 @@ const {
 
 const itemStore = useItemStore()
 const { itemFilters } = storeToRefs(itemStore)
-const { setCategoryFilter, setConditionFilter, setSortOption } = itemStore
+const { setCategoryFilter, setConditionFilter, setSortOption, setPriceFilter } = itemStore
 
 const open = ref(false)
 
@@ -41,6 +41,16 @@ const sortOptions = [
   { name: 'Highest Price', value: 'highest-price' },
   { name: 'Newest', value: 'newest' },
 ]
+
+const minPrice = ref(MIN_ITEM_PRICE)
+const maxPrice = ref(MAX_ITEM_PRICE)
+
+// Watch for changes to price range and update the store
+watch([minPrice, maxPrice], () => {
+  console.log('Price range changed:', minPrice.value, maxPrice.value)
+
+  setPriceFilter({ min: minPrice.value, max: maxPrice.value })
+})
 
 const filters = computed(() => {
   const baseFilters = [
@@ -55,6 +65,11 @@ const filters = computed(() => {
         { value: 'fair', label: 'Fair' },
         { value: 'poor', label: 'Poor' },
       ],
+    },
+    {
+      id: 'price',
+      name: 'Price',
+      options: [], // Empty as we'll handle this with a range input
     },
   ]
 
@@ -159,6 +174,40 @@ function handleConditionChange(condition: Condition) {
                         <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 text-sm text-gray-900">
                           {{ option.label }}
                         </label>
+                      </div>
+                      <div v-if="section.id === 'price'">
+                        <h4 class="font-semibold text-gray-700">Price</h4>
+                        <div class="flex space-x-2 items-center mt-2">
+                          <input
+                            v-model="minPrice"
+                            @input="
+                              minPrice =
+                                ($event.target as HTMLInputElement).value === ''
+                                  ? MIN_ITEM_PRICE
+                                  : Number(($event.target as HTMLInputElement).value)
+                            "
+                            type="number"
+                            class="border border-gray-300 rounded w-20 p-1 text-sm"
+                            placeholder="Min"
+                          />
+                          <span class="text-gray-500">-</span>
+                          <input
+                            v-model="maxPrice"
+                            @input="
+                              maxPrice =
+                                ($event.target as HTMLInputElement).value === ''
+                                  ? MAX_ITEM_PRICE
+                                  : Number(($event.target as HTMLInputElement).value)
+                            "
+                            type="number"
+                            class="border border-gray-300 rounded w-20 p-1 text-sm"
+                            placeholder="Max"
+                          />
+                        </div>
+
+                        <!-- Range Slider -->
+                        <URange v-model="minPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-4" />
+                        <URange v-model="maxPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-2" />
                       </div>
                     </div>
                   </DisclosurePanel>
@@ -277,6 +326,41 @@ function handleConditionChange(condition: Condition) {
                       >
                         {{ option.label }}
                       </label>
+                    </div>
+                    <div v-if="section.id === 'price'">
+                      <h4 class="font-semibold text-gray-700">Price</h4>
+                      <div class="flex space-x-2 items-center mt-2">
+                        <input
+                          v-model="minPrice"
+                          @input="
+                            minPrice =
+                              ($event.target as HTMLInputElement).value === ''
+                                ? MIN_ITEM_PRICE
+                                : Number(($event.target as HTMLInputElement).value)
+                          "
+                          type="number"
+                          class="border border-gray-300 rounded w-20 p-1 text-sm"
+                          placeholder="Min"
+                        />
+
+                        <span class="text-gray-500">-</span>
+                        <input
+                          v-model="maxPrice"
+                          @input="
+                            maxPrice =
+                              ($event.target as HTMLInputElement).value === ''
+                                ? MAX_ITEM_PRICE
+                                : Number(($event.target as HTMLInputElement).value)
+                          "
+                          type="number"
+                          class="border border-gray-300 rounded w-20 p-1 text-sm"
+                          placeholder="Max"
+                        />
+                      </div>
+
+                      <!-- Range Sliders -->
+                      <URange v-model="minPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-4" />
+                      <URange v-model="maxPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-2" />
                     </div>
                   </form>
                 </PopoverPanel>

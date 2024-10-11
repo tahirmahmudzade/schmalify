@@ -2,7 +2,13 @@ import { defineStore } from 'pinia'
 import type { Item } from '~/server/database/drizzle'
 
 export const useItemStore = defineStore('item-store', () => {
-  const itemFilters = reactive({ category: [] as string[], condition: [] as Condition[], selectedSort: 'newest' })
+  const itemFilters = reactive({
+    category: [] as string[],
+    condition: [] as Condition[],
+    selectedSort: 'newest',
+    minPrice: MIN_ITEM_PRICE, // New: Minimum price filter
+    maxPrice: MAX_ITEM_PRICE,
+  })
 
   const filterItems = (items: Item[]) => {
     let filtered = [...items]
@@ -16,6 +22,8 @@ export const useItemStore = defineStore('item-store', () => {
     if (itemFilters.condition.length) {
       filtered = filtered.filter(item => itemFilters.condition.includes(item.condition!))
     }
+
+    filtered = filtered.filter(item => item.price >= itemFilters.minPrice && item.price <= itemFilters.maxPrice)
 
     // Apply sorting
     switch (itemFilters.selectedSort) {
@@ -59,11 +67,16 @@ export const useItemStore = defineStore('item-store', () => {
     itemFilters.selectedSort = option // Set the selected sort option
   }
 
+  function setPriceFilter({ min, max }: { min: number; max: number }) {
+    itemFilters.minPrice = min
+    itemFilters.maxPrice = max
+  }
+
   function resetFilters() {
     itemFilters.category = [] // Reset the category filter
     itemFilters.condition = [] // Reset the condition filter
     itemFilters.selectedSort = 'newest' // Reset the sort
   }
 
-  return { itemFilters, filterItems, setCategoryFilter, setConditionFilter, setSortOption, resetFilters }
+  return { itemFilters, filterItems, setCategoryFilter, setConditionFilter, setSortOption, resetFilters, setPriceFilter }
 })
