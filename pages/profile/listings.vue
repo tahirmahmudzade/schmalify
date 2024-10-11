@@ -3,10 +3,15 @@ import type { Item } from '~/server/database/drizzle'
 
 const toast = useToast()
 const { data: itemsData, error: getItemsError, refresh: refreshItems } = await useMyItems()
+const { filterItems } = useItemStore()
 
 if (!itemsData.value && getItemsError.value) {
   throw createError({ statusCode: 500, message: 'Something went wrong, please try again later.' })
 }
+
+const filteredItems = computed(() => {
+  return filterItems(itemsData.value)
+})
 
 function handleEdit(item: Item & { category: { name: string } | null }) {
   try {
@@ -28,9 +33,10 @@ function handleDelete(itemId: string) {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto">
+    <ProductFilter title="Your Listings" description="" />
     <!-- Items Section -->
-    <div class="items-section">
+    <div class="px-4 py-8">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Your Listings</h2>
       <div
         v-if="itemsData.length"
