@@ -1,6 +1,8 @@
 import { getUserById, updateProfilePicture } from '~/server/service/user'
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
+  await requireUserSession(event)
+
   const paramId = getRouterParam(event, 'id')
 
   if (!paramId) {

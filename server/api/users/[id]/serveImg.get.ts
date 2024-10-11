@@ -1,6 +1,8 @@
 import { getUserById } from '~/server/service/user'
 
 export default defineEventHandler(async event => {
+  await requireUserSession(event)
+
   const paramId = getRouterParam(event, 'id')
 
   if (!paramId) {

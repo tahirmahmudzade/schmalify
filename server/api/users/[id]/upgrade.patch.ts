@@ -14,6 +14,8 @@ const userSchema = z.object({
 })
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
+  await requireUserSession(event)
+
   const paramId = getRouterParam(event, 'id')
 
   if (!paramId) {

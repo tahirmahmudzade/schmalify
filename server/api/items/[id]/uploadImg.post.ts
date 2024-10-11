@@ -8,11 +8,7 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
   }
 
   try {
-    const { user } = await getUserSession(event)
-
-    if (!user) {
-      throw createError({ statusCode: 401, message: 'Unauthorized' })
-    }
+    const { user } = await requireUserSession(event)
 
     const decodedItemId = decodeId(paramId)
 

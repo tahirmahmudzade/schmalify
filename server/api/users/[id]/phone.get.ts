@@ -1,6 +1,8 @@
 import { getUserPhone } from '~/server/service/user'
 
 export default defineEventHandler(async (event): Promise<{ phone: string | null }> => {
+  await requireUserSession(event)
+
   const paramId = getRouterParam(event, 'id')
 
   if (!paramId) {
@@ -8,8 +10,6 @@ export default defineEventHandler(async (event): Promise<{ phone: string | null 
   }
 
   const decodedUserId = decodeId(paramId)
-
-  await requireUserSession(event)
 
   const user = await getUserPhone(decodedUserId)
 
