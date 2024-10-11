@@ -20,7 +20,6 @@ const schema = computed(() =>
       .min(1, { message: 'Title is required' })
       .max(20, { message: 'Title must be at most 20 characters long' }),
     description: z.string().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
-    // Conditionally validate the price field if the category is not "free"
     ...(itemData.category !== 'Free' && {
       price: z
         .number()

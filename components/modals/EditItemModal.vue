@@ -61,26 +61,22 @@ function handleImgChange(e: Event) {
 
   if (target.files && target.files[0]) {
     const file = target.files[0]
-    const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2)
 
-    // Check if file size exceeds 2 MB (This is for the original file, we will still try to compress it)
     if (file.size > 2 * 1024 * 1024) {
-      compressImage(file, 0.7) // Compress the image at 70% quality
+      compressImage(file, 0.7)
         .then(compressedBlob => {
           const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
 
           if (parseFloat(compressedSizeMB) > 4) {
             toast.add({ color: 'red', title: 'Compressed image size must be less than 4 MB' })
-            target.value = '' // Reset the file input and the preview
+            target.value = ''
             imageFile.value = null
             imagePreview.value = null
             return
           }
 
-          // Set compressed image file
           imageFile.value = new File([compressedBlob], file.name, { type: file.type })
 
-          // Show the image preview
           const reader = new FileReader()
           reader.onload = () => {
             imagePreview.value = reader.result as string

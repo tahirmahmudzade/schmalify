@@ -15,7 +15,6 @@
   >
     <template #leading>
       <Icon name="i-healthicons-ui-user-profile" size="1.3em" />
-      <!-- Solves cloud flare UButton icon issue -->
     </template>
   </UButton>
 </template>

@@ -14,10 +14,6 @@ export type User = typeof schema.user.$inferSelect
 export type CreateUser = typeof schema.user.$inferInsert
 export type UpdateUser = Partial<CreateUser>
 
-export type Guest = typeof schema.guest.$inferSelect
-export type CreateGuest = typeof schema.guest.$inferInsert
-export type UpdateGuest = Partial<CreateGuest>
-
 export type Item = typeof schema.item.$inferSelect
 export type CreateItem = typeof schema.item.$inferInsert
 export type UpdateItem = Partial<CreateItem>
