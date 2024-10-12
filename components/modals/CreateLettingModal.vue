@@ -293,10 +293,13 @@ async function onSubmit() {
   height: 100%;
   padding: 1rem;
   pointer-events: none;
+  overflow-y: auto; /* Allow scrolling when content is too large */
 }
 
 .modal-content {
   pointer-events: auto;
+  max-height: 90vh; /* Limit modal height to 90% of the viewport height */
+  overflow-y: auto; /* Enable scrolling inside the modal if content exceeds the height */
 }
 
 @media (max-height: 500px) {
