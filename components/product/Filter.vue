@@ -46,9 +46,22 @@ const minPrice = ref(MIN_ITEM_PRICE)
 const maxPrice = ref(MAX_ITEM_PRICE)
 
 // Watch for changes to price range and update the store
-watch([minPrice, maxPrice], () => {
-  console.log('Price range changed:', minPrice.value, maxPrice.value)
+watch([minPrice, maxPrice], ([newMin, newMax]) => {
+  // Ensure minPrice does not exceed maxPrice
+  if (newMin > newMax) {
+    minPrice.value = newMax // Sync minPrice to maxPrice if min exceeds max
+  } else if (newMin < MIN_ITEM_PRICE) {
+    minPrice.value = MIN_ITEM_PRICE // Ensure minPrice doesn't go below the minimum allowed value
+  }
 
+  // Ensure maxPrice does not fall below minPrice
+  if (newMax < newMin) {
+    maxPrice.value = newMin // Sync maxPrice to minPrice if max falls below min
+  } else if (newMax > MAX_ITEM_PRICE) {
+    maxPrice.value = MAX_ITEM_PRICE // Ensure maxPrice doesn't go above the maximum allowed value
+  }
+
+  // Update the price filter in the store
   setPriceFilter({ min: minPrice.value, max: maxPrice.value })
 })
 
@@ -83,6 +96,22 @@ const filters = computed(() => {
 
   return baseFilters
 })
+
+function validatePrice(inputValue: number, isMin: boolean) {
+  const value = Math.max(MIN_ITEM_PRICE, Math.min(MAX_ITEM_PRICE, inputValue)) // Ensure value is between 0 and 5000
+
+  if (isMin) {
+    if (value > maxPrice.value) {
+      maxPrice.value = value // Sync maxPrice if minPrice exceeds it
+    }
+    return value
+  } else {
+    if (value < minPrice.value) {
+      minPrice.value = value // Sync minPrice if maxPrice falls below it
+    }
+    return value
+  }
+}
 
 function handleSortChange(option: string) {
   setSortOption(option) // Update the sort option in the store
@@ -184,11 +213,13 @@ function handleConditionChange(condition: Condition) {
                               minPrice =
                                 ($event.target as HTMLInputElement).value === ''
                                   ? MIN_ITEM_PRICE
-                                  : Number(($event.target as HTMLInputElement).value)
+                                  : validatePrice(Number(($event.target as HTMLInputElement).value), true)
                             "
                             type="number"
-                            class="border border-gray-300 rounded w-20 p-1 text-sm"
+                            class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
                             placeholder="Min"
+                            :max="MAX_ITEM_PRICE"
+                            :min="MIN_ITEM_PRICE"
                           />
                           <span class="text-gray-500">-</span>
                           <input
@@ -197,17 +228,33 @@ function handleConditionChange(condition: Condition) {
                               maxPrice =
                                 ($event.target as HTMLInputElement).value === ''
                                   ? MAX_ITEM_PRICE
-                                  : Number(($event.target as HTMLInputElement).value)
+                                  : validatePrice(Number(($event.target as HTMLInputElement).value), false)
                             "
                             type="number"
-                            class="border border-gray-300 rounded w-20 p-1 text-sm"
+                            class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
                             placeholder="Max"
+                            :max="MAX_ITEM_PRICE"
+                            :min="MIN_ITEM_PRICE"
                           />
                         </div>
 
                         <!-- Range Slider -->
-                        <URange v-model="minPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-4" />
-                        <URange v-model="maxPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-2" />
+                        <URange
+                          v-model="minPrice"
+                          :max="MAX_ITEM_PRICE"
+                          :min="MIN_ITEM_PRICE"
+                          size="md"
+                          color="blue"
+                          class="mt-4"
+                        />
+                        <URange
+                          v-model="maxPrice"
+                          :max="MAX_ITEM_PRICE"
+                          :min="MIN_ITEM_PRICE"
+                          size="md"
+                          color="blue"
+                          class="mt-2"
+                        />
                       </div>
                     </div>
                   </DisclosurePanel>
@@ -336,11 +383,13 @@ function handleConditionChange(condition: Condition) {
                             minPrice =
                               ($event.target as HTMLInputElement).value === ''
                                 ? MIN_ITEM_PRICE
-                                : Number(($event.target as HTMLInputElement).value)
+                                : validatePrice(Number(($event.target as HTMLInputElement).value), true)
                           "
                           type="number"
-                          class="border border-gray-300 rounded w-20 p-1 text-sm"
+                          class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
                           placeholder="Min"
+                          :max="MAX_ITEM_PRICE"
+                          :min="MIN_ITEM_PRICE"
                         />
 
                         <span class="text-gray-500">-</span>
@@ -350,17 +399,33 @@ function handleConditionChange(condition: Condition) {
                             maxPrice =
                               ($event.target as HTMLInputElement).value === ''
                                 ? MAX_ITEM_PRICE
-                                : Number(($event.target as HTMLInputElement).value)
+                                : validatePrice(Number(($event.target as HTMLInputElement).value), false)
                           "
                           type="number"
-                          class="border border-gray-300 rounded w-20 p-1 text-sm"
+                          class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
                           placeholder="Max"
+                          :max="MAX_ITEM_PRICE"
+                          :min="MIN_ITEM_PRICE"
                         />
                       </div>
 
                       <!-- Range Sliders -->
-                      <URange v-model="minPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-4" />
-                      <URange v-model="maxPrice" :max="MAX_ITEM_PRICE" :min="MIN_ITEM_PRICE" class="mt-2" />
+                      <URange
+                        v-model="minPrice"
+                        :max="MAX_ITEM_PRICE"
+                        :min="MIN_ITEM_PRICE"
+                        size="md"
+                        color="blue"
+                        class="mt-4"
+                      />
+                      <URange
+                        v-model="maxPrice"
+                        :max="MAX_ITEM_PRICE"
+                        :min="MIN_ITEM_PRICE"
+                        size="md"
+                        color="blue"
+                        class="mt-2"
+                      />
                     </div>
                   </form>
                 </PopoverPanel>
@@ -372,3 +437,16 @@ function handleConditionChange(condition: Condition) {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Hide the spinner controls on number inputs */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Hide spinner for Firefox */
+}
+</style>
