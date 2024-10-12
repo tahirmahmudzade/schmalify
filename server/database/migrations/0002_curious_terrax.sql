@@ -1,1 +1,0 @@
-ALTER TABLE `item` ADD `pending` integer DEFAULT true;
