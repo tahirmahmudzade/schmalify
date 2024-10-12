@@ -2,7 +2,7 @@ import AlertModal from '~/components/modals/AlertModal.vue'
 import EditItemModal from '~/components/modals/EditItemModal.vue'
 import type { Item } from '~/server/database/drizzle'
 
-export function useEditItem(item: Item & { category: { name: string } | null }, refreshItems: () => Promise<void>) {
+export function useEditItem(item: Item & { category?: { name: string } | null }, refreshItems: () => Promise<void>) {
   const modal = useModal()
 
   const { user } = useUserSession()

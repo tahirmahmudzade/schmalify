@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Item } from '~/server/database/drizzle'
 
-const { data } = useFetch('/api/category')
+const { data: categoryData } = useFetch('/api/category')
 
 const limit = 16
 const offset = ref(0)
@@ -50,7 +50,7 @@ useInfiniteScroll(loadItems, loadingMore, hasMoreItems)
 
 <template>
   <div>
-    <ProductFilter :categories="data?.categories" />
+    <ProductFilter :categories="categoryData?.categories" />
     <ProductList :items="filteredItems" :limit="limit" />
   </div>
 </template>
