@@ -10,7 +10,7 @@ export const useItemStore = defineStore('item-store', () => {
     maxPrice: MAX_ITEM_PRICE,
   })
 
-  const filterItems = (items: Item[]) => {
+  const filterItems = (items: (Item & { category?: { name: string } | null })[]) => {
     let filtered = [...items]
 
     // Apply category filter

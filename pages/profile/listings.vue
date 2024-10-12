@@ -3,6 +3,7 @@ import type { Item } from '~/server/database/drizzle'
 
 const toast = useToast()
 const { data: itemsData, error: getItemsError, refresh: refreshItems } = await useMyItems()
+const { data: categoryData } = await useFetch(`/api/category/`)
 const { filterItems } = useItemStore()
 
 if (!itemsData.value && getItemsError.value) {
@@ -13,7 +14,7 @@ const filteredItems = computed(() => {
   return filterItems(itemsData.value)
 })
 
-function handleEdit(item: Item & { category: { name: string } | null }) {
+function handleEdit(item: Item & { category?: { name: string } | null }) {
   try {
     useEditItem(item, refreshItems)
   } catch (err: any) {
@@ -34,16 +35,15 @@ function handleDelete(itemId: string) {
 
 <template>
   <div class="container mx-auto">
-    <ProductFilter title="Your Listings" description="" />
+    <ProductFilter :categories="categoryData?.categories" title="Your Listings" description="" />
     <!-- Items Section -->
     <div class="px-4 py-8">
-      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-100 mb-4 text-center">Your Listings</h2>
       <div
         v-if="itemsData.length"
         class="grid gap-4 grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 lg:auto-rows-fr lg:overflow-x-auto lg:overflow-y-hidden"
       >
         <div
-          v-for="item in itemsData"
+          v-for="item in filteredItems"
           :key="item.id"
           class="relative rounded-lg overflow-hidden shadow-md bg-white/5 backdrop-blur-[10px] border border-white/10 transition-transform duration-200 ease-in-out flex flex-col hover:-translate-y-1 cursor-pointer"
           @click="navigateTo(`/items/${item.id}`)"

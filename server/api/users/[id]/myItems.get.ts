@@ -18,7 +18,7 @@ export default defineEventHandler(async (event): Promise<(Item & { category: { n
       throw createError({ statusCode: 404, message: 'User not found' })
     }
 
-    return user.items.map(item => ({ ...item, id: encodeId(item.id) }))
+    return user.items.map(item => ({ ...item, id: encodeId(item.id), category_id: encodeId(item.category_id!) }))
   } catch (err) {
     console.log('error getting user items', err)
     throw createError({ statusCode: 500, message: (err as string) || 'Error getting user items' })

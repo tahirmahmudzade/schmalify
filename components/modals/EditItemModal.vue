@@ -2,7 +2,7 @@
 import z from 'zod'
 import type { Item } from '~/server/database/drizzle'
 
-const { item } = defineProps<{ item: Item & { category: { name: string } | null }; refreshItems: () => Promise<void> }>()
+const { item } = defineProps<{ item: Item & { category?: { name: string } | null }; refreshItems: () => Promise<void> }>()
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
