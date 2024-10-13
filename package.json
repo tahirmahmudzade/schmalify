@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "schmalify",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,6 +20,7 @@
     "@nuxt/ui-pro": "^1.4.3",
     "@nuxthub/core": "npm:@nuxthub/core@nightly",
     "@pinia/nuxt": "^0.5.5",
+    "@vite-pwa/nuxt": "^0.10.5",
     "drizzle-orm": "^0.33.0",
     "form-data": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
