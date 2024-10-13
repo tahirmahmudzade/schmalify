@@ -8,10 +8,10 @@ export default defineCachedEventHandler(
     categories.sort((a, b) => {
       if (a.name === 'Free') return -1
       if (b.name === 'Free') return 1
-      return 0
+      return a.name.localeCompare(b.name) // Alphabetical sorting
     })
 
     return { statusCode: 200, categories: categories.map(c => ({ ...c, id: encodeId(c.id) })) }
   },
-  { maxAge: 60 * 60 * 24 * 7 },
+  { maxAge: 60 * 60 * 24 * 7, swr: true },
 )
