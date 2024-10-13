@@ -15,6 +15,11 @@ export default defineNuxtConfig({
   app: { pageTransition: { name: 'page', mode: 'out-in' }, layoutTransition: { name: 'layout', mode: 'out-in' } },
 
   css: ['~/assets/css/transitions.css'],
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+  },
+
   ui: { global: true },
   image: { dir: 'public' },
   icon: { clientBundle: { scan: true, sizeLimitKb: 256 } },
