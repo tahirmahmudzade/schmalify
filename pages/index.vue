@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
 
+const nuxtApp = useNuxtApp()
+
 const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: itemsError }] = await Promise.all([
   useFetch('/api/category'),
   useLatestItems(),
@@ -22,6 +24,18 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
     statusCode: 500,
     message: 'Something went wrong loading the page, please try again later or contact support.',
   })
+}
+
+const installPwa = () => {
+  const pwa = nuxtApp.$pwa
+  if (pwa?.showInstallPrompt) {
+    pwa.install()
+  } else {
+    throw createError({
+      statusCode: 400,
+      message: 'Something went wrong installing the application, please try again later or contact support.',
+    })
+  }
 }
 </script>
 
@@ -121,6 +135,16 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
         and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more
         efficient way for students to connect and exchange goods.
       </p>
+
+      <ClientOnly>
+        <UButton
+          v-if="$pwa?.showInstallPrompt && !$pwa?.offlineReady"
+          label="Install Application"
+          class="mt-4"
+          size="sm"
+          @click="installPwa"
+        />
+      </ClientOnly>
     </div>
   </div>
 </template>
