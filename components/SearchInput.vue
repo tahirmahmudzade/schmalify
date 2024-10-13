@@ -105,7 +105,7 @@ const onInput = () => {
         @click="selectItem(item)"
         class="p-2 cursor-pointer rounded-lg hover:bg-gray-300"
       >
-        <p :class="`text-${textSize} text-gray-900 font-medium`">{{ item.title }}</p>
+        <p :class="`text-${textSize} text-white dark:text-gray-900 font-medium`">{{ item.title }}</p>
       </li>
     </ul>
   </div>

@@ -5,9 +5,9 @@ defineProps<{ click: () => void }>()
 <template>
   <UButton
     color="white"
-    class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+    class="mt-5 py-2 justify-center bg-gray-800 dark:text-white hover:bg-gray-700 hover:text-white"
     label="Cancel"
-    :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } } }"
+    :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-600' } } }"
     @click="click"
   >
     <template #leading>

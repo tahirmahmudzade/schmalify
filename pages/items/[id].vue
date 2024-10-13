@@ -89,18 +89,18 @@ const whatsappLink = computed(() => {
           <div class="mt-4 space-y-2">
             <div class="flex items-center">
               <Icon name="mdi:hammer-wrench" class="text-blue-500 mr-2" />
-              <span class="font-semibold text-gray-700">Condition:</span>
-              <span class="ml-1 text-gray-600">{{ item.condition }}</span>
+              <span class="font-semibold text-gray-400 dark:text-gray-700">Condition:</span>
+              <span class="ml-1 text-gray-500 dark:text-gray-600">{{ item.condition }}</span>
             </div>
             <div class="flex items-center">
               <Icon name="mdi:map-marker" class="text-red-500 mr-2" />
-              <span class="font-semibold text-gray-700">Address:</span>
-              <span class="ml-1 text-gray-600">{{ item.seller?.location || 'Not specified' }}</span>
+              <span class="font-semibold text-gray-400 dark:text-gray-700">Address:</span>
+              <span class="ml-1 text-gray-500 dark:text-gray-600">{{ item.seller?.location || 'Not specified' }}</span>
             </div>
             <div class="flex items-center">
               <Icon name="i-entypo-price-tag" class="text-green-500 mr-2" />
-              <span class="font-semibold text-gray-700">Price:</span>
-              <span class="ml-1 text-gray-600">{{ item.price }} €</span>
+              <span class="font-semibold text-gray-400 dark:text-gray-700">Price:</span>
+              <span class="ml-1 text-gray-500 dark:text-gray-600">{{ item.price }} €</span>
             </div>
           </div>
 
@@ -108,14 +108,16 @@ const whatsappLink = computed(() => {
           <div class="mt-6 flex justify-end">
             <template v-if="item.status === 'sold'">
               <!-- Sold Button (disabled to indicate item is sold) -->
-              <button class="bg-red-500 cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg opacity-50">
+              <button
+                class="bg-red-500 cursor-not-allowed text-gray-900 dark:text-white font-medium py-2 px-4 rounded-lg opacity-50"
+              >
                 This item is sold
               </button>
             </template>
             <template v-else>
               <!-- Contact Seller Button -->
               <a :href="whatsappLink" target="_blank">
-                <button class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
+                <button class="bg-blue-500 hover:bg-blue-600 text-gray-900 dark:text-white font-medium py-2 px-4 rounded-lg">
                   Contact Seller
                 </button>
               </a>
@@ -138,7 +140,10 @@ const whatsappLink = computed(() => {
           class="w-auto h-auto max-w-[80vw] max-h-[80vh]"
         />
         <!-- Close Button -->
-        <button @click="closeModal" class="absolute top-2 right-2 text-white bg-black bg-opacity-50 rounded-full p-2">
+        <button
+          @click="closeModal"
+          class="absolute top-2 right-2 text-gray-900 dark:text-white bg-black bg-opacity-50 rounded-full p-2"
+        >
           <Icon name="mdi:close" class="w-6 h-6" />
         </button>
       </div>

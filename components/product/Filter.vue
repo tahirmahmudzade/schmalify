@@ -156,10 +156,10 @@ function handleConditionChange(condition: Condition) {
               class="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-6 shadow-xl mt-14"
             >
               <div class="flex items-center justify-between px-4">
-                <h2 class="text-lg font-medium text-gray-900">Filters</h2>
+                <h2 class="text-lg font-medium text-white dark:text-gray-900">Filters</h2>
                 <button
                   type="button"
-                  class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md p-2 text-gray-700 dark:text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   @click="open = false"
                 >
                   <span class="sr-only">Close menu</span>
@@ -177,7 +177,7 @@ function handleConditionChange(condition: Condition) {
                 >
                   <h3 class="-mx-2 -my-3 flow-root">
                     <DisclosureButton class="flex w-full items-center justify-between px-2 py-3 text-sm">
-                      <span class="font-medium text-gray-900">{{ section.name }}</span>
+                      <span class="font-medium text-white dark:text-gray-900">{{ section.name }}</span>
                     </DisclosureButton>
                   </h3>
                   <DisclosurePanel class="pt-6">
@@ -200,12 +200,15 @@ function handleConditionChange(condition: Condition) {
                               : handleConditionChange(option.value as Condition)
                           "
                         />
-                        <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 text-sm text-gray-900">
+                        <label
+                          :for="`filter-mobile-${section.id}-${optionIdx}`"
+                          class="ml-3 text-sm text-white dark:text-gray-900"
+                        >
                           {{ option.label }}
                         </label>
                       </div>
                       <div v-if="section.id === 'price'">
-                        <h4 class="font-semibold text-gray-700">Price</h4>
+                        <h4 class="font-semibold text-gray-400 dark:text-gray-700">Price</h4>
                         <div class="flex space-x-2 items-center mt-2">
                           <input
                             v-model="minPrice"
@@ -216,7 +219,7 @@ function handleConditionChange(condition: Condition) {
                                   : validatePrice(Number(($event.target as HTMLInputElement).value), true)
                             "
                             type="number"
-                            class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
+                            class="border border-gray-700 rounded w-20 p-1 text-sm text-white dark:text-gray-700"
                             placeholder="Min"
                             :max="MAX_ITEM_PRICE"
                             :min="MIN_ITEM_PRICE"
@@ -231,7 +234,7 @@ function handleConditionChange(condition: Condition) {
                                   : validatePrice(Number(($event.target as HTMLInputElement).value), false)
                             "
                             type="number"
-                            class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
+                            class="border border-gray-700 rounded w-20 p-1 text-sm dark:text-gray-400 text-gray-700"
                             placeholder="Max"
                             :max="MAX_ITEM_PRICE"
                             :min="MIN_ITEM_PRICE"
@@ -268,8 +271,8 @@ function handleConditionChange(condition: Condition) {
 
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:max-w-7xl lg:px-8">
       <div class="py-8">
-        <h1 class="text-4xl font-bold tracking-tight text-white">{{ title }}</h1>
-        <p class="mx-auto mt-4 max-w-3xl text-base text-gray-300">{{ description }}</p>
+        <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{{ title }}</h1>
+        <p class="mx-auto mt-4 max-w-3xl text-base text-gray-700 dark:text-gray-300">{{ description }}</p>
       </div>
 
       <section aria-labelledby="filter-heading" class="border-t border-gray-200 py-6">
@@ -279,7 +282,9 @@ function handleConditionChange(condition: Condition) {
           <!-- Sort Menu -->
           <Menu as="div" class="relative inline-block text-left">
             <div>
-              <MenuButton class="group inline-flex justify-center text-sm font-medium text-gray-200 hover:text-gray-300">
+              <MenuButton
+                class="group inline-flex justify-center text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-gray-300"
+              >
                 Sort
                 <Icon class="ml-1 h-5 w-5 flex-shrink-0" name="i-mdi-chevron-down" />
               </MenuButton>
@@ -300,7 +305,10 @@ function handleConditionChange(condition: Condition) {
                   <MenuItem v-for="option in sortOptions" :key="option.value" v-slot="{ active }">
                     <button
                       @click="handleSortChange(option.value)"
-                      :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm font-medium text-gray-900']"
+                      :class="[
+                        active ? 'bg-gray-100' : '',
+                        'block px-4 py-2 text-sm font-medium text-white dark:text-gray-900',
+                      ]"
                     >
                       {{ option.name }}
                     </button>
@@ -313,7 +321,7 @@ function handleConditionChange(condition: Condition) {
           <!-- Filters Button (Mobile) -->
           <button
             type="button"
-            class="inline-block text-sm font-medium text-gray-200 hover:text-gray-300 sm:hidden"
+            class="inline-block text-sm font-medium text-gray-900 dark:text-gray-200 hover:text-gray-300 sm:hidden"
             @click="open = true"
           >
             Filters
@@ -330,7 +338,7 @@ function handleConditionChange(condition: Condition) {
             >
               <div>
                 <PopoverButton
-                  class="group inline-flex justify-center text-sm font-medium text-gray-200 hover:text-gray-300"
+                  class="group inline-flex justify-center text-sm font-medium text-gray-900 dark:text-gray-200 hover:text-gray-300"
                 >
                   <span>{{ section.name }}</span>
                   <Icon class="ml-1 h-5 w-5 flex-shrink-0" name="i-mdi-chevron-down" />
@@ -369,13 +377,13 @@ function handleConditionChange(condition: Condition) {
                       />
                       <label
                         :for="`filter-${section.id}-${optionIdx}`"
-                        class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
+                        class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-white dark:text-gray-900"
                       >
                         {{ option.label }}
                       </label>
                     </div>
                     <div v-if="section.id === 'price'">
-                      <h4 class="font-semibold text-gray-700">Price</h4>
+                      <h4 class="font-semibold text-gray-400 dark:text-gray-700">Price</h4>
                       <div class="flex space-x-2 items-center mt-2">
                         <input
                           v-model="minPrice"
@@ -386,7 +394,7 @@ function handleConditionChange(condition: Condition) {
                                 : validatePrice(Number(($event.target as HTMLInputElement).value), true)
                           "
                           type="number"
-                          class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
+                          class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-400 dark:text-gray-700"
                           placeholder="Min"
                           :max="MAX_ITEM_PRICE"
                           :min="MIN_ITEM_PRICE"
@@ -402,7 +410,7 @@ function handleConditionChange(condition: Condition) {
                                 : validatePrice(Number(($event.target as HTMLInputElement).value), false)
                           "
                           type="number"
-                          class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-700"
+                          class="border border-gray-700 rounded w-20 p-1 text-sm text-gray-400 dark:text-gray-700"
                           placeholder="Max"
                           :max="MAX_ITEM_PRICE"
                           :min="MIN_ITEM_PRICE"

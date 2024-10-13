@@ -69,11 +69,11 @@ function handleDelete(itemId: string) {
           <div class="p-4 flex flex-col justify-between flex-grow">
             <!-- Title and Price -->
             <div>
-              <h3 class="text-gray-100 font-semibold text-sm mb-2 text-left break-words">
+              <h3 class="text-gray-800 dark:text-gray-100 font-semibold text-sm mb-2 text-left break-words">
                 {{ item.title }}
               </h3>
-              <p class="text-gray-300 text-xs mb-1 text-left break-words">Price: {{ item.price }}</p>
-              <p class="text-gray-400 text-xs text-left break-words">{{ item.description }}</p>
+              <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">Price: {{ item.price }}</p>
+              <p class="text-gray-700 dark:text-gray-300 text-xs text-left break-words">{{ item.description }}</p>
             </div>
 
             <!-- Edit and Delete Buttons at the Bottom -->

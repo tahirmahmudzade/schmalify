@@ -116,7 +116,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-gray-900 min-h-screen text-white p-4">
+  <div class="bg-white dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white p-4">
     <!-- Main Container for centering the whole profile section -->
     <div class="flex flex-col items-center justify-center">
       <!-- Container for the profile and account details -->
@@ -128,7 +128,7 @@ onMounted(() => {
             <!-- Tooltip -->
             <div
               v-if="showTooltip && !user?.isGuest"
-              class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs rounded px-2 py-1"
+              class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white text-xs rounded px-2 py-1"
               style="white-space: nowrap"
             >
               Click to change your profile picture.
@@ -161,22 +161,22 @@ onMounted(() => {
 
           <!-- Username and details, stacked on small screens -->
           <h2 class="mt-4 text-xl font-bold">{{ userData?.username }}</h2>
-          <p class="text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
-          <p class="text-gray-400">{{ state.email }}</p>
-          <p class="text-gray-400">{{ state.location }}</p>
-          <p class="text-gray-400">{{ state.phone || 'Phone number not provided' }}</p>
+          <p class="text-gray-700 dark:text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
+          <p class="text-gray-700 dark:text-gray-400">{{ state.email }}</p>
+          <p class="text-gray-700 dark:text-gray-400">{{ state.location }}</p>
+          <p class="text-gray-700 dark:text-gray-400">{{ state.phone || 'Phone number not provided' }}</p>
         </div>
 
         <!-- User Details -->
         <div class="w-full lg:w-3/4">
           <!-- User Info Cards -->
-          <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+          <div class="bg-gray-300 dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h3 class="text-lg font-semibold mb-4">Account Details</h3>
 
             <UForm :schema="schema" :state="state">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Email -->
-                <div v-if="!user?.isGuest" class="bg-gray-700 p-4 rounded-lg">
+                <div v-if="!user?.isGuest" class="bg-gray-400 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Email</h4>
                     <UInput v-model="state.email" type="email" id="email" />
@@ -184,7 +184,7 @@ onMounted(() => {
                 </div>
 
                 <!-- First Name -->
-                <div class="bg-gray-700 p-4 rounded-lg">
+                <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">First Name</h4>
                     <UInput v-model="state.firstName" :disabled="user?.isGuest" type="text" id="first-name" />
@@ -192,7 +192,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Last Name -->
-                <div class="bg-gray-700 p-4 rounded-lg">
+                <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup
                     ><h4 class="block mb-2">Last Name</h4>
                     <UInput v-model="state.lastName" :disabled="user?.isGuest" type="text" id="last-name" />
@@ -200,7 +200,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Location -->
-                <div v-if="!user?.isGuest" class="bg-gray-700 p-4 rounded-lg">
+                <div v-if="!user?.isGuest" class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Address</h4>
                     <UInput v-model="state.location" type="text" id="location" />
@@ -208,7 +208,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Phone -->
-                <div class="bg-gray-700 p-4 rounded-lg">
+                <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Phone</h4>
                     <UInput v-model="state.phone" :disabled="user?.isGuest" type="text" id="phone" class="w-full" />

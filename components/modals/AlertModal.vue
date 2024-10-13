@@ -31,7 +31,7 @@ function onClose() {
         <Icon name="i-material-symbols-warning-outline" size="4rem" />
       </div>
       <h3 class="text-xl font-semibold mb-2">{{ title }}</h3>
-      <p class="text-gray-400 mb-6">{{ description }}</p>
+      <p class="text-gray-700 dark:text-gray-400 mb-6">{{ description }}</p>
       <div class="flex justify-center space-x-4">
         <UButton label="Close" color="gray" class="px-4 py-2 rounded-md" @click="onClose" />
         <UButton :label="confirmLabel" :color="confirmColor" class="px-4 py-2 rounded-md" @click="confirmAction()" />

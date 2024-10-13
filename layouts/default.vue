@@ -71,7 +71,7 @@ function handleSellNowClick() {
   <div>
     <UHeader
       :ui="{
-        wrapper: 'bg-background border-b border-gray-200 dark:border-gray-800 -mb-px sticky top-0 z-50',
+        wrapper: 'bg-background border-b border-gray-800 -mb-px sticky top-0 z-50 bg-gray-900',
         container: 'flex items-center justify-between h-auto py-2', // Added vertical padding
         left: 'flex-shrink-0 flex items-center gap-1.5',
         center: 'flex-grow flex-shrink min-w-0 mx-2',
@@ -84,7 +84,7 @@ function handleSellNowClick() {
       </template>
 
       <template #center>
-        <SearchInput :class="path === '/' ? 'hidden' : ''" text-size="xs" icon-size="1.2rem" />
+        <SearchInput :class="path === '/' ? 'hidden' : ''" :is-on-header="true" text-size="xs" icon-size="1.2rem" />
       </template>
 
       <template #right>
