@@ -21,17 +21,24 @@ const searchQuery = ref('')
 const debouncedSearchQuery = refDebounced(searchQuery, 500) // Debouncing to avoid too many requests
 const items = ref<Item[]>([]) // Empty array to store the fetched items
 const dropdownVisible = ref(false)
+const loading = ref(false) // Loading state to track API calls
+const searchPerformed = ref(false) // State to track if a search has been performed
 
 // Fetch items based on search query
 const fetchItems = async () => {
   if (debouncedSearchQuery.value.trim() === '') {
     items.value = []
+    searchPerformed.value = false // No search was performed
     return
   }
+
+  loading.value = true // Start loading
+  searchPerformed.value = true // A search is in progress
 
   const data = await $fetch('/api/items', { query: { searchQuery: debouncedSearchQuery.value } })
 
   items.value = data || [] // Store the fetched items
+  loading.value = false // End loading
 }
 
 // Watch the debounced search query and fetch items when it changes
@@ -39,9 +46,11 @@ watch(debouncedSearchQuery, () => {
   fetchItems()
 })
 
+// Clear items if the search query is empty
 watch(searchQuery, val => {
   if (!val.trim()) {
     items.value = []
+    searchPerformed.value = false // Reset search performed status
   }
 })
 
@@ -60,12 +69,14 @@ const hideDropdown = () => {
     dropdownVisible.value = false
   }, 200) // slight delay to allow item click
 }
+
 // Handle item selection
 const selectItem = (item: Item) => {
-  searchQuery.value = item.title
-  hideDropdown()
-  navigateTo(`/items/${item.id}`)
+  searchQuery.value = '' // Clear the search input
+  hideDropdown() // Hide the dropdown
+  navigateTo(`/items/${item.id}`) // Navigate to the selected item's page
 }
+
 // Input handler
 const onInput = () => {
   if (searchQuery.value) {
@@ -98,15 +109,26 @@ const onInput = () => {
     </UInput>
 
     <!-- Dropdown suggestions -->
-    <ul v-if="searchQuery && filteredItems.length" class="absolute w-full bg-gray-200 border rounded-lg shadow-lg z-10 mt-1">
+    <ul
+      v-if="searchQuery && dropdownVisible && filteredItems.length"
+      class="absolute w-full bg-gray-200 border rounded-lg shadow-lg z-10 mt-1"
+    >
       <li
         v-for="(item, index) in filteredItems"
         :key="index"
         @click="selectItem(item)"
         class="p-2 cursor-pointer rounded-lg hover:bg-gray-300"
       >
-        <p :class="`text-${textSize} text-white dark:text-gray-900 font-medium`">{{ item.title }}</p>
+        <p :class="`text-${textSize} text-black font-medium`">{{ item.title }}</p>
       </li>
     </ul>
+
+    <!-- No items found message (only shows after search is performed and loading ends) -->
+    <p
+      v-else-if="!loading && searchPerformed && searchQuery && dropdownVisible && !filteredItems.length"
+      class="absolute w-full bg-gray-200 border rounded-lg shadow-lg z-10 mt-1 p-2 text-xs text-gray-500"
+    >
+      No items found
+    </p>
   </div>
 </template>
