@@ -69,9 +69,9 @@ function handleSellNowClick() {
 
 <template>
   <div>
-    <UHeader :ui="{ left: 'flex-shrink-0', right: 'flex-shrink-0', center: 'flex-1 min-w-0 mx-2' }">
+    <UHeader>
       <template #logo>
-        <span class="font-black text-white text-base md:text-2xl tracking-tighter leading-none italic">Schmalify</span>
+        <span class="font-black text-white text-base md:text-xl tracking-tighter leading-none">Schmalify</span>
       </template>
 
       <template #center>
