@@ -1,14 +1,14 @@
 import z from 'zod'
 import { createUser } from '~/server/service/user'
-import { phoneRegex } from '~/utils/const'
+import { MAX_PHONE_NUMBER_LENGTH, MIN_PHONE_NUMBER_LENGTH, phoneRegex } from '~/utils/const'
 
 const guestSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required' }),
   lastName: z.string().optional(),
   phone: z
     .string()
-    .min(10, { message: 'Phone number must be at least 10 digits' })
-    .max(15, { message: 'Phone number must be at most 15 digits' })
+    .min(MIN_PHONE_NUMBER_LENGTH, { message: 'Phone number must be at least 10 digits' })
+    .max(MAX_PHONE_NUMBER_LENGTH, { message: 'Phone number must be at most 15 digits' })
     .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
 })
 

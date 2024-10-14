@@ -1,3 +1,5 @@
+import parsePhoneNumberFromString from 'libphonenumber-js'
+
 export function getProfilePicUrl(avatar?: string | null, userId?: string | null): string {
   return avatar?.startsWith('https') ? avatar : `/api/users/${userId}/serveImg`
 }
@@ -41,4 +43,9 @@ export function compressImage(file: File, quality: number = 0.7): Promise<Blob> 
 
     img.onerror = error => reject(error)
   })
+}
+
+export function validatePhoneNumber(phone: string) {
+  const phoneNumber = parsePhoneNumberFromString(phone)
+  return phoneNumber ? phoneNumber.isValid() : false
 }

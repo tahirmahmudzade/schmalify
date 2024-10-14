@@ -1,12 +1,13 @@
 import z from 'zod'
 import { updateUserById } from '~/server/service/user'
+import { MAX_PHONE_NUMBER_LENGTH } from '~/utils/const'
 
 const userSchema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
   firstName: z.string().max(40).optional(),
   lastName: z.string().max(50).optional(),
   location: z.string().optional(),
-  phone: z.string().max(15, { message: 'Phone number must be at most 15 digits' }).optional(),
+  phone: z.string().max(MAX_PHONE_NUMBER_LENGTH, { message: 'Phone number must be at most 15 digits' }).optional(),
   avatar: z.string().optional(),
 })
 
