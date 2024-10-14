@@ -5,13 +5,20 @@ const toast = useToast()
 const { user } = useUserSession()
 const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
 
-// Define the validation schema using Zod
+function onPhoneInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  input.value = input.value.replace(/[^0-9+]/g, '') // Only allow + and numbers
+}
+
 const schema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
   firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
   lastName: z.string().max(50, { message: 'Last name must be at most 50 characters long' }).optional(),
   location: z.string().optional(),
-  phone: z.string().max(15, { message: 'Phone number must be at most 15 digits' }).optional(),
+  phone: z
+    .string()
+    .regex(phoneRegex, { message: 'Phone number must contain only numbers and a leading + symbol' })
+    .refine(value => validatePhoneNumber(value), { message: 'Invalid phone number' }),
   avatar: z.string().optional(),
 })
 
@@ -211,7 +218,14 @@ onMounted(() => {
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Phone</h4>
-                    <UInput v-model="state.phone" :disabled="user?.isGuest" type="text" id="phone" class="w-full" />
+                    <UInput
+                      v-model="state.phone"
+                      :disabled="user?.isGuest"
+                      type="text"
+                      id="phone"
+                      class="w-full"
+                      @input="onPhoneInput"
+                    />
                   </UFormGroup>
                 </div>
               </div>

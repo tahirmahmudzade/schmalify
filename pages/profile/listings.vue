@@ -73,7 +73,12 @@ function handleDelete(itemId: string) {
                 {{ item.title }}
               </h3>
               <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">Price: {{ item.price }}</p>
-              <p class="text-gray-700 dark:text-gray-300 text-xs text-left break-words">{{ item.description }}</p>
+              <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">
+                Condition: {{ item.condition }}
+              </p>
+              <p class="text-gray-700 dark:text-gray-300 text-xs text-left break-words">
+                Posted on: {{ formatDateToDDMMYYYY(item.createdAt!) }}
+              </p>
             </div>
 
             <!-- Edit and Delete Buttons at the Bottom -->

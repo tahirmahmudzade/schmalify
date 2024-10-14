@@ -12,6 +12,11 @@ const buttonLoading = ref(false)
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
 
+function onPhoneInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  input.value = input.value.replace(/[^0-9+]/g, '') // Only allow + and numbers
+}
+
 const schema = computed(() =>
   z.object({
     title: z
@@ -33,9 +38,10 @@ const schema = computed(() =>
       phone: z
         .string()
         .trim()
-        .min(10, { message: 'Phone number must be at least 10 digits' })
-        .max(15, { message: 'Phone number must be at most 15 digits' })
-        .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
+        .min(MIN_PHONE_NUMBER_LENGTH, { message: `Phone number must be at least ${MIN_PHONE_NUMBER_LENGTH} digits` })
+        .max(MAX_PHONE_NUMBER_LENGTH, { message: `Phone number must be at most ${MAX_PHONE_NUMBER_LENGTH} digits` })
+        .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' })
+        .refine(value => validatePhoneNumber(value), { message: 'Invalid phone number' }),
     }),
   }),
 )
@@ -208,6 +214,7 @@ async function onSubmit() {
                       v-model="itemData.phone"
                       type="tel"
                       placeholder="Number with country code (e.g. +495556667788)"
+                      @input="onPhoneInput"
                     />
                   </UFormGroup>
                 </div>
