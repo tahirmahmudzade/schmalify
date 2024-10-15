@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "41a71afc-5ef4-420a-874e-1855f6a7f6bc",
+  "id": "9c6cb967-fdea-402e-a674-545b20ae38e9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "category": {
@@ -87,7 +87,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'default-item.webp'"
+          "default": "(json_array())"
         },
         "price": {
           "name": "price",

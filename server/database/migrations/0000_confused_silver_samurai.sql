@@ -9,7 +9,7 @@ CREATE TABLE `item` (
 	`id` text PRIMARY KEY NOT NULL,
 	`title` text(35) NOT NULL,
 	`description` text(400),
-	`image` text DEFAULT 'default-item.webp',
+	`image` text DEFAULT (json_array()),
 	`price` integer NOT NULL,
 	`category_id` text,
 	`seller_id` text,
