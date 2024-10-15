@@ -17,10 +17,10 @@
     </div>
 
     <!-- Footer will stick to the bottom -->
-    <UFooter class="footer">
+    <!-- <UFooter class="footer">
       <template #left> Copyright © {{ new Date().getFullYear() }} </template>
       <template #right> <p class="text-md font-bold italic">Schmalify</p> </template>
-    </UFooter>
+    </UFooter> -->
   </div>
 
   <UModals />
