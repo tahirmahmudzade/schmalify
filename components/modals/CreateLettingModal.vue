@@ -9,8 +9,8 @@ const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 const toast = useToast()
 
 const buttonLoading = ref(false)
-const imageFile = ref<File | null>(null)
-const imagePreview = ref<string | null>(null)
+const imageFiles = ref<File[]>([]) // Store an array of images
+const imagePreviews = ref<string[]>([])
 
 function onPhoneInput(event: Event) {
   const input = event.target as HTMLInputElement
@@ -59,7 +59,7 @@ const itemData = reactive({
 
 const isFormInvalid = computed(() => {
   const result = schema.value.safeParse(itemData)
-  return !result.success || !imageFile.value
+  return !result.success || !imageFiles.value.length
 })
 
 const categoryNames = computed(() => categories.map(c => c.name))
@@ -71,49 +71,39 @@ function onClose() {
 function handleImgChange(e: Event) {
   const target = e.target as HTMLInputElement
 
-  if (target.files && target.files[0]) {
-    const file = target.files[0]
+  if (target.files) {
+    const selectedFiles = Array.from(target.files)
 
-    // Check if file size exceeds 2 MB (This is for the original file, we will still try to compress it)
-    if (file.size > 2 * 1024 * 1024) {
-      // Compress the image before showing the preview and uploading
-      compressImage(file, 0.7) // Compress the image at 70% quality
-        .then(compressedBlob => {
-          const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
-
-          // Check if the compressed image size exceeds 4 MB
-          if (parseFloat(compressedSizeMB) > 4) {
-            toast.add({ color: 'red', title: 'Compressed image size must be less than 4 MB' })
-            // Reset the file input and the preview
-            target.value = ''
-            imageFile.value = null
-            imagePreview.value = null
-            return
-          }
-
-          imageFile.value = new File([compressedBlob], file.name, { type: file.type })
-
-          const reader = new FileReader()
-          reader.onload = () => {
-            imagePreview.value = reader.result as string
-          }
-          reader.readAsDataURL(compressedBlob)
-        })
-        .catch(err => {
-          toast.add({ color: 'red', title: err.data.message || 'Failed to compress the image' })
-        })
-    } else {
-      // If file is within the size limit, just show the preview
-      imageFile.value = file
-      const reader = new FileReader()
-      reader.onload = () => {
-        imagePreview.value = reader.result as string
-      }
-      reader.readAsDataURL(file)
+    if (selectedFiles.length > 3) {
+      toast.add({ color: 'red', title: 'You can only upload up to 3 images', timeout: 2000 })
+      return
     }
+
+    imageFiles.value = []
+    imagePreviews.value = []
+
+    selectedFiles.forEach(file => {
+      if (file.size > 2 * 1024 * 1024) {
+        compressImage(file, 0.7)
+          .then(compressedBlob => {
+            const compressedFile = new File([compressedBlob], file.name, { type: file.type })
+            imageFiles.value.push(compressedFile)
+
+            imagePreviews.value.push(URL.createObjectURL(compressedFile))
+          })
+          .catch(err => {
+            console.log('Failed to compress image:', err)
+
+            toast.add({ color: 'red', title: 'Failed to compress the image', timeout: 3000 })
+          })
+      } else {
+        imageFiles.value.push(file)
+        imagePreviews.value.push(URL.createObjectURL(file))
+      }
+    })
   } else {
-    imagePreview.value = null
-    imageFile.value = null
+    imagePreviews.value = []
+    imageFiles.value = []
   }
 }
 
@@ -130,8 +120,10 @@ async function onSubmit() {
     }
 
     const formData = new FormData()
-    if (imageFile.value && imageFile.value.size) {
-      formData.append('image', imageFile.value!)
+    if (imageFiles.value.length) {
+      imageFiles.value.forEach((file, index) => {
+        formData.append(`image_${index}`, file)
+      })
       formData.append('title', itemData.title)
       formData.append('description', itemData.description)
       formData.append('price', itemData.price.toString())
@@ -238,15 +230,25 @@ async function onSubmit() {
 
                 <div class="mt-3">
                   <label for="imageInput" class="relative cursor-pointer">
-                    <div v-if="imagePreview">
-                      <img :src="imagePreview" alt="Item Image" class="w-full h-40 object-cover rounded-lg" />
-                    </div>
+                    <!-- Use UCarousel for image previews -->
+                    <UCarousel
+                      v-if="imagePreviews.length"
+                      :items="imagePreviews"
+                      arrows
+                      :ui="{ item: 'basis-full' }"
+                      class="rounded-lg overflow-hidden"
+                    >
+                      <template v-slot="{ item }">
+                        <img :src="item" alt="Item Image" class="w-full h-40 object-cover rounded-lg" draggable="true" />
+                      </template>
+                    </UCarousel>
+
                     <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                      <span class="text-gray-500">Click to upload image</span>
+                      <span class="text-gray-500">Click to upload images</span>
                     </div>
                   </label>
-                  <input id="imageInput" type="file" class="hidden" @change="handleImgChange" accept="image/*" />
-                  <p class="text-sm text-gray-500 mt-1">Maximum file size: 4 MB</p>
+                  <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
+                  <p class="text-sm text-gray-500 mt-1">Maximum of 3 images, size limit: 4 MB each</p>
                 </div>
 
                 <UFormGroup v-if="itemData.category !== 'Free'" class="mt-3" name="price">

@@ -2,15 +2,19 @@
 import z from 'zod'
 import type { Item } from '~/server/database/drizzle'
 
-const { item } = defineProps<{ item: Item & { category?: { name: string } | null }; refreshItems: () => Promise<void> }>()
+const { item: itemData } = defineProps<{
+  item: Item & { category?: { name: string } | null }
+  refreshItems: () => Promise<void>
+}>()
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const toast = useToast()
 
 const buttonLoading = ref(false)
-const imageFile = ref<File | null>(null)
-const imagePreview = ref<string | null>(null)
+
+const imageFiles = ref<File[]>([]) // New images selected by the user
+const imagePreviews = ref<string[]>([]) // Previews of new images
 
 // Zod schema for validation
 const schema = z.object({
@@ -18,39 +22,42 @@ const schema = z.object({
     .string()
     .trim()
     .min(1, { message: 'Title is required' })
-    .max(20, { message: 'Title must be at most 20 characters long' }),
-  description: z.string().trim().max(100, { message: 'Description must be at most 100 characters long' }).optional(),
+    .max(35, { message: 'Title must be at most 35 characters long' }),
+  description: z.string().trim().max(400, { message: 'Description must be at most 400 characters long' }).optional(),
   price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
   condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
   status: z.enum(['available', 'sold'], { message: 'Status is required' }),
 })
 
-const itemData = reactive({
-  title: item.title,
-  description: item.description || '',
-  price: item.price,
-  condition: item.condition || ('new' as Condition),
-  status: item.status || ('available' as Status),
-  category: item.category?.name,
+const itemSchemaData = reactive({
+  title: itemData.title,
+  description: itemData.description || '',
+  price: itemData.price,
+  condition: itemData.condition || ('new' as Condition),
+  status: itemData.status || ('available' as Status),
+  category: itemData.category?.name,
 })
 
-const initialData = reactive({ ...itemData })
+const initialData = reactive({ ...itemSchemaData })
 
 const isFormInvalid = computed(() => {
-  const result = schema.safeParse(itemData)
+  const result = schema.safeParse(itemSchemaData)
   return !result.success
 })
 
 const isFormUnchanged = computed(() => {
   return (
-    itemData.title === initialData.title &&
-    itemData.description === initialData.description &&
-    itemData.price === initialData.price &&
-    itemData.condition === initialData.condition &&
-    itemData.status === initialData.status &&
-    imageFile.value === null // Check if no new image has been uploaded
+    itemSchemaData.title === initialData.title &&
+    itemSchemaData.description === initialData.description &&
+    itemSchemaData.price === initialData.price &&
+    itemSchemaData.condition === initialData.condition &&
+    itemSchemaData.status === initialData.status &&
+    imageFiles.value.length === 0
   )
 })
+
+// Only display the carousel if there are new image previews
+const allImages = computed(() => imagePreviews.value)
 
 function onClose() {
   emit('close', false)
@@ -59,45 +66,54 @@ function onClose() {
 function handleImgChange(e: Event) {
   const target = e.target as HTMLInputElement
 
-  if (target.files && target.files[0]) {
-    const file = target.files[0]
+  if (target.files) {
+    const selectedFiles = Array.from(target.files)
 
-    if (file.size > 2 * 1024 * 1024) {
-      compressImage(file, 0.7)
-        .then(compressedBlob => {
-          const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
-
-          if (parseFloat(compressedSizeMB) > 4) {
-            toast.add({ color: 'red', title: 'Compressed image size must be less than 4 MB' })
-            target.value = ''
-            imageFile.value = null
-            imagePreview.value = null
-            return
-          }
-
-          imageFile.value = new File([compressedBlob], file.name, { type: file.type })
-
-          const reader = new FileReader()
-          reader.onload = () => {
-            imagePreview.value = reader.result as string
-          }
-          reader.readAsDataURL(compressedBlob)
-        })
-        .catch(() => {
-          toast.add({ color: 'red', title: 'Failed to compress the image' })
-        })
-    } else {
-      // If file is within the size limit, just show the preview
-      imageFile.value = file
-      const reader = new FileReader()
-      reader.onload = () => {
-        imagePreview.value = reader.result as string
-      }
-      reader.readAsDataURL(file)
+    if (selectedFiles.length > 3) {
+      toast.add({ color: 'red', title: 'You can only upload up to 3 images', timeout: 2000 })
+      return
     }
+
+    // Reset previous images
+    imageFiles.value = []
+    imagePreviews.value = []
+
+    selectedFiles.forEach(file => {
+      if (file.size > 2 * 1024 * 1024) {
+        compressImage(file, 0.7)
+          .then(compressedBlob => {
+            const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
+
+            if (parseFloat(compressedSizeMB) > 4) {
+              toast.add({ color: 'red', title: 'Compressed image size must be less than 4 MB' })
+              target.value = ''
+              return
+            }
+
+            const compressedFile = new File([compressedBlob], file.name, { type: file.type })
+            imageFiles.value.push(compressedFile)
+            imagePreviews.value.push(URL.createObjectURL(compressedFile))
+          })
+          .catch(() => {
+            toast.add({ color: 'red', title: 'Failed to compress the image' })
+          })
+      } else {
+        // If file is within the size limit, just show the preview
+        imageFiles.value.push(file)
+        imagePreviews.value.push(URL.createObjectURL(file))
+      }
+    })
   } else {
-    imagePreview.value = null
-    imageFile.value = null
+    imagePreviews.value = []
+    imageFiles.value = []
+  }
+}
+
+function removeImage(index: number) {
+  // Remove images from new image previews
+  if (imagePreviews.value.length > 0) {
+    imageFiles.value.splice(index, 1)
+    imagePreviews.value.splice(index, 1)
   }
 }
 
@@ -106,16 +122,20 @@ async function onSubmit() {
 
   try {
     const formData = new FormData()
-    if (imageFile.value) {
-      formData.append('image', imageFile.value)
+    // Append new images
+    if (imageFiles.value.length) {
+      imageFiles.value.forEach((file, index) => {
+        formData.append(`image_${index}`, file)
+      })
     }
-    formData.append('title', itemData.title)
-    formData.append('description', itemData.description)
-    formData.append('price', itemData.price.toString())
-    formData.append('condition', itemData.condition)
-    formData.append('status', itemData.status)
 
-    const { message } = await $fetch<{ statusCode: number; message: string }>(`/api/items/${item.id}`, {
+    formData.append('title', itemSchemaData.title)
+    formData.append('description', itemSchemaData.description)
+    formData.append('price', itemSchemaData.price.toString())
+    formData.append('condition', itemSchemaData.condition)
+    formData.append('status', itemSchemaData.status)
+
+    const { message } = await $fetch<{ statusCode: number; message: string }>(`/api/items/${itemData.id}`, {
       method: 'PATCH',
       body: formData,
     })
@@ -150,7 +170,7 @@ async function onSubmit() {
             <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Edit Item</h3>
             <p class="mb-4 text-gray-700 dark:text-gray-300">Update the details of your item</p>
 
-            <UForm :schema="schema" :state="itemData">
+            <UForm :schema="schema" :state="itemSchemaData">
               <UFormGroup class="mt-3" name="title">
                 <template #label>
                   <div class="flex items-center justify-start space-x-1">
@@ -158,36 +178,49 @@ async function onSubmit() {
                     <span class="text-red-500">*</span>
                   </div>
                 </template>
-                <UInput v-model="itemData.title" placeholder="Edit title (max 20 characters)" />
+                <UInput v-model="itemSchemaData.title" placeholder="Edit title (max 35 characters)" />
               </UFormGroup>
 
               <UFormGroup class="mt-3" label="Description" name="description">
-                <UInput v-model="itemData.description" placeholder="Edit description (max length: 100 characters)" />
+                <UInput v-model="itemSchemaData.description" placeholder="Edit description (max length: 100 characters)" />
               </UFormGroup>
 
               <UFormGroup class="mt-3" label="Status" name="status">
-                <USelect v-model="itemData.status" :options="['available', 'sold']" />
+                <USelect v-model="itemSchemaData.status" :options="['available', 'sold']" />
               </UFormGroup>
 
               <div class="mt-3">
                 <label for="imageInput" class="relative cursor-pointer">
-                  <div v-if="imagePreview">
-                    <img :src="imagePreview" alt="Item Image" class="w-full h-40 object-cover rounded-lg" />
-                  </div>
+                  <!-- Use UCarousel for image previews -->
+                  <UCarousel
+                    v-if="imagePreviews.length"
+                    :items="imagePreviews"
+                    arrows
+                    :ui="{ item: 'basis-full' }"
+                    class="rounded-lg overflow-hidden"
+                  >
+                    <template v-slot="{ item }">
+                      <img :src="item" alt="Item Image" class="w-full h-40 object-cover rounded-lg" draggable="true" />
+                    </template>
+                  </UCarousel>
+
                   <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                    <span class="text-gray-500">Click to upload new image</span>
+                    <span class="text-gray-500">Click to upload images</span>
                   </div>
                 </label>
-                <input id="imageInput" type="file" class="hidden" @change="handleImgChange" accept="image/*" />
-                <p class="text-sm text-gray-500 mt-1">Maximum file size: 4 MB</p>
+                <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
+                <p class="text-sm text-gray-500 mt-1">Maximum of 3 images, size limit: 4 MB each</p>
               </div>
 
               <UFormGroup class="mt-3" label="Price" name="price">
-                <UInput v-model.number="itemData.price" type="number" placeholder="Edit price in euros" />
+                <UInput v-model.number="itemSchemaData.price" type="number" placeholder="Edit price in euros" />
               </UFormGroup>
 
               <UFormGroup class="mt-3" label="Condition" name="condition">
-                <USelect v-model="itemData.condition" :options="['new', 'like new', 'very good', 'good', 'fair', 'poor']" />
+                <USelect
+                  v-model="itemSchemaData.condition"
+                  :options="['new', 'like new', 'very good', 'good', 'fair', 'poor']"
+                />
               </UFormGroup>
             </UForm>
 
