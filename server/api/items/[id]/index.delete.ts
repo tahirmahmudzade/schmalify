@@ -23,7 +23,9 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       throw createError({ statusCode: 403, message: 'Forbidden access' })
     }
 
-    await Promise.all([deleteItemById(decodedItemId), hubBlob().delete(`${user.id}/items/${item.image}`)])
+    const deletePaths = item.images!.map(image => `${user.id}/items/${image}`)
+
+    await Promise.all([deleteItemById(decodedItemId), hubBlob().delete(deletePaths)])
 
     return { statusCode: 204, message: 'Item deleted successfully' }
   } catch (err) {
