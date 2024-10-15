@@ -59,11 +59,15 @@ function handleDelete(itemId: string) {
 
           <!-- Item Image -->
           <img
-            :src="`/api/items/${item.id}/serveImg`"
+            v-if="item.images && item.images.length"
+            :src="`/api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             loading="lazy"
             :alt="item.title"
             class="w-full h-[180px] object-cover"
           />
+
+          <!-- Default Image if no images -->
+          <img v-else src="/img/items/default-item.webp" alt="Default Image" class="w-full h-[180px] object-cover" />
 
           <!-- Item Details -->
           <div class="p-4 flex flex-col justify-between flex-grow">

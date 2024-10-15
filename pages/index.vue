@@ -11,11 +11,6 @@ const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: item
 const categories = ref<Category[]>([])
 const items = ref<(Item & { seller: { location: string | null } | null })[]>([])
 
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.src = '/img/items/default-item.webp' // Fallback image path
-}
-
 if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.value) {
   categories.value = categoryRes.value.categories
   items.value = itemRes.value
@@ -66,12 +61,13 @@ const installPwa = () => {
           :key="category.name"
           class="bg-gray-200 dark:bg-gray-800 flex-none w-36 flex flex-col items-center p-4 rounded-lg shadow-md"
         >
-          <NuxtImg
+          <img
             :src="`/img/categories/${category.img!}`"
             :alt="category.name"
             loading="lazy"
             class="w-full h-36 object-cover rounded-lg"
             format="webp"
+            @error="event => handleImageError(event, true)"
           />
           <p class="text-gray-900 dark:text-gray-100 font-semibold text-center mt-4">
             {{ category.name }}
@@ -105,11 +101,11 @@ const installPwa = () => {
 
           <!-- Item Image -->
           <img
-            :src="`api/blob/${item.id}/serveImg` || '/img/items/default-item.webp'"
+            :src="`api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             loading="lazy"
             :alt="item.title"
             class="w-full h-36 object-cover rounded-t-lg"
-            @error="handleImageError"
+            @error="event => handleImageError(event, false)"
           />
           <div class="p-4 flex flex-col flex-grow">
             <h3 class="text-gray-900 dark:text-gray-100 mb-1 text-sm font-semibold line-clamp-2">{{ item.title }}</h3>
