@@ -17,9 +17,10 @@ onBeforeUnmount(() => {
       <div v-for="item in items" :key="item.id" class="group relative">
         <div class="h-56 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:h-72 xl:h-80">
           <img
-            :src="`/api/blob/${item.id}/serveImg` || 'img/items/default-item.webp'"
+            :src="`/api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             :alt="item.title"
             class="h-full w-full object-cover object-center"
+            @error="event => handleImageError(event, false)"
           />
         </div>
         <h3 class="mt-4 text-sm text-gray-900 dark:text-gray-100">
