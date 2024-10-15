@@ -20,7 +20,9 @@ export const item = sqliteTable('item', {
   id: text('id').primaryKey().unique(),
   title: text('title', { length: 35 }).notNull(),
   description: text('description', { length: 400 }),
-  image: text('image').default('default-item.webp'), // optional image for item
+  images: text('image', { mode: 'json' })
+    .$type<string[]>()
+    .default(sql`(json_array())`), // optional image for item
   price: integer('price').notNull(), // store price as integer for cents (e.g., 1000 = €10.00)
   category_id: text('category_id').references(() => category.id, { onDelete: 'set null', onUpdate: 'cascade' }), // link to category table
   seller_id: text('seller_id').references(() => user.id, { onDelete: 'cascade', onUpdate: 'cascade' }), // user selling the item

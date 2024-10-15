@@ -27,10 +27,7 @@ export function getLatestItems() {
 }
 
 export function getItemById(itemId: string) {
-  return useDrizzle().query.item.findFirst({
-    where: eq(tables.item.id, itemId),
-    with: { category: true, seller: true },
-  })
+  return useDrizzle().query.item.findFirst({ where: eq(tables.item.id, itemId), with: { category: true, seller: true } })
 }
 
 export function getItemsByCategory(categoryId: string) {
@@ -45,6 +42,10 @@ export function getItemsBySeller(sellerId: string) {
     where: eq(tables.item.seller_id, sellerId),
     with: { category: true, seller: true },
   })
+}
+
+export function getItemImages(itemId: string) {
+  return useDrizzle().query.item.findFirst({ where: eq(tables.item.id, itemId), columns: { images: true } })
 }
 
 export function createItem(itemData: Omit<CreateItem, 'id'>) {
@@ -63,6 +64,6 @@ export function deleteItemById(itemId: string) {
   return useDrizzle().delete(tables.item).where(eq(tables.item.id, itemId))
 }
 
-export function updateItemPicture(itemId: string, fileName: string) {
-  return useDrizzle().update(tables.item).set({ image: fileName }).where(eq(tables.item.id, itemId))
+export function updateItemPicture(itemId: string, imageNames: string[]) {
+  return useDrizzle().update(tables.item).set({ images: imageNames }).where(eq(tables.item.id, itemId))
 }
