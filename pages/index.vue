@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
 
-const nuxtApp = useNuxtApp()
+// const nuxtApp = useNuxtApp()
 
 const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: itemsError }] = await Promise.all([
   useFetch('/api/category'),
@@ -21,17 +21,17 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
   })
 }
 
-const installPwa = () => {
-  const pwa = nuxtApp.$pwa
-  if (pwa?.showInstallPrompt) {
-    pwa.install()
-  } else {
-    throw createError({
-      statusCode: 400,
-      message: 'Something went wrong installing the application, please try again later or contact support.',
-    })
-  }
-}
+// const installPwa = () => {
+//   const pwa = nuxtApp.$pwa
+//   if (pwa?.showInstallPrompt) {
+//     pwa.install()
+//   } else {
+//     throw createError({
+//       statusCode: 400,
+//       message: 'Something went wrong installing the application, please try again later or contact support.',
+//     })
+//   }
+// }
 </script>
 
 <template>
@@ -67,7 +67,7 @@ const installPwa = () => {
             loading="lazy"
             class="w-full h-36 object-cover rounded-lg"
             format="webp"
-            @error="event => handleImageError(event, true)"
+            @error="event => handleImageError(event, 'category')"
           />
           <p class="text-gray-900 dark:text-gray-100 font-semibold text-center mt-4">
             {{ category.name }}
@@ -105,7 +105,7 @@ const installPwa = () => {
             loading="lazy"
             :alt="item.title"
             class="w-full h-36 object-cover rounded-t-lg"
-            @error="event => handleImageError(event, false)"
+            @error="event => handleImageError(event, 'item')"
           />
           <div class="p-4 flex flex-col flex-grow">
             <h3 class="text-gray-900 dark:text-gray-100 mb-1 text-sm font-semibold line-clamp-2">{{ item.title }}</h3>
@@ -132,7 +132,7 @@ const installPwa = () => {
         efficient way for students to connect and exchange goods.
       </p>
 
-      <ClientOnly>
+      <!-- <ClientOnly>
         <UButton
           v-if="$pwa?.showInstallPrompt && !$pwa?.offlineReady"
           label="Install Application"
@@ -140,7 +140,7 @@ const installPwa = () => {
           size="sm"
           @click="installPwa"
         />
-      </ClientOnly>
+      </ClientOnly> -->
     </div>
   </div>
 </template>
