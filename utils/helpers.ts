@@ -49,3 +49,12 @@ export function validatePhoneNumber(phone: string) {
   const phoneNumber = parsePhoneNumberFromString(phone)
   return phoneNumber ? phoneNumber.isValid() : false
 }
+
+export const handleImageError = (event: Event, isCategory: boolean) => {
+  const target = event.target as HTMLImageElement
+  if (isCategory) {
+    target.src = '/img/categories/default-category.webp' // Fallback image path for categories
+  } else {
+    target.src = '/img/items/default-item.webp' // Fallback image path for items
+  }
+}
