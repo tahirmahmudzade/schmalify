@@ -26,7 +26,8 @@ export default defineEventHandler(async event => {
   try {
     return await hubBlob().serve(event, `${encodeId(item.seller_id!)}/items/${processedImageName}`)
   } catch (err) {
-    console.log('error updating profile picture', err)
-    throw createError({ statusCode: 500, message: (err as string) || 'Error updating profile picture' })
+    console.log('error serving profile picture', err)
+
+    throw createError({ statusCode: 500, message: (err as string) || 'Error serving profile picture' })
   }
 })

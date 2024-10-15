@@ -20,6 +20,10 @@ export const getUserPhone = async (userId: string) => {
   return useDrizzle().query.user.findFirst({ where: eq(tables.user.id, userId), columns: { phone: true } })
 }
 
+export const getUserImage = async (userId: string) => {
+  return useDrizzle().query.user.findFirst({ where: eq(tables.user.id, userId), columns: { avatar: true } })
+}
+
 export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
   return useDrizzle()
     .insert(tables.user)

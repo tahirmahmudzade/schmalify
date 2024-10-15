@@ -52,18 +52,21 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       newImages.push(processedImageName) // Add the image name to the array
     }
 
-    // 11. Update the item
+    // 11. If no new images are uploaded, keep the existing ones
+    const finalImages = newImages.length > 0 ? newImages : isItem.images
+
+    // 12. Update the item
     const itemData: UpdateItem = {
       price,
       title,
       description,
       condition,
       status,
-      images: newImages, // Replace images array with new images
+      images: finalImages, // Use final images array
     }
     await updateItemById(decodedItemId, itemData)
 
-    // 12. Return a 204 status code and a success message
+    // 13. Return a 204 status code and a success message
     return { statusCode: 204, message: 'Item updated successfully' }
   } catch (err) {
     console.log('Error: ', err)
