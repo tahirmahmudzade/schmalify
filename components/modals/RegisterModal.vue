@@ -87,6 +87,7 @@ function onLogin() {
                 class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
                 label="Sign Up With Google"
                 :ui="{ base: 'max-w-lg', rounded: 'rounded-lg' }"
+                @click="reloadNuxtApp({ path: '/api/auth/google' })"
               />
               <div class="flex items-center my-3">
                 <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
