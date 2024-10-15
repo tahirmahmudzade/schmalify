@@ -50,12 +50,14 @@ async function onSubmit() {
         body: { email: credentials.email, password: credentials.password, username: credentials.username },
       })
     }
-  } catch (err: any) {
-    console.error(err)
-    toast.add({ color: 'red', title: err.data.message || 'Something went wrong, please try again later or contact support' })
-  } finally {
-    loading.value = false
     onClose()
+  } catch (err: any) {
+    loading.value = false
+    console.error(err)
+    toast.add({
+      color: 'red',
+      title: err.data.message || 'Something went wrong, please try again later or contact support',
+    })
   }
 }
 

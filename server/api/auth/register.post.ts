@@ -1,8 +1,6 @@
 import z from 'zod'
-
 import { createUser, getUserByEmail } from '~/server/service/user'
 import { CreateUser } from '~/server/database/drizzle'
-import { encodeId } from '~/server/utils/encrypt'
 
 const userSchema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
