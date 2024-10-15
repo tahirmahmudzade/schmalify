@@ -6,17 +6,11 @@ export function getAllCategories(): Promise<Category[]> {
 }
 
 export function getCategoryById(categoryId: string) {
-  return useDrizzle().query.category.findFirst({
-    where: eq(tables.category.id, categoryId),
-    with: { items: true },
-  })
+  return useDrizzle().query.category.findFirst({ where: eq(tables.category.id, categoryId), with: { items: true } })
 }
 
 export function getCategoryByName(categoryName: string) {
-  return useDrizzle().query.category.findFirst({
-    where: eq(tables.category.name, categoryName),
-    with: { items: true },
-  })
+  return useDrizzle().query.category.findFirst({ where: eq(tables.category.name, categoryName), with: { items: true } })
 }
 
 export function createCategory(categoryData: Omit<CreateCategory, 'id'>) {

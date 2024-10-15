@@ -99,13 +99,13 @@ const whatsappLink = computed(() => {
             </h1>
 
             <!-- Category Link -->
-            <a
-              :href="`/category/${item.category.name}`"
-              class="text-blue-600 hover:underline text-sm font-medium"
+            <NuxtLink
               v-if="item.category"
+              :to="`/categories/${item.category.name.toLowerCase().trim()}`"
+              class="text-blue-600 hover:underline text-sm font-medium"
             >
               {{ item.category.name }}
-            </a>
+            </NuxtLink>
           </div>
 
           <div class="mt-3 flex items-center">
