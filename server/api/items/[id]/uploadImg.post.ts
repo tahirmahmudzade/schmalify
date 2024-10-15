@@ -16,10 +16,10 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
 
     const file = form.get('image') as File
 
-    processImage(file)
+    const processedName = processImage(file)
 
     await Promise.all([
-      updateItemPicture(decodedItemId, file.name),
+      updateItemPicture(decodedItemId, [processedName]),
       hubBlob().put(file.name, file, { prefix: `${user.id}/items` }),
     ])
     return { statusCode: 200, message: 'Profile picture updated' }
