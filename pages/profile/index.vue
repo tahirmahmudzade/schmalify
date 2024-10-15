@@ -76,11 +76,6 @@ async function handleLogout() {
   }
 }
 
-function onImageError(event: Event) {
-  const img = event.target as HTMLImageElement
-  img.src = 'img/users/default-user.webp' // Path to the default image
-}
-
 async function uploadImage(e: Event) {
   const input = e.target as HTMLInputElement
   const formData = new FormData()
@@ -151,7 +146,7 @@ onMounted(() => {
                 :src="getProfilePicUrl(userData?.avatar, user?.id)"
                 alt="User Avatar"
                 class="w-full h-full object-cover rounded-full"
-                @error="onImageError"
+                @error="event => handleImageError(event, 'user')"
               />
             </label>
 

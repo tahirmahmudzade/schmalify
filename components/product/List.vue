@@ -20,7 +20,7 @@ onBeforeUnmount(() => {
             :src="`/api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             :alt="item.title"
             class="h-full w-full object-cover object-center"
-            @error="event => handleImageError(event, false)"
+            @error="event => handleImageError(event, 'item')"
           />
         </div>
         <h3 class="mt-4 text-sm text-gray-900 dark:text-gray-100">

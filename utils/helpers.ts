@@ -1,7 +1,7 @@
 import parsePhoneNumberFromString from 'libphonenumber-js'
 
 export function getProfilePicUrl(avatar?: string | null, userId?: string | null): string {
-  return avatar?.startsWith('https') ? avatar : `/api/users/${userId}/serveImg`
+  return avatar?.startsWith('https') ? avatar : `/api/blob/${userId}/serveProfile`
 }
 
 export function compressImage(file: File, quality: number = 0.7): Promise<Blob> {
@@ -50,11 +50,20 @@ export function validatePhoneNumber(phone: string) {
   return phoneNumber ? phoneNumber.isValid() : false
 }
 
-export const handleImageError = (event: Event, isCategory: boolean) => {
+export const handleImageError = (event: Event, entityType: 'item' | 'user' | 'category') => {
   const target = event.target as HTMLImageElement
-  if (isCategory) {
-    target.src = '/img/categories/default-category.webp' // Fallback image path for categories
-  } else {
-    target.src = '/img/items/default-item.webp' // Fallback image path for items
+
+  switch (entityType) {
+    case 'item':
+      target.src = '/img/items/default-item.webp'
+      break
+    case 'user':
+      target.src = '/img/users/default-user.webp'
+      break
+    case 'category':
+      target.src = '/img/categories/default-category.webp'
+      break
+    default:
+      target.src = '/img/default-image.webp'
   }
 }
