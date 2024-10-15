@@ -5,8 +5,6 @@ import type { Category, Item, User } from '~/server/database/drizzle'
 
 const route = useRoute('items-id')
 
-const isModalOpen = ref(false)
-
 const { data: itemData, error } = await useFetch<{
   statusCode: number
   item: Item & { category: Category | null; seller: User | null }
@@ -47,6 +45,12 @@ const whatsappLink = computed(() => {
 
   return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`
 })
+
+const selectedImage = ref<string | null>()
+
+const openModal = (imageUrl: string) => {
+  selectedImage.value = imageUrl
+}
 </script>
 
 <template>
@@ -84,7 +88,12 @@ const whatsappLink = computed(() => {
           <TabPanels>
             <TabPanel v-for="image in product.images" :key="image.id" class="w-full">
               <div class="relative h-96 w-full overflow-hidden rounded-lg">
-                <img :src="image.src" :alt="image.alt" class="h-full w-full object-cover object-center" />
+                <img
+                  :src="image.src"
+                  :alt="image.alt"
+                  class="h-full w-full object-cover object-center"
+                  @click="openModal(image.src)"
+                />
               </div>
             </TabPanel>
           </TabPanels>
@@ -92,11 +101,21 @@ const whatsappLink = computed(() => {
 
         <!-- Product info -->
         <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0 lg:pl-8">
-          <div class="flex justify-between items-center">
+          <div class="items-center">
             <!-- Product Title -->
             <h1 class="text-3xl font-bold tracking-tight text-gray-900">
               {{ product.name }}
             </h1>
+          </div>
+
+          <div class="mt-3 flex items-center justify-between">
+            <!-- Price -->
+            <div class="flex items-center">
+              <Icon name="i-entypo-price-tag" class="text-green-500 mr-1" size="1.5rem" />
+              <p class="text-xl tracking-tight text-green-500 font-semibold">
+                {{ product.price }}
+              </p>
+            </div>
 
             <!-- Category Link -->
             <NuxtLink
@@ -106,13 +125,6 @@ const whatsappLink = computed(() => {
             >
               {{ item.category.name }}
             </NuxtLink>
-          </div>
-
-          <div class="mt-3 flex items-center">
-            <Icon name="i-entypo-price-tag" class="text-green-500 mr-2" size="1.5rem" />
-            <p class="text-3xl tracking-tight text-gray-900">
-              {{ product.price }}
-            </p>
           </div>
 
           <!-- Description -->
@@ -176,5 +188,6 @@ const whatsappLink = computed(() => {
         </div>
       </div>
     </div>
+    <ModalsImagePreviewModal v-if="selectedImage" :imageUrl="selectedImage" @close="selectedImage = null" />
   </div>
 </template>
