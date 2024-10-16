@@ -7,23 +7,27 @@ const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
 
 function onPhoneInput(event: Event) {
   const input = event.target as HTMLInputElement
-  input.value = input.value.replace(/[^0-9+]/g, '') // Only allow + and numbers
+  input.value = input.value.replace(/[^0-9+]/g, '')
 }
 
 const schema = z.object({
   email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
   firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
   lastName: z.string().max(50, { message: 'Last name must be at most 50 characters long' }).optional(),
-  location: z.string().optional(),
+  location: z.string().max(50, { message: 'Location must be at most 50 characters long' }).optional(),
   phone: z
     .string()
-    .regex(phoneRegex, { message: 'Phone number must contain only numbers and a leading + symbol' })
-    .refine(value => validatePhoneNumber(value), { message: 'Invalid phone number' }),
+    .optional()
+    .refine(
+      (value: string | undefined): boolean => {
+        return initialData.phone ? validatePhoneNumber(value!) && value !== '' : !value || validatePhoneNumber(value)
+      },
+      { message: 'Invalid phone number or cannot be empty' },
+    ),
   avatar: z.string().optional(),
 })
 
 type Schema = z.infer<typeof schema>
-// Initialize the state with user data
 const state = reactive<Schema>({
   email: userData.value?.email || '',
   firstName: userData.value?.firstName || '',
@@ -33,19 +37,16 @@ const state = reactive<Schema>({
   avatar: userData.value?.avatar || '',
 })
 
-// Store initial data for comparison
 const initialData = reactive<Schema>({ ...state })
 
 const loading = ref(false)
 const showTooltip = ref(true)
 
-// Check if any required fields are missing or invalid
 const isFormInvalid = computed(() => {
   const validation = schema.safeParse(state)
-  return !validation.success || loading.value || state.phone === ''
+  return !validation.success || loading.value
 })
 
-// Check if the form data has changed
 const isFormUnchanged = computed(() => {
   return (
     state.email === initialData.email &&
@@ -63,7 +64,7 @@ async function handleLogout() {
     const confirmDescription = `You are logging out as a guest, you won't be able to log back in. Are you sure you want to continue?`
     const confirmed = await useConfirmModal(confirmTitle, confirmDescription)
     if (!confirmed) {
-      return // If the user cancels, stop the logout process
+      return
     }
   }
   try {
@@ -101,46 +102,39 @@ async function onSubmit() {
   try {
     await $fetch(`/api/users/${user.value?.id}`, { method: 'PATCH', body: state })
     toast.add({ title: 'Profile updated successfully' })
-    // Update initial data to match the new state
+
     Object.assign(initialData, state)
   } catch (error: any) {
     toast.add({ title: error.data.message || 'Error updating profile' })
   } finally {
-    loading.value = false // Re-enable the button after submission
+    loading.value = false
   }
 }
 
 onMounted(() => {
   setTimeout(() => {
     showTooltip.value = false
-  }, 2000) // Tooltip disappears after 2 seconds
+  }, 2000)
 })
 </script>
 
 <template>
   <div class="bg-white dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white p-4">
-    <!-- Main Container for centering the whole profile section -->
     <div class="flex flex-col items-center justify-center">
-      <!-- Container for the profile and account details -->
       <div class="mt-8 flex flex-col lg:flex-row items-start lg:space-x-8 w-full max-w-6xl space-y-8 lg:space-y-0">
-        <!-- Avatar and User Info -->
         <div class="w-full lg:w-1/4 text-center lg:text-left flex flex-col items-center lg:items-start">
-          <!-- Avatar Image Container with Tooltip -->
           <div class="w-32 h-32 relative">
-            <!-- Tooltip -->
             <div
               v-if="showTooltip && !user?.isGuest"
               class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white text-xs rounded px-2 py-1"
               style="white-space: nowrap"
             >
               Click to change your profile picture.
-              <!-- Tooltip Arrow -->
               <div
                 class="absolute left-1/2 transform -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-700"
               ></div>
             </div>
 
-            <!-- Avatar Image as Button -->
             <label for="avatarInput" :class="user?.isGuest ? '' : 'cursor-pointer'">
               <img
                 :src="getProfilePicUrl(userData?.avatar, user?.id)"
@@ -150,7 +144,6 @@ onMounted(() => {
               />
             </label>
 
-            <!-- Hidden File Input -->
             <input
               v-if="!user?.isGuest"
               id="avatarInput"
@@ -161,7 +154,6 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Username and details, stacked on small screens -->
           <h2 class="mt-4 text-xl font-bold">{{ userData?.username }}</h2>
           <p class="text-gray-700 dark:text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
           <p class="text-gray-700 dark:text-gray-400">{{ state.email }}</p>
@@ -169,47 +161,52 @@ onMounted(() => {
           <p class="text-gray-700 dark:text-gray-400">{{ state.phone || 'Phone number not provided' }}</p>
         </div>
 
-        <!-- User Details -->
         <div class="w-full lg:w-3/4">
-          <!-- User Info Cards -->
           <div class="bg-gray-300 dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h3 class="text-lg font-semibold mb-4">Account Details</h3>
 
             <UForm :schema="schema" :state="state">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Email -->
                 <div v-if="!user?.isGuest" class="bg-gray-400 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Email</h4>
-                    <UInput v-model="state.email" type="email" id="email" />
+                    <UInput v-model="state.email" placeholder="johncena@gmail.com" type="email" id="email" />
                   </UFormGroup>
                 </div>
 
-                <!-- First Name -->
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">First Name</h4>
-                    <UInput v-model="state.firstName" :disabled="user?.isGuest" type="text" id="first-name" />
+                    <UInput
+                      v-model="state.firstName"
+                      placeholder="John"
+                      :disabled="user?.isGuest"
+                      type="text"
+                      id="first-name"
+                    />
                   </UFormGroup>
                 </div>
 
-                <!-- Last Name -->
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup
                     ><h4 class="block mb-2">Last Name</h4>
-                    <UInput v-model="state.lastName" :disabled="user?.isGuest" type="text" id="last-name" />
+                    <UInput
+                      v-model="state.lastName"
+                      placeholder="Cena"
+                      :disabled="user?.isGuest"
+                      type="text"
+                      id="last-name"
+                    />
                   </UFormGroup>
                 </div>
 
-                <!-- Location -->
                 <div v-if="!user?.isGuest" class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Address</h4>
-                    <UInput v-model="state.location" type="text" id="location" />
+                    <UInput v-model="state.location" placeholder="Blechammer 9B Haus 2, 999" type="text" id="location" />
                   </UFormGroup>
                 </div>
 
-                <!-- Phone -->
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">Phone</h4>
@@ -217,6 +214,7 @@ onMounted(() => {
                       v-model="state.phone"
                       :disabled="user?.isGuest"
                       type="text"
+                      placeholder="Number with country code (e.g. +495556667788)"
                       id="phone"
                       class="w-full"
                       @input="onPhoneInput"
@@ -225,7 +223,6 @@ onMounted(() => {
                 </div>
               </div>
 
-              <!-- Save Button -->
               <div class="mt-6 text-right">
                 <UButton @click="onSubmit" :disabled="isFormInvalid || isFormUnchanged" label="Save" />
               </div>
