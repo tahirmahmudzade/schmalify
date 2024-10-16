@@ -24,7 +24,7 @@ const imagesUrl = item.images?.map(image => `/api/blob/${item.id}/serveImg?fileN
 const product = reactive({
   name: item.title,
   price: item.price + ' €',
-  rating: 0, // Assuming no rating available
+  rating: 0,
   images: imagesUrl.map((url, index) => ({
     id: index,
     name: `Image ${index + 1}`,
@@ -156,18 +156,18 @@ const openModal = (imageUrl: string) => {
             <ul class="mt-2 text-base text-gray-700 space-y-1">
               <li class="flex items-center">
                 <Icon name="mdi:hammer-wrench" class="text-blue-500 mr-2" />
-                <strong>Condition:</strong>
-                <span class="ml-2">{{ product.condition }}</span>
+                <strong class="text-[15px]">Condition:</strong>
+                <span class="ml-2 text-[15px]">{{ product.condition }}</span>
               </li>
               <li class="flex items-center">
                 <Icon name="mdi:map-marker" class="text-red-500 mr-2" />
-                <strong>Location:</strong>
-                <span class="ml-2">{{ product.location }}</span>
+                <strong class="text-[15px]">Location:</strong>
+                <span class="ml-2 text-[15px]">{{ product.location }}</span>
               </li>
               <li class="flex items-center">
                 <Icon name="mdi:calendar" class="text-yellow-500 mr-2" />
-                <strong>Posted on:</strong>
-                <span class="ml-2">{{ product.postedOn }}</span>
+                <strong class="text-[15px]">Posted on:</strong>
+                <span class="ml-2 text-[15px]">{{ product.postedOn }}</span>
               </li>
             </ul>
           </div>
