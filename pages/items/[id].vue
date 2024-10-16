@@ -131,7 +131,12 @@ const openModal = (imageUrl: string) => {
           <div class="mt-6">
             <h3 class="sr-only">Description</h3>
 
-            <div class="space-y-6 text-base text-gray-700" v-html="product.description" />
+            <!-- Adding word-break and overflow protection -->
+            <div
+              class="space-y-6 text-base text-gray-700 break-words overflow-hidden"
+              style="word-wrap: break-word; max-height: 200px; overflow-y: auto"
+              v-html="product.description"
+            />
           </div>
 
           <div class="mt-6 flex items-center">
@@ -141,7 +146,9 @@ const openModal = (imageUrl: string) => {
               size="md"
               class="w-10 h-10 rounded-full"
             />
-            <p class="ml-2 text-md text-gray-500 italic">{{ item.seller?.username }}</p>
+            <p class="ml-2 text-md text-gray-500 italic">
+              {{ item.seller?.username || `${item.seller?.firstName} ${item.seller?.lastName}` }}
+            </p>
           </div>
 
           <!-- Details -->
