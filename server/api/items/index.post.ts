@@ -1,6 +1,8 @@
 import { CreateItem } from '~/server/database/drizzle'
 import { createItem } from '~/server/service/item'
+import { getUserItemsCount } from '~/server/service/user'
 import { processImage } from '~/server/utils/processImage'
+import { MAX_USER_ITEMS } from '~/utils/const'
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
   try {
@@ -16,6 +18,15 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
 
     const decodedUserId = decodeId(user.id)
     const decodedCategoryId = decodeId(categoryId)
+
+    const itemCount = await getUserItemsCount(decodedUserId)
+
+    if (itemCount[0].count >= MAX_USER_ITEMS) {
+      throw createError({
+        statusCode: 403,
+        message: `You have reached the maximum number of ${MAX_USER_ITEMS} items. You cannot create more.`,
+      })
+    }
 
     const images: string[] = []
     for (let i = 0; body.has(`image_${i}`); i++) {

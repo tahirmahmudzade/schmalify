@@ -1,30 +1,35 @@
+import { count } from 'drizzle-orm'
 import { CreateUser, eq, tables, UpdateUser, useDrizzle } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
-export const getUsers = async () => {
+export function getUsers() {
   return useDrizzle().query.user.findMany({ with: { items: true } })
 }
 
-export const getUserById = async (userId: string) => {
+export function getUserById(userId: string) {
   return useDrizzle().query.user.findFirst({
     where: eq(tables.user.id, userId),
     with: { items: { with: { category: { columns: { name: true } } } } },
   })
 }
 
-export const getUserByEmail = async (userEmail: string) => {
+export function getUserByEmail(userEmail: string) {
   return useDrizzle().query.user.findFirst({ where: eq(tables.user.email, userEmail) })
 }
 
-export const getUserPhone = async (userId: string) => {
+export function getUserPhone(userId: string) {
   return useDrizzle().query.user.findFirst({ where: eq(tables.user.id, userId), columns: { phone: true } })
 }
 
-export const getUserImage = async (userId: string) => {
+export function getUserImage(userId: string) {
   return useDrizzle().query.user.findFirst({ where: eq(tables.user.id, userId), columns: { avatar: true } })
 }
 
-export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
+export function getUserItemsCount(userId: string) {
+  return useDrizzle().select({ count: count() }).from(tables.item).where(eq(tables.item.seller_id, userId))
+}
+
+export function createUser(userData: Omit<CreateUser, 'id'>) {
   return useDrizzle()
     .insert(tables.user)
     .values({ ...userData, id: useNanoId(), avatar: userData.avatar || 'default-user.webp' })
@@ -32,18 +37,18 @@ export const createUser = async (userData: Omit<CreateUser, 'id'>) => {
     .get()
 }
 
-export const updateUserById = async (userId: string, userData: UpdateUser) => {
+export function updateUserById(userId: string, userData: UpdateUser) {
   return useDrizzle().update(tables.user).set(userData).where(eq(tables.user.id, userId)).returning().get()
 }
 
-export const deleteUserById = async (userId: string) => {
+export function deleteUserById(userId: string) {
   return useDrizzle().delete(tables.user).where(eq(tables.user.id, userId)).returning().get()
 }
 
-export const updateProfilePicture = async (userId: string, fileName: string) => {
+export function updateProfilePicture(userId: string, fileName: string) {
   return useDrizzle().update(tables.user).set({ avatar: fileName }).where(eq(tables.user.id, userId))
 }
 
-export const updatePassword = async (userId: string, password: string) => {
+export function updatePassword(userId: string, password: string) {
   return useDrizzle().update(tables.user).set({ password }).where(eq(tables.user.id, userId))
 }
