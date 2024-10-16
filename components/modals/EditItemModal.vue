@@ -192,17 +192,13 @@ async function onSubmit() {
               <div class="mt-3">
                 <label for="imageInput" class="relative cursor-pointer">
                   <!-- Use UCarousel for image previews -->
-                  <UCarousel
+                  <ImageCarousel
                     v-if="imagePreviews.length"
-                    :items="imagePreviews"
-                    arrows
-                    :ui="{ item: 'basis-full' }"
-                    class="rounded-lg overflow-hidden"
-                  >
-                    <template v-slot="{ item }">
-                      <img :src="item" alt="Item Image" class="w-full h-40 object-cover rounded-lg" draggable="true" />
-                    </template>
-                  </UCarousel>
+                    type="arrows"
+                    :images="imagePreviews"
+                    :removable="true"
+                    @removeImage="removeImage"
+                  />
 
                   <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
                     <span class="text-gray-500">Click to upload images</span>
