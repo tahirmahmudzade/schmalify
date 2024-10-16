@@ -24,7 +24,7 @@ const schema = computed(() =>
       .trim()
       .min(1, { message: 'Title is required' })
       .max(35, { message: 'Title must be at most 35 characters long' }),
-    description: z.string().max(400, { message: 'Description must be at most 400 characters long' }).optional(),
+    description: z.string().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
     ...(itemData.category !== 'Free' && {
       price: z
         .number()

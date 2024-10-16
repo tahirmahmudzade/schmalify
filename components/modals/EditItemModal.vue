@@ -23,7 +23,7 @@ const schema = z.object({
     .trim()
     .min(1, { message: 'Title is required' })
     .max(35, { message: 'Title must be at most 35 characters long' }),
-  description: z.string().trim().max(400, { message: 'Description must be at most 400 characters long' }).optional(),
+  description: z.string().trim().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
   price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
   condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
   status: z.enum(['available', 'sold'], { message: 'Status is required' }),
