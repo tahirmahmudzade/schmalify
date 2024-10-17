@@ -40,7 +40,7 @@ function onContinueAsGuest() {
           <li>You can create only one listing.</li>
           <li>Profile and listings cannot be updated.</li>
           <li>Access expires after 3 days.</li>
-          <li>If you log out once, you can not back in.</li>
+          <li>If you log out once, you can not log back in.</li>
         </ul>
         <p class="mt-2">You can log in anytime by clicking "Sign in as user" on the menu bar.</p>
       </div>
