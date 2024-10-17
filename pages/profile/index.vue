@@ -27,6 +27,14 @@ const schema = z.object({
   avatar: z.string().optional(),
 })
 
+const guestSchema = z.object({
+  firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
+  lastName: z.string().max(50, { message: 'Last name must be at most 50 characters long' }).optional(),
+  phone: z
+    .string({ message: 'Phone number is required' })
+    .refine((value: string): boolean => validatePhoneNumber(value), { message: 'Invalid phone number' }),
+})
+
 type Schema = z.infer<typeof schema>
 const state = reactive<Schema>({
   email: userData.value?.email || '',
@@ -43,7 +51,7 @@ const loading = ref(false)
 const showTooltip = ref(true)
 
 const isFormInvalid = computed(() => {
-  const validation = schema.safeParse(state)
+  const validation = user.value?.isGuest ? guestSchema.safeParse(state) : schema.safeParse(state)
   return !validation.success || loading.value
 })
 
@@ -177,26 +185,14 @@ onMounted(() => {
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
                     <h4 class="block mb-2">First Name</h4>
-                    <UInput
-                      v-model="state.firstName"
-                      placeholder="John"
-                      :disabled="user?.isGuest"
-                      type="text"
-                      id="first-name"
-                    />
+                    <UInput v-model="state.firstName" placeholder="John" type="text" id="first-name" />
                   </UFormGroup>
                 </div>
 
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup
                     ><h4 class="block mb-2">Last Name</h4>
-                    <UInput
-                      v-model="state.lastName"
-                      placeholder="Cena"
-                      :disabled="user?.isGuest"
-                      type="text"
-                      id="last-name"
-                    />
+                    <UInput v-model="state.lastName" placeholder="Cena" type="text" id="last-name" />
                   </UFormGroup>
                 </div>
 
@@ -212,7 +208,6 @@ onMounted(() => {
                     <h4 class="block mb-2">Phone</h4>
                     <UInput
                       v-model="state.phone"
-                      :disabled="user?.isGuest"
                       type="text"
                       placeholder="Number with country code (e.g. +495556667788)"
                       id="phone"
