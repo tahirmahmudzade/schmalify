@@ -16,9 +16,16 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       return { statusCode: 404, message: 'User with given email not found' }
     }
 
-    const token = jwt.sign({ email: user.email }, config.jwtSecret, { expiresIn: '15m' })
+    const token = jwt.sign({ email: user.email }, config.jwtSecret, { expiresIn: '5m' })
 
-    await sendMail(body.email, 'Password Reset Request', `Paste this token in the reset password form: ${token}`)
+    const htmlContent = getPasswordResetHtmlContent(token)
+
+    await sendMail(
+      body.email,
+      'Password Reset Request',
+      `Paste this token in the reset password form: ${token}`,
+      htmlContent,
+    )
 
     return { statusCode: 200, message: 'A password reset email will be sent.' }
   } catch (err) {
