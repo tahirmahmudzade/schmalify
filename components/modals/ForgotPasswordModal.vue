@@ -8,6 +8,9 @@ const toast = useToast()
 // State to track the current step
 const step = ref<'email' | 'reset'>('email')
 
+const emailLoading = ref(false)
+const resetLoading = ref(false)
+
 // Validation schemas
 const emailSchema = z.object({ email: z.string().email({ message: 'Invalid email' }) })
 
@@ -50,6 +53,7 @@ function onClose() {
 }
 
 async function onSubmitEmail() {
+  emailLoading.value = true
   try {
     const res = await $fetch('/api/auth/forgot-password', { method: 'POST', body: emailState })
 
@@ -64,10 +68,13 @@ async function onSubmitEmail() {
       color: 'red',
       title: err.data.message || 'Something  went wrong, please try again later or contact support.',
     })
+  } finally {
+    emailLoading.value = false
   }
 }
 
 async function onSubmitReset() {
+  resetLoading.value = true
   try {
     await $fetch('/api/auth/reset-password', { method: 'POST', body: resetState })
     toast.add({ color: 'green', title: 'Password reset successfully' })
@@ -76,6 +83,8 @@ async function onSubmitReset() {
     console.log('Error resetting password', err)
 
     toast.add({ color: 'red', title: err.data.message || 'Error resetting password' })
+  } finally {
+    resetLoading.value = false
   }
 }
 </script>
@@ -111,6 +120,7 @@ async function onSubmitReset() {
                   label="Send reset link"
                   :ui="{ rounded: 'rounded-lg' }"
                   :disabled="isEmailFormInvalid"
+                  :loading="emailLoading"
                   @click="onSubmitEmail"
                 />
               </div>
@@ -134,6 +144,7 @@ async function onSubmitReset() {
                   label="Reset Password"
                   :ui="{ rounded: 'rounded-lg' }"
                   :disabled="isResetFormInvalid"
+                  :loading="resetLoading"
                   @click="onSubmitReset"
                 />
               </div>
