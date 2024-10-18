@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
 
-// const nuxtApp = useNuxtApp()
-
 const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: itemsError }] = await Promise.all([
   useFetch('/api/category'),
   useLatestItems(),
@@ -20,23 +18,10 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
     message: 'Something went wrong loading the page, please try again later or contact support.',
   })
 }
-
-// const installPwa = () => {
-//   const pwa = nuxtApp.$pwa
-//   if (pwa?.showInstallPrompt) {
-//     pwa.install()
-//   } else {
-//     throw createError({
-//       statusCode: 400,
-//       message: 'Something went wrong installing the application, please try again later or contact support.',
-//     })
-//   }
-// }
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8">
-    <!-- Header Section -->
     <div class="text-center mb-8">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">
         Swap or Sell, Do It Well! - Student Deals in Schmalkalden!
@@ -45,13 +30,11 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
         Discover great deals and unique items for sale near you
       </p>
 
-      <!-- Search Bar -->
       <div class="mt-6 relative mx-auto w-full max-w-xs sm:max-w-md lg:max-w-lg">
         <SearchInput :is-on-header="false" placeholder="What are you looking for ?" input-size="xl" />
       </div>
     </div>
 
-    <!-- Categories Section -->
     <div class="category-section">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">Categories</h2>
       <div class="flex overflow-x-auto space-x-4 pb-4">
@@ -76,7 +59,6 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
       </div>
     </div>
 
-    <!-- Items Section -->
     <div class="items-section mt-12">
       <div class="relative text-center mb-4">
         <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Latest Items</h2>
@@ -94,12 +76,10 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
           class="flex-none w-36 bg-gray-200 dark:bg-gray-800 backdrop-filter backdrop-blur-lg border border-white border-opacity-10 rounded-lg shadow-md cursor-pointer transform transition-transform duration-200 hover:-translate-y-1 flex flex-col relative"
           @click="navigateTo(`/items/${item.id}`)"
         >
-          <!-- Sold Badge (conditionally rendered) -->
           <div v-if="item.status === 'sold'" class="absolute top-2 right-2">
             <UBadge label="Sold" color="red" size="md" />
           </div>
 
-          <!-- Item Image -->
           <img
             :src="`api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             loading="lazy"
@@ -123,7 +103,6 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
         </div>
       </div>
     </div>
-    <!-- New Section: Schmalify Description -->
     <div class="description-section text-center mt-12 px-4 sm:px-6 lg:px-8">
       <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Schmalify?</h2>
       <p class="text-gray-700 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
@@ -131,16 +110,6 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
         and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more
         efficient way for students to connect and exchange goods.
       </p>
-
-      <!-- <ClientOnly>
-        <UButton
-          v-if="$pwa?.showInstallPrompt && !$pwa?.offlineReady"
-          label="Install Application"
-          class="mt-4"
-          size="sm"
-          @click="installPwa"
-        />
-      </ClientOnly> -->
     </div>
   </div>
 </template>
