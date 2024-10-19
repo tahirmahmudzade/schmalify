@@ -1,5 +1,4 @@
 <template>
-  <!-- <VitePwaManifest /> -->
   <NuxtLoadingIndicator />
   <NuxtRouteAnnouncer politeness="polite">
     <template #default="{ message }">
