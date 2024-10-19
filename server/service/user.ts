@@ -50,5 +50,9 @@ export function updateProfilePicture(userId: string, fileName: string) {
 }
 
 export function updatePassword(userId: string, password: string) {
-  return useDrizzle().update(tables.user).set({ password }).where(eq(tables.user.id, userId))
+  return useDrizzle().update(tables.user).set({ password, passwordResetToken: null }).where(eq(tables.user.id, userId))
+}
+
+export function updateUserResetToken(userId: string, token: string) {
+  return useDrizzle().update(tables.user).set({ passwordResetToken: token }).where(eq(tables.user.id, userId))
 }

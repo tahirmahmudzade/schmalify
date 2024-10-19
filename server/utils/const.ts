@@ -1,6 +1,6 @@
 export const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-export function getPasswordResetHtmlContent(resetToken: string) {
+export function getPasswordResetHtmlContent(resetCode: number) {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -67,13 +67,13 @@ export function getPasswordResetHtmlContent(resetToken: string) {
     </div>
     <div class="content">
       <p>Hello,</p>
-      <p>We received a request to reset your password. Please copy the token below and paste it into the password reset form:</p>
-      <p class="token">${resetToken}</p>
+      <p>We received a request to reset your password. Please copy the code below and paste it into the password reset form:</p>
+      <p class="token">${resetCode}</p>
       <p>If you did not request this, please ignore this email. The token will expire in 5 minutes.</p>
     </div>
     <div class="footer">
-      <p>If you have any questions, feel free to contact us at support@example.com.</p>
-      <p>&copy; 2024 Your Company. All rights reserved.</p>
+      <p>If you have any questions, feel free to contact us at support@schmalify.com.</p>
+      <p>&copy; 2024 Schmalify. All rights reserved.</p>
     </div>
   </div>
 </body>

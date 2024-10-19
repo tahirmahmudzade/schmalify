@@ -1,32 +1,37 @@
 import z from 'zod'
 import jwt from '@tsndr/cloudflare-worker-jwt'
-import { getUserByEmail } from '~/server/service/user'
+import { getUserByEmail, updateUserResetToken } from '~/server/service/user'
 
 const bodySchema = z.object({ email: z.string().email({ message: 'Invalid email' }) })
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
   try {
-    const body = await readValidatedBody(event, bodySchema.parse)
+    const { email } = await readValidatedBody(event, bodySchema.parse)
 
-    const user = await getUserByEmail(body.email)
+    const user = await getUserByEmail(email.trim())
 
     if (!user) {
       return { statusCode: 404, message: 'User with given email not found' }
     }
 
+    const resetCode = generateResetCode()
+
     const token = await jwt.sign(
-      { email: user.email, exp: Math.floor(Date.now() / 1000) + 5 * 60 },
+      { resetCode, exp: Math.floor(Date.now() / 1000) + 5 * 60 }, // 5 minutes
       process.env.JWT_SECRET || 'prvscret',
     )
 
-    const htmlContent = getPasswordResetHtmlContent(token)
+    const htmlContent = getPasswordResetHtmlContent(resetCode)
 
-    await sendMail(
-      body.email,
-      'Password Reset Request',
-      `Paste this token in the reset password form: ${token}`,
-      htmlContent,
-    )
+    await Promise.all([
+      updateUserResetToken(user.id, token),
+      sendMail(
+        email.trim(),
+        'Password Reset Request',
+        `Paste this token in the reset password form: ${resetCode}`,
+        htmlContent,
+      ),
+    ])
 
     return { statusCode: 200, message: 'A password reset email will be sent.' }
   } catch (err) {

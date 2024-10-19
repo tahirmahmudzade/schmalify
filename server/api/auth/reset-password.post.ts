@@ -4,6 +4,7 @@ import { getUserByEmail, updatePassword } from '~/server/service/user'
 
 const resetSchema = z
   .object({
+    email: z.string().email({ message: 'Invalid email' }),
     password: z
       .string()
       .min(8, { message: 'Password must be at least 8 characters long' })
@@ -15,23 +16,23 @@ const resetSchema = z
 
 export default defineEventHandler(async event => {
   try {
-    const body = await readValidatedBody(event, resetSchema.parse)
+    const { email, password, token } = await readValidatedBody(event, resetSchema.parse)
 
-    const decoded = await jwt.verify(body.token, process.env.JWT_SECRET || 'prvscret')
-
-    if (!decoded) {
-      throw createError({ statusCode: 403, message: 'Token is either expired or invalid' })
-    }
-
-    const { payload } = decoded as { payload: { email: string } }
-
-    const user = await getUserByEmail(payload.email)
+    const user = await getUserByEmail(email.trim())
 
     if (!user) {
       throw createError({ statusCode: 404, message: 'Reset token is invalid' })
     }
 
-    const hashedPassword = await hashPassword(body.password)
+    const decoded = (await jwt.verify(user.passwordResetToken || '', process.env.JWT_SECRET || 'prvscret')) as
+      | { payload: { resetCode: number } }
+      | undefined
+
+    if (!decoded || decoded.payload.resetCode !== parseInt(token)) {
+      throw createError({ statusCode: 403, message: 'Token is either expired or invalid' })
+    }
+
+    const hashedPassword = await hashPassword(password)
 
     await updatePassword(user.id, hashedPassword)
 
