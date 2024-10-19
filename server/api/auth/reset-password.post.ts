@@ -38,6 +38,9 @@ export default defineEventHandler(async event => {
     return { statusCode: 200, message: 'Password reset successfully' }
   } catch (err) {
     console.log('error resetting password', err)
-    throw createError({ statusCode: 500, message: 'Token is either invalid or expired. Please try again.' })
+    throw createError({
+      statusCode: 500,
+      message: (err as string) || 'Token is either invalid or expired. Please try again.',
+    })
   }
 })
