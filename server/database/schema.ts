@@ -11,6 +11,7 @@ export const user = sqliteTable('user', {
   location: text('location'), // optional, could help filter by location
   avatar: text('avatar'), // optional profile picture
   phone: text('phone'), // optional contact number
+  passwordResetToken: text('password_reset_token'),
   admin: integer('admin', { mode: 'boolean' }).default(false),
   isGuest: integer('is_guest', { mode: 'boolean' }).default(false),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
