@@ -76,7 +76,7 @@ async function onSubmitEmail() {
 async function onSubmitReset() {
   resetLoading.value = true
   try {
-    await $fetch('/api/auth/reset-password', { method: 'POST', body: resetState })
+    await $fetch('/api/auth/reset-password', { method: 'POST', body: { ...resetState, email: emailState.email } })
     toast.add({ color: 'green', title: 'Password reset successfully' })
     onClose()
   } catch (err: any) {
@@ -103,7 +103,7 @@ async function onSubmitReset() {
                 {{
                   step === 'email'
                     ? 'Enter your email address to reset your password.'
-                    : 'Enter the token you received and your new password below.'
+                    : 'Enter the code you received and your new password below.'
                 }}
               </p>
 
@@ -128,8 +128,8 @@ async function onSubmitReset() {
               <!-- Reset Password Form -->
               <div v-else-if="step === 'reset'">
                 <UForm :schema="resetSchema" :state="resetState">
-                  <UFormGroup label="Token" name="token">
-                    <UInput v-model="resetState.token" placeholder="Enter your token" />
+                  <UFormGroup label="Code" name="token">
+                    <UInput v-model="resetState.token" placeholder="Enter your code" />
                   </UFormGroup>
                   <UFormGroup label="New Password" name="password">
                     <UInput v-model="resetState.password" type="password" />
