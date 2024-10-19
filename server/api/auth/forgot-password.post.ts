@@ -28,7 +28,7 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       sendMail(
         email.trim(),
         'Password Reset Request',
-        `Paste this token in the reset password form: ${resetCode}`,
+        `Paste this code in the reset password form: ${resetCode}`,
         htmlContent,
       ),
     ])

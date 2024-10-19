@@ -69,7 +69,7 @@ export function getPasswordResetHtmlContent(resetCode: number) {
       <p>Hello,</p>
       <p>We received a request to reset your password. Please copy the code below and paste it into the password reset form:</p>
       <p class="token">${resetCode}</p>
-      <p>If you did not request this, please ignore this email. The token will expire in 5 minutes.</p>
+      <p>If you did not request this, please ignore this email. The code will expire in 5 minutes.</p>
     </div>
     <div class="footer">
       <p>If you have any questions, feel free to contact us at support@schmalify.com.</p>
