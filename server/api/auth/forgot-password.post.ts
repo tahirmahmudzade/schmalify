@@ -1,13 +1,11 @@
 import z from 'zod'
-import jwt from 'jsonwebtoken'
-import { sendMail } from '~/server/utils/sendEmail'
+import jwt from '@tsndr/cloudflare-worker-jwt'
 import { getUserByEmail } from '~/server/service/user'
 
 const bodySchema = z.object({ email: z.string().email({ message: 'Invalid email' }) })
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
   try {
-    const config = useRuntimeConfig()
     const body = await readValidatedBody(event, bodySchema.parse)
 
     const user = await getUserByEmail(body.email)
@@ -16,7 +14,10 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       return { statusCode: 404, message: 'User with given email not found' }
     }
 
-    const token = jwt.sign({ email: user.email }, config.jwtSecret, { expiresIn: '5m' })
+    const token = await jwt.sign(
+      { email: user.email, exp: Math.floor(Date.now() / 1000) + 5 * 60 },
+      process.env.JWT_SECRET || 'prvscret',
+    )
 
     const htmlContent = getPasswordResetHtmlContent(token)
 

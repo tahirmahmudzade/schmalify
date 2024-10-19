@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import jwt from 'jsonwebtoken'
+import jwt from '@tsndr/cloudflare-worker-jwt'
 import { getUserByEmail, updatePassword } from '~/server/service/user'
 
 const resetSchema = z
@@ -15,14 +15,17 @@ const resetSchema = z
 
 export default defineEventHandler(async event => {
   try {
-    const config = useRuntimeConfig()
-
     const body = await readValidatedBody(event, resetSchema.parse)
 
-    const decoded = jwt.verify(body.token, config.jwtSecret)
-    const { email } = decoded as { email: string }
+    const decoded = await jwt.verify(body.token, process.env.JWT_SECRET || 'prvscret')
 
-    const user = await getUserByEmail(email)
+    if (!decoded) {
+      throw createError({ statusCode: 403, message: 'Token is either expired or invalid' })
+    }
+
+    const { payload } = decoded as { payload: { email: string } }
+
+    const user = await getUserByEmail(payload.email)
 
     if (!user) {
       throw createError({ statusCode: 404, message: 'Reset token is invalid' })
