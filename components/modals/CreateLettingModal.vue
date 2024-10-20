@@ -24,7 +24,7 @@ const schema = computed(() =>
       .trim()
       .min(1, { message: 'Title is required' })
       .max(35, { message: 'Title must be at most 35 characters long' }),
-    description: z.string().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
+    description: z.string().trim().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
     ...(itemData.category !== 'Free' && {
       price: z
         .number()
@@ -123,7 +123,11 @@ async function onSubmit() {
     if (asGuest) {
       await $fetch('/api/auth/guestLogin', {
         method: 'POST',
-        body: { firstName: itemData.firstName, lastName: itemData.lastName || '', phone: itemData.phone },
+        body: {
+          firstName: itemData.firstName.trim(),
+          lastName: itemData.lastName.trim() || '',
+          phone: itemData.phone.trim(),
+        },
       })
     }
 
@@ -132,11 +136,11 @@ async function onSubmit() {
       imageFiles.value.forEach((file, index) => {
         formData.append(`image_${index}`, file)
       })
-      formData.append('title', itemData.title)
-      formData.append('description', itemData.description)
-      formData.append('price', itemData.price.toString())
-      formData.append('condition', itemData.condition)
-      formData.append('category_id', categoryId!)
+      formData.append('title', itemData.title.trim())
+      formData.append('description', itemData.description.trim())
+      formData.append('price', itemData.price.toString().trim())
+      formData.append('condition', itemData.condition.trim())
+      formData.append('category_id', categoryId!.trim())
     }
 
     const { message } = await $fetch('/api/items', { method: 'POST', body: formData })

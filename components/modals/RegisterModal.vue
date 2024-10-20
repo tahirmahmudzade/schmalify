@@ -42,12 +42,20 @@ async function onSubmit() {
     if (user?.isGuest && user.id) {
       await $fetch<{ statusCode: number; message: string }>(`/api/users/${user.id}/upgrade`, {
         method: 'PATCH',
-        body: { email: credentials.email, password: credentials.password, username: credentials.username },
+        body: {
+          email: credentials.email.trim(),
+          password: credentials.password.trim(),
+          username: credentials.username.trim(),
+        },
       })
     } else {
       await $fetch<{ statusCode: number; message: string }>('/api/auth/register', {
         method: 'POST',
-        body: { email: credentials.email, password: credentials.password, username: credentials.username },
+        body: {
+          email: credentials.email.trim(),
+          password: credentials.password.trim(),
+          username: credentials.username.trim(),
+        },
       })
     }
     onClose()

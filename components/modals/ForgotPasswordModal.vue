@@ -55,7 +55,7 @@ function onClose() {
 async function onSubmitEmail() {
   emailLoading.value = true
   try {
-    const res = await $fetch('/api/auth/forgot-password', { method: 'POST', body: emailState })
+    const res = await $fetch('/api/auth/forgot-password', { method: 'POST', body: { email: emailState.email.trim() } })
 
     if (res.statusCode === 404) {
       toast.add({ color: 'red', title: res.message })
@@ -76,7 +76,15 @@ async function onSubmitEmail() {
 async function onSubmitReset() {
   resetLoading.value = true
   try {
-    await $fetch('/api/auth/reset-password', { method: 'POST', body: { ...resetState, email: emailState.email } })
+    await $fetch('/api/auth/reset-password', {
+      method: 'POST',
+      body: {
+        token: resetState.token.trim(),
+        password: resetState.password.trim(),
+        confirmPassword: resetState.confirmPassword.trim(),
+        email: emailState.email.trim(),
+      },
+    })
     toast.add({ color: 'green', title: 'Password reset successfully' })
     onClose()
   } catch (err: any) {

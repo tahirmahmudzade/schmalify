@@ -35,7 +35,10 @@ function onClose() {
 async function onSubmit() {
   loading.value = true
   try {
-    await $fetch<{ statusCode: number; message: string }>('/api/auth/login', { method: 'POST', body: credentials })
+    await $fetch<{ statusCode: number; message: string }>('/api/auth/login', {
+      method: 'POST',
+      body: { email: credentials.email.trim(), password: credentials.password.trim() },
+    })
 
     onClose()
   } catch (err: any) {

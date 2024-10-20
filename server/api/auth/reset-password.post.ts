@@ -4,13 +4,14 @@ import { getUserByEmail, updatePassword } from '~/server/service/user'
 
 const resetSchema = z
   .object({
-    email: z.string().email({ message: 'Invalid email' }),
+    email: z.string().email({ message: 'Invalid email' }).trim(),
     password: z
       .string()
+      .trim()
       .min(8, { message: 'Password must be at least 8 characters long' })
       .max(15, { message: 'Password must be at most 15 characters long' }),
-    confirmPassword: z.string(),
-    token: z.string({ message: 'Code is required' }),
+    confirmPassword: z.string().trim(),
+    token: z.string({ message: 'Code is required' }).trim(),
   })
   .refine(data => data.password === data.confirmPassword, { message: 'Passwords do not match', path: ['confirmPassword'] })
 

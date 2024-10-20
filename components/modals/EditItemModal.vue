@@ -129,11 +129,11 @@ async function onSubmit() {
       })
     }
 
-    formData.append('title', itemSchemaData.title)
-    formData.append('description', itemSchemaData.description)
-    formData.append('price', itemSchemaData.price.toString())
-    formData.append('condition', itemSchemaData.condition)
-    formData.append('status', itemSchemaData.status)
+    formData.append('title', itemSchemaData.title.trim())
+    formData.append('description', itemSchemaData.description.trim())
+    formData.append('price', itemSchemaData.price.toString().trim())
+    formData.append('condition', itemSchemaData.condition.trim())
+    formData.append('status', itemSchemaData.status.trim())
 
     const { message } = await $fetch<{ statusCode: number; message: string }>(`/api/items/${itemData.id}`, {
       method: 'PATCH',
@@ -148,7 +148,6 @@ async function onSubmit() {
     console.log('Error:', err)
     toast.add({ color: 'red', title: err.data.message || 'Failed to update item, please try again.' })
   } finally {
-    onClose()
     buttonLoading.value = false
   }
 }

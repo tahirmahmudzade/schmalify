@@ -3,13 +3,19 @@ import { createUser, getUserByEmail } from '~/server/service/user'
 import { CreateUser } from '~/server/database/drizzle'
 
 const userSchema = z.object({
-  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
+  email: z
+    .string()
+    .email({ message: 'Invalid email' })
+    .trim()
+    .max(40, { message: 'Email must be at most 40 characters long' }),
   password: z
     .string({ message: 'Invalid password' })
+    .trim()
     .min(8, { message: 'Password must be at least 8 characters long' })
     .max(15, { message: 'Password must be at most 15 characters long' }),
   username: z
     .string()
+    .trim()
     .min(3, { message: 'Username must be at least 3 characters long' })
     .max(20, { message: 'Username must be at most 20 characters long' }),
 })
@@ -21,7 +27,7 @@ export default defineEventHandler<{ body: CreateUser }>(async (event): Promise<{
     const isUser = await getUserByEmail(body.email)
 
     if (isUser) {
-      throw createError({ statusCode: 400, message: 'User already exists, please login' })
+      throw createError({ statusCode: 400, message: 'User with this email already exists, please login' })
     }
 
     const hashedPassword = await hashPassword(body.password)

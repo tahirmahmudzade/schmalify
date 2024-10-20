@@ -2,7 +2,7 @@ import z from 'zod'
 import jwt from '@tsndr/cloudflare-worker-jwt'
 import { getUserByEmail, updateUserResetToken } from '~/server/service/user'
 
-const bodySchema = z.object({ email: z.string().email({ message: 'Invalid email' }) })
+const bodySchema = z.object({ email: z.string().email({ message: 'Invalid email' }).trim() })
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
   try {
