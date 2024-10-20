@@ -26,7 +26,7 @@ const searchPerformed = ref(false) // State to track if a search has been perfor
 
 // Fetch items based on search query
 const fetchItems = async () => {
-  if (debouncedSearchQuery.value.trim() === '') {
+  if (debouncedSearchQuery.value.trim().length < 3) {
     items.value = []
     searchPerformed.value = false // No search was performed
     return
@@ -35,7 +35,7 @@ const fetchItems = async () => {
   loading.value = true // Start loading
   searchPerformed.value = true // A search is in progress
 
-  const data = await $fetch('/api/items', { query: { searchQuery: debouncedSearchQuery.value } })
+  const data = await $fetch('/api/items', { query: { searchQuery: debouncedSearchQuery.value.trim() } })
 
   items.value = data || [] // Store the fetched items
   loading.value = false // End loading
