@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownItem } from '#ui/types'
 import type { FooterLink } from '#ui-pro/types'
+
 const { loggedIn, user } = useUserSession()
 
 const path = computed(() => useRoute().path)

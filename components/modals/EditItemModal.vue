@@ -65,9 +65,6 @@ const isFormUnchanged = computed(() => {
   )
 })
 
-// Only display the carousel if there are new image previews
-const allImages = computed(() => imagePreviews.value)
-
 function onClose() {
   emit('close', false)
 }

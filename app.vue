@@ -14,12 +14,6 @@
         <NuxtPage />
       </NuxtLayout>
     </div>
-
-    <!-- Footer will stick to the bottom -->
-    <!-- <UFooter class="footer">
-      <template #left> Copyright © {{ new Date().getFullYear() }} </template>
-      <template #right> <p class="text-md font-bold italic">Schmalify</p> </template>
-    </UFooter> -->
   </div>
 
   <UModals />
@@ -46,12 +40,5 @@ body,
 
 .content-container {
   flex-grow: 1; /* This makes the content grow to fill available space */
-}
-
-.footer {
-  background: #1f2937;
-  color: white;
-  padding: 1rem;
-  text-align: center;
 }
 </style>
