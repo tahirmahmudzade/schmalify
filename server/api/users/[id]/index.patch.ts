@@ -1,5 +1,5 @@
 import z from 'zod'
-import { updateUserById } from '~/server/service/user'
+import { getUserByEmail, updateUserById } from '~/server/service/user'
 import { MAX_PHONE_NUMBER_LENGTH } from '~/utils/const'
 
 const userSchema = z.object({
@@ -29,6 +29,14 @@ export default defineEventHandler(async event => {
 
     if (!updateUser) {
       throw createError({ statusCode: 404, message: 'User not found' })
+    }
+
+    if (body.email) {
+      const isUser = await getUserByEmail(body.email)
+
+      if (isUser) {
+        throw createError({ statusCode: 400, message: 'User with this email already exists, please login' })
+      }
     }
 
     return { statusCode: 200, message: 'Profile updated successfully' }
