@@ -12,7 +12,7 @@ const guestSchema = z.object({
     .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' }),
 })
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
   try {
     const body = await readValidatedBody(event, guestSchema.parse)
 
@@ -29,7 +29,7 @@ export default defineEventHandler(async event => {
       { maxAge: 60 * 60 * 24 * 3 }, // 3 days
     )
 
-    return { statusCode: 200, guest: { ...newUser, id: encodeId(newUser.id) }, message: 'Guest login successful' }
+    return { statusCode: 200, message: 'Guest login successful' }
   } catch (err) {
     console.log('Error: ', err)
 

@@ -1,8 +1,23 @@
-import { Category, Item, User } from '~/server/database/drizzle'
+import { Item } from '~/server/database/drizzle'
 import { getItemById } from '~/server/service/item'
 
 export default defineEventHandler(
-  async (event): Promise<{ statusCode: number; item: Item & { category: Category | null; seller: User | null } }> => {
+  async (
+    event,
+  ): Promise<{
+    statusCode: number
+    item: Item & {
+      category: { name: string } | null
+      seller: {
+        avatar: string | null
+        location: string | null
+        lastName: string | null
+        firstName: string | null
+        phone: string | null
+        username: string | null
+      } | null
+    }
+  }> => {
     const paramId = getRouterParam(event, 'id')
 
     if (!paramId) {
@@ -25,7 +40,7 @@ export default defineEventHandler(
           category_id: encodeId(item.category_id!),
           seller_id: encodeId(item.seller_id!),
           id: encodeId(item.id),
-          seller: { ...item.seller!, id: encodeId(item.seller!.id) },
+          seller: { ...item.seller! },
         },
       }
     } catch (err) {

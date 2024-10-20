@@ -3,7 +3,7 @@ import type { Item } from '~/server/database/drizzle'
 
 const toast = useToast()
 const { data: itemsData, error: getItemsError, refresh: refreshItems } = await useMyItems()
-const { data: categoryData } = await useFetch(`/api/category/`)
+const { data: categoryData } = await useFetch(`/api/category`)
 const { filterItems } = useItemStore()
 
 if (!itemsData.value && getItemsError.value) {

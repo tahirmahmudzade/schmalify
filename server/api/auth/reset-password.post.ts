@@ -15,7 +15,7 @@ const resetSchema = z
   })
   .refine(data => data.password === data.confirmPassword, { message: 'Passwords do not match', path: ['confirmPassword'] })
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
   try {
     const { email, password, token } = await readValidatedBody(event, resetSchema.parse)
 

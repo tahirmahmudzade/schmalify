@@ -3,7 +3,9 @@ import { z } from 'zod'
 
 const toast = useToast()
 const { user } = useUserSession()
-const { data: userData } = await useFetch(`/api/users/${user.value?.id}`)
+const { data: userData } = await useFetch(`/api/users/${user.value?.id}`, {
+  pick: ['email', 'firstName', 'lastName', 'location', 'phone', 'avatar', 'username'],
+})
 
 function onPhoneInput(event: Event) {
   const input = event.target as HTMLInputElement

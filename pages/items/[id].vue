@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-import type { Category, Item, User } from '~/server/database/drizzle'
+import type { Item } from '~/server/database/drizzle'
 
 const route = useRoute('items-id')
 
 const { data: itemData, error } = await useFetch<{
   statusCode: number
-  item: Item & { category: Category | null; seller: User | null }
+  item: Item & {
+    category: { name: string } | null
+    seller: {
+      avatar: string | null
+      location: string | null
+      lastName: string | null
+      firstName: string | null
+      phone: string | null
+      username: string | null
+    } | null
+  }
 }>(`/api/items/${route.params.id}`)
 
 if (error.value || !itemData.value) {

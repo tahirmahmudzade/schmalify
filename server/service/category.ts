@@ -10,7 +10,11 @@ export function getCategoryById(categoryId: string) {
 }
 
 export function getCategoryByName(categoryName: string) {
-  return useDrizzle().query.category.findFirst({ where: eq(tables.category.name, categoryName), with: { items: true } })
+  return useDrizzle().query.category.findFirst({
+    where: eq(tables.category.name, categoryName),
+    with: { items: true },
+    columns: { name: true },
+  })
 }
 
 export function createCategory(categoryData: Omit<CreateCategory, 'id'>) {

@@ -230,7 +230,7 @@ async function onSubmit() {
                       <span class="text-red-500">*</span>
                     </div>
                   </template>
-                  <UInput v-model="itemData.title" placeholder="Shot title (max 20 characters)" />
+                  <UInput v-model="itemData.title" placeholder="Short title (max 35 characters)" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Description" name="description">
