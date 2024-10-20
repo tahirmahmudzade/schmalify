@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DropdownItem } from '#ui/types'
+import type { FooterLink } from '#ui-pro/types'
 const { loggedIn, user } = useUserSession()
 
 const path = computed(() => useRoute().path)
@@ -62,6 +63,25 @@ const items: DropdownItem[][] = [
   ],
 ]
 
+const footerLinks: FooterLink[] = [
+  {
+    label: 'Hochschule Schmalkalden',
+    to: 'https://www.hs-schmalkalden.de/',
+  },
+  {
+    label: 'About us',
+    to: '/about',
+  },
+  {
+    label: 'Feedback',
+    to: 'mailto:support@schmalify.com?subject=Support%20Request&body=Hello%20Schmalify%20Support%2C%0A%0AI%20need%20help%20with...',
+  },
+  {
+    label: `Bored? Let's play some games!`,
+    to: 'https://tahirmahmudzade.github.io/guessmynumber/',
+  },
+]
+
 function handleSellNowClick() {
   !loggedIn.value && !user.value ? useSellNowNotificationModal() : useCreateLettingModal()
 }
@@ -88,5 +108,28 @@ function handleSellNowClick() {
     </UHeader>
 
     <slot />
+
+    <UDivider label="Schmalify" />
+    <UFooter :links="footerLinks">
+      <template #left> Copyright © {{ new Date().getFullYear() }} </template>
+
+      <template #right>
+        <UButton
+          icon="skill-icons:instagram"
+          color="gray"
+          variant="ghost"
+          to="https://www.instagram.com/hs_schmalkalden/"
+          target="_blank"
+        />
+        <UButton
+          icon="logos:google-gmail"
+          color="gray"
+          variant="ghost"
+          to="mailto:support@schmalify.com?subject=Support%20Request&body=Hello%20Schmalify%20Support%2C%0A%0AI%20need%20help%20with..."
+          target="_blank"
+        />
+        <UButton icon="mdi:github" color="gray" variant="ghost" to="https://github.com/tahirmahmudzade/" target="_blank" />
+      </template>
+    </UFooter>
   </div>
 </template>
