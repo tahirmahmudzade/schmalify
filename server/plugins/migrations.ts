@@ -12,8 +12,8 @@ export default defineNitroPlugin(async () => {
       .then(() => {
         consola.success('Database migrations done')
       })
-      .catch((err) => {
-        consola.error('Database migrations failed', err)
+      .catch(err => {
+        consola.error('Database migrations failed')
       })
   })
 })
