@@ -88,7 +88,7 @@ function handleSellNowClick() {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col min-h-screen">
     <UHeader>
       <template #logo>
         <span class="font-black text-white text-base md:text-xl tracking-tighter leading-none">Schmalify</span>
@@ -99,7 +99,6 @@ function handleSellNowClick() {
       </template>
 
       <template #right>
-        <!-- <UColorModeButton />/ -->
         <ButtonsSellNowButton :click="handleSellNowClick" />
         <UDropdown :items="items" :popper="{ placement: 'bottom' }">
           <ButtonsProfileButton />
@@ -107,12 +106,15 @@ function handleSellNowClick() {
       </template>
     </UHeader>
 
-    <slot />
+    <!-- Main content -->
+    <div class="flex-1">
+      <slot />
+    </div>
 
+    <!-- Footer -->
     <UDivider label="Schmalify" />
     <UFooter :links="footerLinks">
       <template #left> Copyright © {{ new Date().getFullYear() }} </template>
-
       <template #right>
         <UButton
           icon="skill-icons:instagram"
