@@ -234,7 +234,7 @@ async function onSubmit() {
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" label="Description" name="description">
-                  <UInput v-model="itemData.description" placeholder="Item description (max length: 100 characters)" />
+                  <UInput v-model="itemData.description" placeholder="Item description (max length: 200 characters)" />
                 </UFormGroup>
                 <UFormGroup class="mt-3" label="Category" name="category" required>
                   <USelectMenu v-model="itemData.category" :options="categoryNames" />
