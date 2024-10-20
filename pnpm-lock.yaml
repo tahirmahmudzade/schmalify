@@ -53,6 +53,9 @@ importers:
       nuxt-auth-utils:
         specifier: ^0.4.2
         version: 0.4.2(magicast@0.3.5)(rollup@4.24.0)
+      nuxt-security:
+        specifier: ^2.0.0
+        version: 2.0.0(magicast@0.3.5)(rollup@4.24.0)
       nuxt-typed-router:
         specifier: ^3.7.0
         version: 3.7.0(magicast@0.3.5)(prettier@3.3.3)(rollup@4.24.0)
@@ -2057,6 +2060,10 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
+  basic-auth@2.0.1:
+    resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
+    engines: {node: '>= 0.8'}
+
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
@@ -3690,6 +3697,12 @@ packages:
       '@simplewebauthn/server':
         optional: true
 
+  nuxt-csurf@1.6.3:
+    resolution: {integrity: sha512-GZqafBPn+eEXVVaYEJ+tRtw/OSLHX3BUUqvXPiFhkQztXYdzYaPp6G9pbr26O03wMqApkLCrMhio7i/NqQ5gLg==}
+
+  nuxt-security@2.0.0:
+    resolution: {integrity: sha512-zlcB8uNDLipuJ0r1UHnns4rj8WwIfrni+DQeE8h9PIytCgRCBzuxsf/xNNTKJqXkoV4VGF2XGwrIzM9zdL4xFg==}
+
   nuxt-typed-router@3.7.0:
     resolution: {integrity: sha512-8JMOsChzdjIVtD0x8z5Rs2yawtlp6KMSei7gBVw9xj6prmaSWhBo+sBmVdVnHW+wH1JKgorPtn8Tia9QnnHujA==}
     peerDependencies:
@@ -4643,6 +4656,9 @@ packages:
   uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
 
+  uncsrf@1.1.1:
+    resolution: {integrity: sha512-wH9+N3oNdr2XB3egUKxCR26XTVfYywv2STZYtZLIp8votOf0/9b0axA9gpIHdYfgq/Myfh/HS5e0lQ/+27dj9A==}
+
   unctx@2.3.1:
     resolution: {integrity: sha512-PhKke8ZYauiqh3FEMVNm7ljvzQiph0Mt3GBRve03IJm7ukfaON2OBK795tLwhbyfzknuRRkW0+Ze+CQUmzOZ+A==}
 
@@ -4676,6 +4692,9 @@ packages:
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
+
+  unplugin-remove@1.0.3:
+    resolution: {integrity: sha512-BZMt9v8Y/Z27cY7YQv+DpcW928znjP1cqplBXOirbANiFQtM2YCdiyNAJhHCvjppT0lScNn1aDrQnXqnRp32pQ==}
 
   unplugin-vue-router@0.10.8:
     resolution: {integrity: sha512-xi+eLweYAqolIoTRSmumbi6Yx0z5M0PLvl+NFNVWHJgmE2ByJG1SZbrn+TqyuDtIyln20KKgq8tqmL7aLoiFjw==}
@@ -7075,6 +7094,10 @@ snapshots:
 
   base64-js@1.5.1: {}
 
+  basic-auth@2.0.1:
+    dependencies:
+      safe-buffer: 5.1.2
+
   binary-extensions@2.3.0: {}
 
   bindings@1.5.0:
@@ -7442,8 +7465,7 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  cssfilter@0.0.10:
-    optional: true
+  cssfilter@0.0.10: {}
 
   cssnano-preset-default@7.0.6(postcss@8.4.47):
     dependencies:
@@ -8854,6 +8876,32 @@ snapshots:
       - supports-color
       - webpack-sources
 
+  nuxt-csurf@1.6.3(magicast@0.3.5)(rollup@4.24.0):
+    dependencies:
+      '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@4.24.0)
+      defu: 6.1.4
+      uncsrf: 1.1.1
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+      - webpack-sources
+
+  nuxt-security@2.0.0(magicast@0.3.5)(rollup@4.24.0):
+    dependencies:
+      '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@4.24.0)
+      basic-auth: 2.0.1
+      defu: 6.1.4
+      nuxt-csurf: 1.6.3(magicast@0.3.5)(rollup@4.24.0)
+      pathe: 1.1.2
+      unplugin-remove: 1.0.3(rollup@4.24.0)
+      xss: 1.0.15
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+      - webpack-sources
+
   nuxt-typed-router@3.7.0(magicast@0.3.5)(prettier@3.3.3)(rollup@4.24.0):
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@4.24.0)
@@ -10026,6 +10074,8 @@ snapshots:
 
   uncrypto@0.1.3: {}
 
+  uncsrf@1.1.1: {}
+
   unctx@2.3.1:
     dependencies:
       acorn: 8.12.1
@@ -10087,6 +10137,20 @@ snapshots:
       - webpack-sources
 
   universalify@2.0.1: {}
+
+  unplugin-remove@1.0.3(rollup@4.24.0):
+    dependencies:
+      '@babel/core': 7.25.7
+      '@babel/generator': 7.25.7
+      '@babel/parser': 7.25.7
+      '@babel/traverse': 7.25.7
+      '@rollup/pluginutils': 5.1.2(rollup@4.24.0)
+      magic-string: 0.30.11
+      unplugin: 1.14.1
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+      - webpack-sources
 
   unplugin-vue-router@0.10.8(rollup@4.24.0)(vue-router@4.4.5(vue@3.5.10))(vue@3.5.10):
     dependencies:
@@ -10414,7 +10478,6 @@ snapshots:
     dependencies:
       commander: 2.20.3
       cssfilter: 0.0.10
-    optional: true
 
   xxhash-wasm@1.0.2: {}
 

@@ -10,7 +10,18 @@ export default defineNuxtConfig({
     'nuxt-typed-router',
     '@pinia/nuxt',
     '@vueuse/nuxt',
+    'nuxt-security',
   ],
+
+  security: {
+    headers: {
+      crossOriginEmbedderPolicy: 'unsafe-none',
+      contentSecurityPolicy: {
+        'img-src': ["'self'", 'data:', 'blob:'],
+        'script-src': ["'self'", 'https:', "'unsafe-inline'", "'strict-dynamic'", "'nonce-{{nonce}}'", "'unsafe-eval'"],
+      },
+    },
+  },
 
   experimental: { payloadExtraction: true, appManifest: true },
 
