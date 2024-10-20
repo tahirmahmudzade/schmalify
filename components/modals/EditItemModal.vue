@@ -17,17 +17,26 @@ const imageFiles = ref<File[]>([]) // New images selected by the user
 const imagePreviews = ref<string[]>([]) // Previews of new images
 
 // Zod schema for validation
-const schema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, { message: 'Title is required' })
-    .max(35, { message: 'Title must be at most 35 characters long' }),
-  description: z.string().trim().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
-  price: z.number().min(1, { message: 'Price must be greater than 0' }).max(5000, { message: 'Price must be at most 5000' }),
-  condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
-  status: z.enum(['available', 'sold'], { message: 'Status is required' }),
-})
+const schema = computed(() =>
+  z.object({
+    title: z
+      .string()
+      .trim()
+      .min(1, { message: 'Title is required' })
+      .max(35, { message: 'Title must be at most 35 characters long' }),
+    description: z.string().trim().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
+    // Only validate price if the category is not "Free" or price is not 0
+    ...(itemData.category?.name !== 'Free' &&
+      itemSchemaData.price !== 0 && {
+        price: z
+          .number()
+          .min(1, { message: 'Price must be greater than 0' })
+          .max(5000, { message: 'Price must be at most 5000' }),
+      }),
+    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
+    status: z.enum(['available', 'sold'], { message: 'Status is required' }),
+  }),
+)
 
 const itemSchemaData = reactive({
   title: itemData.title,
@@ -41,7 +50,7 @@ const itemSchemaData = reactive({
 const initialData = reactive({ ...itemSchemaData })
 
 const isFormInvalid = computed(() => {
-  const result = schema.safeParse(itemSchemaData)
+  const result = schema.value.safeParse(itemSchemaData)
   return !result.success
 })
 
@@ -49,7 +58,7 @@ const isFormUnchanged = computed(() => {
   return (
     itemSchemaData.title === initialData.title &&
     itemSchemaData.description === initialData.description &&
-    itemSchemaData.price === initialData.price &&
+    (itemSchemaData.price === initialData.price || itemSchemaData.category === 'Free') &&
     itemSchemaData.condition === initialData.condition &&
     itemSchemaData.status === initialData.status &&
     imageFiles.value.length === 0
@@ -207,7 +216,7 @@ async function onSubmit() {
                 <p class="text-sm text-gray-500 mt-1">Maximum of 3 images, size limit: 4 MB each</p>
               </div>
 
-              <UFormGroup class="mt-3" label="Price" name="price">
+              <UFormGroup v-if="itemData.category?.name !== 'Free'" class="mt-3" label="Price" name="price">
                 <UInput v-model.number="itemSchemaData.price" type="number" placeholder="Edit price in euros" />
               </UFormGroup>
 
@@ -222,7 +231,7 @@ async function onSubmit() {
             <UButton
               color="white"
               :loading="buttonLoading"
-              :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
+              :icon="isFormInvalid || isFormUnchanged ? 'i-flat-color-icons-lock' : ''"
               class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
               label="Update Item"
               :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } } }"

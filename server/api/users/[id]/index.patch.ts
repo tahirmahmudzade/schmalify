@@ -25,18 +25,18 @@ export default defineEventHandler(async event => {
 
     const body = await readValidatedBody(event, userSchema.parse)
 
+    if (body.email) {
+      const isUser = await getUserByEmail(body.email)
+
+      if (isUser && isUser.email?.trim() !== body.email) {
+        throw createError({ statusCode: 400, message: 'User with this email already exists, please use another email' })
+      }
+    }
+
     const updateUser = await updateUserById(decodedUserId, body)
 
     if (!updateUser) {
       throw createError({ statusCode: 404, message: 'User not found' })
-    }
-
-    if (body.email) {
-      const isUser = await getUserByEmail(body.email)
-
-      if (isUser) {
-        throw createError({ statusCode: 400, message: 'User with this email already exists, please login' })
-      }
     }
 
     return { statusCode: 200, message: 'Profile updated successfully' }
