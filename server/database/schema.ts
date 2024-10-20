@@ -1,44 +1,67 @@
 import { relations, sql } from 'drizzle-orm'
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
-export const user = sqliteTable('user', {
-  id: text('id').primaryKey().unique(),
-  email: text('email').unique(),
-  firstName: text('first_name'),
-  lastName: text('last_name'),
-  password: text('password'),
-  username: text('username'),
-  location: text('location'), // optional, could help filter by location
-  avatar: text('avatar'), // optional profile picture
-  phone: text('phone'), // optional contact number
-  passwordResetToken: text('password_reset_token'),
-  admin: integer('admin', { mode: 'boolean' }).default(false),
-  isGuest: integer('is_guest', { mode: 'boolean' }).default(false),
-  createdAt: text('created_at').default(sql`(datetime('now'))`),
-})
+export const user = sqliteTable(
+  'user',
+  {
+    id: text('id').primaryKey().unique(),
+    email: text('email').unique(),
+    firstName: text('first_name'),
+    lastName: text('last_name'),
+    password: text('password'),
+    username: text('username'),
+    location: text('location'), // optional, could help filter by location
+    avatar: text('avatar'), // optional profile picture
+    phone: text('phone'), // optional contact number
+    passwordResetToken: text('password_reset_token'),
+    admin: integer('admin', { mode: 'boolean' }).default(false),
+    isGuest: integer('is_guest', { mode: 'boolean' }).default(false),
+    createdAt: text('created_at').default(sql`(datetime('now'))`),
+  },
+  table => {
+    return { emailIdx: uniqueIndex('email_idx').on(table.email) }
+  },
+)
 
-export const item = sqliteTable('item', {
-  id: text('id').primaryKey().unique(),
-  title: text('title', { length: 35 }).notNull(),
-  description: text('description', { length: 400 }),
-  images: text('image', { mode: 'json' })
-    .$type<string[]>()
-    .default(sql`(json_array())`), // optional image for item
-  price: integer('price').notNull(), // store price as integer for cents (e.g., 1000 = €10.00)
-  category_id: text('category_id').references(() => category.id, { onDelete: 'set null', onUpdate: 'cascade' }), // link to category table
-  seller_id: text('seller_id').references(() => user.id, { onDelete: 'cascade', onUpdate: 'cascade' }), // user selling the item
-  condition: text('condition', { enum: ['new', 'like new', 'very good', 'good', 'fair', 'poor'] }), // e.g., new, like new, used
-  status: text('status', { enum: ['available', 'sold'] }).default('available'), // e.g., available, sold
-  createdAt: text('created_at').default(sql`(datetime('now'))`),
-  pending: integer('pending', { mode: 'boolean' }).default(true),
-})
+export const item = sqliteTable(
+  'item',
+  {
+    id: text('id').primaryKey().unique(),
+    title: text('title', { length: 35 }).notNull(),
+    description: text('description', { length: 400 }),
+    images: text('image', { mode: 'json' })
+      .$type<string[]>()
+      .default(sql`(json_array())`), // optional image for item
+    price: integer('price').notNull(), // store price as integer for cents (e.g., 1000 = €10.00)
+    category_id: text('category_id').references(() => category.id, { onDelete: 'set null', onUpdate: 'cascade' }), // link to category table
+    seller_id: text('seller_id').references(() => user.id, { onDelete: 'cascade', onUpdate: 'cascade' }), // user selling the item
+    condition: text('condition', { enum: ['new', 'like new', 'very good', 'good', 'fair', 'poor'] }), // e.g., new, like new, used
+    status: text('status', { enum: ['available', 'sold'] }).default('available'), // e.g., available, sold
+    createdAt: text('created_at').default(sql`(datetime('now'))`),
+    pending: integer('pending', { mode: 'boolean' }).default(true),
+  },
+  table => {
+    return {
+      titleIdx: index('title_idx').on(table.title),
+      descriptionIdx: index('description_idx').on(table.description),
+      categoryIdx: index('category_idx').on(table.category_id),
+      sellerIdx: index('seller_idx').on(table.seller_id),
+    }
+  },
+)
 
-export const category = sqliteTable('category', {
-  id: text('id').primaryKey().unique(),
-  name: text('name').notNull().unique(),
-  img: text('img'), // optional image for category
-  createdAt: text('created_at').default(sql`(datetime('now'))`),
-})
+export const category = sqliteTable(
+  'category',
+  {
+    id: text('id').primaryKey().unique(),
+    name: text('name').notNull().unique(),
+    img: text('img'), // optional image for category
+    createdAt: text('created_at').default(sql`(datetime('now'))`),
+  },
+  table => {
+    return { nameIdx: uniqueIndex('name_idx').on(table.name) }
+  },
+)
 
 export const userRelations = relations(user, ({ many }) => ({
   items: many(item),
