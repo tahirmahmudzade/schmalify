@@ -9,17 +9,30 @@ export default defineNuxtConfig({
     'nuxt-auth-utils',
     'nuxt-typed-router',
     '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt',
     'nuxt-security',
   ],
 
   security: {
+    requestSizeLimiter: {
+      maxRequestSizeInBytes: 2000000,
+      maxUploadFileRequestInBytes: 12000000,
+      throwError: true,
+    },
     headers: {
       crossOriginEmbedderPolicy: 'unsafe-none',
       contentSecurityPolicy: {
         'img-src': ["'self'", 'data:', 'blob:'],
-        'script-src': ["'self'", 'https:', "'unsafe-inline'", "'strict-dynamic'", "'nonce-{{nonce}}'", "'unsafe-eval'"],
+        'script-src': ["'self'", 'https:', "'strict-dynamic'", "'nonce-{{nonce}}'"],
       },
+      xXSSProtection: '1; mode=block',
+    },
+  },
+  nitro: {
+    routeRules: {
+      '/api/auth/reset-password': { security: { rateLimiter: { tokensPerInterval: 6, interval: 60000, throwError: true } } },
+      '/api/auth/login': { security: { rateLimiter: { tokensPerInterval: 6, interval: 60000, throwError: true } } },
     },
   },
 
