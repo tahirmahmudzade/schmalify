@@ -8,13 +8,13 @@ export function useMyItems() {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 
-  const { refetchMyItems } = storeToRefs(store)
+  const { refetchEntities } = storeToRefs(store)
 
   return useFetch<(Item & { category: { name: string } | null })[]>(`/api/users/${user.value.id}/myItems`, {
     default: () => [],
     getCachedData(key, nuxtApp) {
-      if (refetchMyItems.value) {
-        refetchMyItems.value = false
+      if (refetchEntities.value.myItems) {
+        refetchEntities.value.myItems = false
         return
       }
       return nuxtApp.payload.data[key] || nuxtApp.static.data[key]

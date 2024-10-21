@@ -5,7 +5,7 @@ export function useDeleteItem(itemId: string, refresh: () => Promise<void>) {
   const toast = useToast()
   const store = useStore()
 
-  const { refetchItems, refetchMyItems, refetchLatestItems } = storeToRefs(store)
+  const { refetchEntities } = storeToRefs(store)
 
   modal.open(ConfirmModal, {
     title: 'Delete Item',
@@ -15,9 +15,9 @@ export function useDeleteItem(itemId: string, refresh: () => Promise<void>) {
       // @ts-ignore
       await $fetch(`/api/items/${itemId}`, { method: 'DELETE' })
       toast.add({ title: 'Item deleted successfully' })
-      refetchItems.value = true
-      refetchMyItems.value = true
-      refetchLatestItems.value = true
+      refetchEntities.value.items = true
+      refetchEntities.value.myItems = true
+      refetchEntities.value.latestItems = true
       refresh()
       modal.close()
     },
