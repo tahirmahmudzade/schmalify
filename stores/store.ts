@@ -1,8 +1,17 @@
-export const useStore = defineStore('store', () => {
-  const refetchItems = ref(false)
-  const refetchMyItems = ref(false)
-  const refetchCategories = ref(false)
-  const refetchLatestItems = ref(false)
+import { defineStore } from 'pinia'
 
-  return { refetchItems, refetchMyItems, refetchCategories, refetchLatestItems }
-})
+export const useStore = defineStore(
+  'store',
+  () => {
+    const refetchEntities = reactive({ items: false, myItems: false, categories: false, latestItems: false })
+
+    const loginValidation = reactive({ failedAttempts: 0, lockoutExpiration: null as number | null })
+
+    const resetPasswordValidation = reactive({ failedAttempts: 0, lockoutExpiration: null as number | null })
+
+    return { refetchEntities, loginValidation, resetPasswordValidation }
+  },
+  {
+    persist: { pick: ['loginValidation', 'resetPasswordValidation'] },
+  },
+)

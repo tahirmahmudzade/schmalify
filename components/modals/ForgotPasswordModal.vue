@@ -48,6 +48,28 @@ const isResetFormInvalid = computed(() => {
   return !result.success
 })
 
+// Reactive current time
+const now = useNow({ interval: 1000 })
+
+// Import store and get resetPasswordValidation
+const store = useStore()
+const { resetPasswordValidation } = storeToRefs(store)
+
+// Computed properties for lockout
+const isResetLockedOut = computed(() => {
+  const lockoutExpiration = resetPasswordValidation.value.lockoutExpiration
+  return lockoutExpiration !== null && now.value.getTime() < lockoutExpiration
+})
+
+const resetLockoutRemainingTime = computed(() => {
+  const lockoutExpiration = resetPasswordValidation.value.lockoutExpiration
+  if (lockoutExpiration !== null) {
+    const remaining = lockoutExpiration - now.value.getTime()
+    return remaining > 0 ? Math.ceil(remaining / 1000) : 0
+  }
+  return 0
+})
+
 function onClose() {
   emit('close')
 }
@@ -55,7 +77,10 @@ function onClose() {
 async function onSubmitEmail() {
   emailLoading.value = true
   try {
-    const res = await $fetch('/api/auth/forgot-password', { method: 'POST', body: { email: emailState.email.trim() } })
+    const res = await $fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      body: { email: emailState.email.trim() },
+    })
 
     if (res.statusCode === 404) {
       toast.add({ color: 'red', title: res.message })
@@ -66,7 +91,7 @@ async function onSubmitEmail() {
   } catch (err: any) {
     toast.add({
       color: 'red',
-      title: err.data.message || 'Something  went wrong, please try again later or contact support.',
+      title: err.data?.message || 'Something went wrong, please try again later or contact support.',
     })
   } finally {
     emailLoading.value = false
@@ -74,6 +99,10 @@ async function onSubmitEmail() {
 }
 
 async function onSubmitReset() {
+  if (isResetLockedOut.value) {
+    return
+  }
+
   resetLoading.value = true
   try {
     await $fetch('/api/auth/reset-password', {
@@ -85,12 +114,26 @@ async function onSubmitReset() {
         email: emailState.email.trim(),
       },
     })
+
+    // Reset lockout state upon successful reset
+    resetPasswordValidation.value.failedAttempts = 0
+    resetPasswordValidation.value.lockoutExpiration = null
+
     toast.add({ color: 'green', title: 'Password reset successfully' })
     onClose()
   } catch (err: any) {
-    console.log('Error resetting password', err)
+    const message = err.data?.message || 'Error resetting password'
+    toast.add({ color: 'red', title: message })
 
-    toast.add({ color: 'red', title: err.data.message || 'Error resetting password' })
+    // Increment the failed attempts
+    resetPasswordValidation.value.failedAttempts += 1
+
+    if (resetPasswordValidation.value.failedAttempts >= 5) {
+      // Set lockout expiration time to current time + 1 minute
+      resetPasswordValidation.value.lockoutExpiration = now.value.getTime() + 60 * 1000 // 1 minute
+      // Reset failed attempts to 2 for subsequent lockouts
+      resetPasswordValidation.value.failedAttempts = 0
+    }
   } finally {
     resetLoading.value = false
   }
@@ -149,12 +192,16 @@ async function onSubmitReset() {
                 <UButton
                   color="white"
                   class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                  label="Reset Password"
+                  :label="isResetLockedOut ? `Wait ${resetLockoutRemainingTime}s` : 'Reset Password'"
                   :ui="{ rounded: 'rounded-lg' }"
-                  :disabled="isResetFormInvalid"
+                  :disabled="isResetFormInvalid || isResetLockedOut"
                   :loading="resetLoading"
                   @click="onSubmitReset"
                 />
+                <!-- Lockout Message -->
+                <p v-if="isResetLockedOut" class="text-red-500 mt-2">
+                  Too many failed attempts. Please wait {{ resetLockoutRemainingTime }} seconds before trying again.
+                </p>
               </div>
 
               <UButton
@@ -173,22 +220,22 @@ async function onSubmitReset() {
 </template>
 
 <style scoped>
-/* Reuse the modal styles from your SignInModal */
 .modal-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Use fixed positioning to cover the entire viewport */
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  padding: 1rem;
-  pointer-events: none;
+  padding: 1rem; /* Adjust padding as needed */
+  pointer-events: none; /* Allow clicks to pass through */
 }
 
 .modal-content {
-  pointer-events: auto;
+  pointer-events: auto; /* Enable clicks on modal content */
 }
 
 @media (max-height: 500px) {

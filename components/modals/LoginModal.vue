@@ -5,6 +5,12 @@ const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void; (e: 'forgot
 
 const toast = useToast()
 
+const store = useStore()
+
+const now = useNow({ interval: 1000 })
+
+const { loginValidation } = storeToRefs(store)
+
 const schema = z.object({
   email: z
     .string()
@@ -28,11 +34,28 @@ const isFormInvalid = computed(() => {
   return !result.success
 })
 
+const isLockedOut = computed(() => {
+  const lockoutExpiration = loginValidation.value.lockoutExpiration
+  return lockoutExpiration !== null && now.value.getTime() < lockoutExpiration
+})
+
+const lockoutRemainingTime = computed(() => {
+  const lockoutExpiration = loginValidation.value.lockoutExpiration
+  if (lockoutExpiration !== null) {
+    const remaining = lockoutExpiration - now.value.getTime()
+    return remaining > 0 ? Math.ceil(remaining / 1000) : 0
+  }
+  return 0
+})
+
 function onClose() {
   emit('close', false)
 }
 
 async function onSubmit() {
+  if (isLockedOut.value) {
+    return
+  }
   loading.value = true
   try {
     await $fetch<{ statusCode: number; message: string }>('/api/auth/login', {
@@ -40,11 +63,26 @@ async function onSubmit() {
       body: { email: credentials.email.trim(), password: credentials.password.trim() },
     })
 
+    loginValidation.value.failedAttempts = 0
+    loginValidation.value.lockoutExpiration = null
+
     onClose()
   } catch (err: any) {
     loading.value = false
     credentials.password = ''
-    toast.add({ color: 'red', title: err.data.message || 'Invalid email or password' })
+    const message =
+      err.data.statusCode === 429
+        ? 'You have exceeded the maximum number of login attempts, please try again in one minute.'
+        : err.data.message
+
+    toast.add({ color: 'red', title: message || 'Invalid email or password' })
+    loginValidation.value.failedAttempts += 1
+
+    if (loginValidation.value.failedAttempts >= 5) {
+      // Set lockout expiration time to current time + 1 minute
+      loginValidation.value.lockoutExpiration = Date.now() + 60 * 1000 // 1 minute
+      loginValidation.value.failedAttempts = 0
+    }
   }
 }
 
@@ -101,19 +139,25 @@ function onForgotPassword() {
                   </a>
                 </div>
               </UForm>
+              <!-- Existing Login Button -->
               <UButton
                 color="white"
-                :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
+                :icon="isFormInvalid || isLockedOut ? 'i-flat-color-icons-lock' : ''"
                 class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                label="Log in"
+                :label="isLockedOut ? `Wait ${lockoutRemainingTime}s` : 'Log in'"
                 :ui="{
                   rounded: 'rounded-lg',
                   color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
                 }"
                 :loading="loading"
-                :disabled="isFormInvalid"
+                :disabled="isFormInvalid || isLockedOut"
                 @click="onSubmit"
               />
+
+              <!-- Lockout Message -->
+              <p v-if="isLockedOut" class="text-red-500 mt-2">
+                Too many failed attempts. Please wait {{ lockoutRemainingTime }} seconds before trying again.
+              </p>
               <p class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300">
                 Not registered yet?
                 <span @click="onRegister" class="font-bold cursor-pointer text-blue-500 dark:text-blue-400">
