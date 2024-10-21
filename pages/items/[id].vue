@@ -28,6 +28,16 @@ if (error.value || !itemData.value) {
 
 const { item } = itemData.value
 
+useSeoMeta({
+  title: `${item.title} - ${item.price} €`,
+  description: () => `${item.description}`,
+  ogTitle: () => `${item.title} - ${item.price} €`,
+  ogDescription: () => `${item.description}`,
+  ogImage: () => `/api/blob/${item.id}/serveImg?fileName=${item.images?.[0]}`,
+  ogUrl: () => `${canonicalUrl}/items/${item.id}`,
+  ogType: 'website',
+})
+
 const imagesUrl = item.images?.map(image => `/api/blob/${item.id}/serveImg?fileName=${image}`) || []
 
 const product = reactive({

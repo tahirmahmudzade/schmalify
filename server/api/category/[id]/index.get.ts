@@ -2,7 +2,7 @@ import { Category, Item } from '~/server/database/drizzle'
 import { getCategoryByName } from '~/server/service/category'
 
 export default defineEventHandler(
-  async (event): Promise<{ statusCode: number; category: { name: string; items: Item[] } }> => {
+  async (event): Promise<{ statusCode: number; category: { name: string; img: string | null; items: Item[] } }> => {
     const name = getRouterParam(event, 'id')
 
     if (!name) {
@@ -23,7 +23,7 @@ export default defineEventHandler(
         throw createError({ statusCode: 404, message: 'Category not found' })
       }
 
-      const transformedCategory: { name: string; items: Item[] } = {
+      const transformedCategory: { name: string; img: string | null; items: Item[] } = {
         ...category,
         items: category.items.map(item => ({
           ...item,

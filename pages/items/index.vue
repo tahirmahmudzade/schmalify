@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import type { Item } from '~/server/database/drizzle'
 
+useSeoMeta({
+  title: `All Items`,
+  description: () => `Discover the best items`,
+  ogTitle: () => `All Items`,
+  ogDescription: () => `Discover the best items`,
+  ogImage: () => `main-logo.png`,
+  ogUrl: () => `${canonicalUrl}/items`,
+  ogType: 'website',
+})
+
 const { data: categoryData } = useFetch('/api/category')
 
 const limit = 16

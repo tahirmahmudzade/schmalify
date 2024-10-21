@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
 
+useSeoMeta({
+  title: siteName,
+  description: siteDescription,
+  ogTitle: siteName,
+  ogDescription: siteDescription,
+  ogImage: `/img/main-logo.png`,
+  ogUrl: canonicalUrl,
+  ogType: 'website',
+})
+
 const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: itemsError }] = await Promise.all([
   useFetch('/api/category'),
   useLatestItems(),

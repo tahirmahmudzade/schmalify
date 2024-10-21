@@ -1,10 +1,5 @@
 import pkg from './package.json'
-
-const canonicalUrl = 'https://www.schmalify.com'
-const appName = 'Schmalify'
-const siteName = 'Student Deals in Schmalkalden!'
-const siteDescription =
-  'Second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community.'
+import { appName, canonicalUrl, siteDescription, siteName } from './utils/const'
 
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
