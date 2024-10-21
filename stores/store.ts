@@ -11,7 +11,5 @@ export const useStore = defineStore(
 
     return { refetchEntities, loginValidation, resetPasswordValidation }
   },
-  {
-    persist: { pick: ['loginValidation', 'resetPasswordValidation'] },
-  },
+  { persist: { pick: ['loginValidation', 'resetPasswordValidation'] } },
 )

@@ -35,7 +35,7 @@ function handleDelete(itemId: string) {
 
 <template>
   <div class="container mx-auto">
-    <ProductFilter :categories="categoryData?.categories" title="Your Listings" description="" />
+    <ProductFilter :categories="categoryData?.categories" title="My Listings" description="" />
     <!-- Items Section -->
     <div class="px-4 py-8">
       <div

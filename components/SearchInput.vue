@@ -103,7 +103,7 @@ const onInput = () => {
       @input="onInput"
       @blur="hideDropdown"
     >
-      <template #trailing>
+      <template #leading>
         <Icon name="i-material-symbols-search" style="color: black" :size="iconSize" />
       </template>
     </UInput>
