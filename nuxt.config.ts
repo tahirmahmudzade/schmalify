@@ -39,11 +39,6 @@ export default defineNuxtConfig({
     },
   },
 
-  routeRules: {
-    '/categories/**': { prerender: true },
-    '/about': { prerender: true },
-  },
-
   experimental: { payloadExtraction: true, appManifest: true },
 
   app: {
