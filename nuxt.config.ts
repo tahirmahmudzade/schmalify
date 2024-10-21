@@ -1,4 +1,11 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import pkg from './package.json'
+
+const canonicalUrl = 'https://www.schmalify.com'
+const appName = 'Schmalify'
+const siteName = 'Student Deals in Schmalkalden!'
+const siteDescription =
+  'Second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community.'
+
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
   modules: [
@@ -15,15 +22,11 @@ export default defineNuxtConfig({
   ],
 
   security: {
-    requestSizeLimiter: {
-      maxRequestSizeInBytes: 2000000,
-      maxUploadFileRequestInBytes: 12000000,
-      throwError: true,
-    },
+    requestSizeLimiter: { maxRequestSizeInBytes: 2000000, maxUploadFileRequestInBytes: 12000000, throwError: true },
     headers: {
       crossOriginEmbedderPolicy: 'unsafe-none',
       contentSecurityPolicy: {
-        'img-src': ["'self'", 'data:', 'blob:'],
+        'img-src': ["'self'", 'data:', 'blob:', 'https://*.googleusercontent.com'],
         'script-src': ["'self'", 'https:', "'strict-dynamic'", "'nonce-{{nonce}}'"],
       },
       xXSSProtection: '1; mode=block',
@@ -36,9 +39,27 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    '/categories/**': { prerender: true },
+    '/about': { prerender: true },
+  },
+
   experimental: { payloadExtraction: true, appManifest: true },
 
-  app: { pageTransition: { name: 'page', mode: 'out-in' }, layoutTransition: { name: 'layout', mode: 'out-in' } },
+  app: {
+    head: {
+      htmlAttrs: { lang: 'en' },
+      title: appName,
+      titleTemplate: `%s - ${siteName} `,
+      link: [{ rel: 'icon', href: '/icons/icon_144x144.png', type: 'image/png', sizes: 'any' }],
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=5' },
+        { name: 'description', content: siteDescription },
+      ],
+    },
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
+  },
 
   css: ['~/assets/css/transitions.css'],
   colorMode: { preference: 'dark', fallback: 'dark' },
@@ -53,6 +74,8 @@ export default defineNuxtConfig({
     mailgunFromEmail: process.env.MAILGUN_FROM_EMAIL,
     jwtSecret: process.env.JWT_SECRET,
     oauth: { google: { clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET } },
+
+    public: { siteUrl: process.env.NUXT_PUBLIC_SITE_URL, canonicalUrl, buildDate: new Date(), appName: pkg.name },
   },
 
   $development: { hub: { database: true, blob: true, kv: true, remote: true } },
