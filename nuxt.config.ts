@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    experimental: { websocket: true },
     routeRules: {
       '/api/auth/reset-password': { security: { rateLimiter: { tokensPerInterval: 6, interval: 60000, throwError: true } } },
       '/api/auth/login': { security: { rateLimiter: { tokensPerInterval: 6, interval: 60000, throwError: true } } },
