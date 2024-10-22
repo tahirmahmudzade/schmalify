@@ -11,6 +11,8 @@ useSeoMeta({
   ogType: 'website',
 })
 
+const nonce = useNonce()
+
 const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: itemsError }] = await Promise.all([
   useFetch('/api/category'),
   useLatestItems(),
@@ -54,13 +56,15 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
           :key="category.name"
           class="bg-gray-200 dark:bg-gray-800 flex-none w-36 flex flex-col items-center p-4 rounded-lg shadow-md"
         >
-          <img
+          <NuxtImg
             :src="`/img/categories/${category.img!}`"
             :alt="category.name"
-            loading="lazy"
+            :nonce="nonce"
             class="w-full h-36 object-cover rounded-lg"
+            loading="lazy"
             format="webp"
-            @error="event => handleImageError(event, 'category')"
+            placeholder="/img/categories/default-category.webp"
+            @error="event => handleImageError(event as Event, 'category')"
           />
           <p class="text-gray-900 dark:text-gray-100 font-semibold text-center mt-4">
             {{ category.name }}
@@ -91,9 +95,9 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
           </div>
 
           <img
-            :src="`api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
-            loading="lazy"
+            :src="`/api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             :alt="item.title"
+            loading="lazy"
             class="w-full h-36 object-cover rounded-t-lg"
             @error="event => handleImageError(event, 'item')"
           />

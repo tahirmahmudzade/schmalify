@@ -21,8 +21,9 @@ export default defineNuxtConfig({
     headers: {
       crossOriginEmbedderPolicy: 'unsafe-none',
       contentSecurityPolicy: {
-        'img-src': ["'self'", 'data:', 'blob:', 'https://*.googleusercontent.com'],
+        'img-src': ["'self'", 'data:', 'blob:', 'https:', 'https://*.googleusercontent.com'],
         'script-src': ["'self'", 'https:', "'strict-dynamic'", "'nonce-{{nonce}}'"],
+        'script-src-attr': ["'self'", "'nonce-{{nonce}}'"],
       },
       xXSSProtection: '1; mode=block',
     },
@@ -55,7 +56,7 @@ export default defineNuxtConfig({
   colorMode: { preference: 'dark', fallback: 'dark' },
 
   ui: { global: true },
-  image: { dir: 'public' },
+  image: { dir: 'public', format: ['webp', 'avif'], domains: ['schmalify.com'] },
   icon: { clientBundle: { scan: true, sizeLimitKb: 256 } },
 
   runtimeConfig: {
