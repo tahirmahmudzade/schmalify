@@ -6,7 +6,7 @@ useSeoMeta({
   description: siteDescription,
   ogTitle: siteName,
   ogDescription: siteDescription,
-  ogImage: `/img/main-logo.png`,
+  ogImage: `/main-logo.png`,
   ogUrl: canonicalUrl,
   ogType: 'website',
 })

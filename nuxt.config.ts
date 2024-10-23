@@ -43,7 +43,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'en' },
       title: appName,
       titleTemplate: `%s - ${siteName} `,
-      link: [{ rel: 'icon', href: '/icons/icon_144x144.png', type: 'image/png', sizes: 'any' }],
+      link: [{ rel: 'icon', href: '/main-logo.png', type: 'image/png', sizes: 'any' }],
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=5' },
         { name: 'description', content: siteDescription },
