@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
+import { joinURL } from 'ufo'
+
+const title = 'Schmalify: Student Deals in Schmalkalden!'
+const description =
+  'Second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community.'
 
 useSeoMeta({
-  title: siteName,
-  description: siteDescription,
-  ogTitle: siteName,
-  ogDescription: siteDescription,
-  ogImage: `/main-logo.png`,
-  ogUrl: canonicalUrl,
-  ogType: 'website',
+  title,
+  ogTitle: title,
+  description: description,
+  ogDescription: description,
+  ogImage: joinURL('https://www.schmalify.com', '/main-logo.png'),
+  twitterImage: joinURL('https://www.schmalify.com', '/main-logo.png'),
 })
 
 const nonce = useNonce()

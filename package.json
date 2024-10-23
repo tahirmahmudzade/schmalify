@@ -30,6 +30,7 @@
     "nuxt-typed-router": "^3.7.0",
     "pinia-plugin-persistedstate": "^4.1.1",
     "tailwindcss": "^3.4.13",
+    "ufo": "^1.5.4",
     "vue": "latest",
     "vue-router": "^4.4.5",
     "zod": "^3.23.8"

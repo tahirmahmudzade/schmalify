@@ -59,6 +59,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.13
         version: 3.4.13
+      ufo:
+        specifier: ^1.5.4
+        version: 1.5.4
       vue:
         specifier: latest
         version: 3.5.10

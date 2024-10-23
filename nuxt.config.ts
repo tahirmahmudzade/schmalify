@@ -1,5 +1,5 @@
 import pkg from './package.json'
-import { appName, canonicalUrl, siteDescription, siteName } from './utils/const'
+import { canonicalUrl } from './utils/const'
 
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
@@ -38,20 +38,7 @@ export default defineNuxtConfig({
 
   experimental: { payloadExtraction: true, appManifest: true },
 
-  app: {
-    head: {
-      htmlAttrs: { lang: 'en' },
-      title: appName,
-      titleTemplate: `%s - ${siteName} `,
-      link: [{ rel: 'icon', href: '/main-logo.png', type: 'image/png', sizes: 'any' }],
-      meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=5' },
-        { name: 'description', content: siteDescription },
-      ],
-    },
-    pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'layout', mode: 'out-in' },
-  },
+  app: { pageTransition: { name: 'page', mode: 'out-in' }, layoutTransition: { name: 'layout', mode: 'out-in' } },
 
   css: ['~/assets/css/transitions.css'],
   colorMode: { preference: 'dark', fallback: 'dark' },
@@ -76,5 +63,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   imports: { dirs: ['composables/**'] },
   vue: { propsDestructure: true },
-  compatibilityDate: '2024-09-12',
+  future: { compatibilityVersion: 4 },
+  compatibilityDate: '2024-10-23',
 })
