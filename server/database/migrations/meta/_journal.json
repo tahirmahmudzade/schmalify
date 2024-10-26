@@ -29,6 +29,20 @@
       "when": 1729405369209,
       "tag": "0003_chilly_boomer",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1729836420944,
+      "tag": "0004_lame_klaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1729836587971,
+      "tag": "0005_workable_wiccan",
+      "breakpoints": true
     }
   ]
 }

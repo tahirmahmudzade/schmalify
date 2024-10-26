@@ -19,7 +19,7 @@ export const user = sqliteTable(
     createdAt: text('created_at').default(sql`(datetime('now'))`),
   },
   table => {
-    return { emailIdx: uniqueIndex('email_idx').on(table.email) }
+    return { emailIdx: uniqueIndex('email_idx').on(table.email), usernameIdx: index('username_idx').on(table.username) }
   },
 )
 
@@ -63,6 +63,21 @@ export const category = sqliteTable(
   },
 )
 
+export const conversation = sqliteTable(
+  'conversation',
+  {
+    id: text('id').primaryKey().unique(),
+    participants: text('participants', { mode: 'json' }).$type<string[]>(), // Array of user IDs
+    lastUpdated: text('last_updated').default(sql`(datetime('now'))`),
+  },
+  table => {
+    return {
+      lastUpdatedIdx: index('last_updated_idx').on(table.lastUpdated),
+      participantsIdx: index('participants_idx').on(table.participants),
+    }
+  },
+)
+
 export const userRelations = relations(user, ({ many }) => ({
   items: many(item),
   // transactions: many(transaction),
@@ -72,14 +87,8 @@ export const userRelations = relations(user, ({ many }) => ({
 }))
 
 export const itemRelations = relations(item, ({ one }) => ({
-  category: one(category, {
-    fields: [item.category_id],
-    references: [category.id], // link category.id to category.id
-  }),
-  seller: one(user, {
-    fields: [item.seller_id], // link seller_id to user.id
-    references: [user.id], // link user.id to user.id
-  }),
+  category: one(category, { fields: [item.category_id], references: [category.id] }),
+  seller: one(user, { fields: [item.seller_id], references: [user.id] }),
   // transaction: one(transaction),
 }))
 
