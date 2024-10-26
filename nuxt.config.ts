@@ -57,12 +57,12 @@ export default defineNuxtConfig({
     public: { siteUrl: process.env.NUXT_PUBLIC_SITE_URL, canonicalUrl, buildDate: new Date(), appName: pkg.name },
   },
 
-  $development: { hub: { database: true, blob: true, kv: true, remote: true } },
-  hub: { database: true, blob: true, kv: true, remote: true },
+  $development: { hub: { database: true, blob: true, kv: true, remote: 'production' } },
+  hub: { database: true, blob: true, kv: true, remote: 'production' },
 
   devtools: { enabled: true },
   imports: { dirs: ['composables/**'] },
   vue: { propsDestructure: true },
   future: { compatibilityVersion: 4 },
-  compatibilityDate: '2024-10-23',
+  compatibilityDate: '2024-09-25',
 })
