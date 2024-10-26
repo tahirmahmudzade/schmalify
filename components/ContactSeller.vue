@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { DropdownItem } from '#ui/types'
+import AlertModal from './modals/AlertModal.vue'
 
 const { status, phone, title } = defineProps<{ status: 'available' | 'sold' | null; phone: string; title: string }>()
+
+const { loggedIn } = useUserSession()
 
 const isChatboxOpen = useState<boolean>('is-chatbox-open')
 
@@ -10,7 +13,6 @@ function getWhatsappLink() {
   const message = `Hi, I'm interested in your item "${title}". Is it still available?`
 
   const formattedPhone = number.replace(/[^0-9]/g, '')
-
   return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`
 }
 
@@ -20,7 +22,16 @@ const contactDropdownItems: DropdownItem[][] = [
       label: 'Chatbox',
       icon: 'material-symbols:chat-outline',
       iconClass: 'bg-blue-500',
-      click: () => (isChatboxOpen.value = true),
+      click: () => {
+        loggedIn.value
+          ? (isChatboxOpen.value = true)
+          : useModal().open(AlertModal, {
+              title: 'Not Logged In',
+              description: 'You need to be logged in to chat with the seller.',
+              confirmLabel: 'Login',
+              confirmAction: () => useLoginModal(),
+            })
+      },
     },
     { label: 'Whatsapp', icon: 'logos:whatsapp-icon', to: getWhatsappLink(), target: '_blank' },
     { label: 'Telegram', icon: 'logos:telegram' },
