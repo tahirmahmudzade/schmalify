@@ -21,3 +21,7 @@ export type UpdateItem = Partial<CreateItem>
 export type Category = typeof schema.category.$inferSelect
 export type CreateCategory = typeof schema.category.$inferInsert
 export type UpdateCategory = Partial<CreateCategory>
+
+export type Conversation = typeof schema.conversation.$inferSelect
+export type CreateConversation = typeof schema.conversation.$inferInsert
+export type UpdateConversation = Partial<CreateConversation>
