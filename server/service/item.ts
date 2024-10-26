@@ -132,6 +132,10 @@ export function getItemImages(itemId: string): Promise<{ images: string[] | null
   return useDrizzle().query.item.findFirst({ where: eq(tables.item.id, itemId), columns: { images: true } })
 }
 
+export function getItemSellerId(itemId: string): Promise<{ seller_id: string | null } | undefined> {
+  return useDrizzle().query.item.findFirst({ where: eq(tables.item.id, itemId), columns: { seller_id: true } })
+}
+
 export function createItem(itemData: Omit<CreateItem, 'id'>) {
   return useDrizzle()
     .insert(tables.item)
