@@ -11,3 +11,5 @@ type GoogleUser = {
   email: string
   email_verified: boolean
 }
+
+type MessageData = { senderId: string; receiverId: string; content: string; timestamp: string }
