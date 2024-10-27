@@ -9,38 +9,38 @@ const team = [
   {
     name: 'Baris Eroglu',
     role: 'QA Engineer',
-    description: 'Lisa is a key developer in building and maintaining our platform.',
-    imageUrl: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=150&h=150&q=80',
+    description: 'I test it, perfect it, so you love it.',
+    imageUrl: '/img/team/baris_eroglu.png',
   },
   {
-    name: 'Lindsey Cooper',
+    name: 'Kamila Mamedzade',
     role: 'Designer',
     description: 'Lindsey designs beautiful and user-friendly interfaces for our users.',
-    imageUrl: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=150&h=150&q=80',
+    imageUrl: '/img/team/kamila_mamedzade.jpeg',
   },
   {
-    name: 'Tina Lee',
+    name: 'Test',
     role: 'CEO',
     description: 'Tina provides visionary leadership and guides the company’s strategy.',
     imageUrl: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=150&h=150&q=80',
   },
   {
-    name: 'Chris Lee',
-    role: 'CTO',
-    description: 'Chris oversees the tech stack and drives the development of new features.',
-    imageUrl: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=150&h=150&q=80',
+    name: 'Fahmin Mahili',
+    role: 'AI Engineer',
+    description: 'Innovating with machine learning and AI technologies to create impactful real-world solutions.',
+    imageUrl: '/img/team/fahmin_mahili.jpeg',
   },
   {
-    name: 'Dawn Wilson',
-    role: 'Designer',
-    description: 'Dawn works on crafting intuitive designs that enhance user experience.',
-    imageUrl: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=150&h=150&q=80',
+    name: 'Oleksii Muzyka',
+    role: 'UI/UX Designer',
+    description: 'UI/UX Designer, responsible for user friendly design and marketing',
+    imageUrl: '/img/team/oleksii_muzyka.jpeg',
   },
 ]
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-6 mt-12 sm:my-20 mb-12 lg:px-8 text-center">
+  <div class="mx-auto max-w-7xl px-6 sm:my-10 mb-6 lg:px-8 text-center">
     <div class="mx-auto max-w-2xl">
       <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">Our Team</h2>
       <p class="mt-6 text-lg leading-8 text-gray-300">
