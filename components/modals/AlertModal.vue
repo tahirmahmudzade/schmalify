@@ -1,27 +1,19 @@
 <script setup lang="ts">
 import type { ButtonColor } from '#ui/types'
 
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close', 'confirm'])
 
 const {
   title = 'Alert',
   description = '',
   confirmLabel = 'Confirm',
   confirmColor = 'gray',
-  confirmAction = () => {
-    navigateTo('/')
-  },
 } = defineProps<{
   title: string
   description: string
   confirmLabel?: string
   confirmColor?: ButtonColor
-  confirmAction?: () => void
 }>()
-
-function onClose() {
-  emits('close')
-}
 </script>
 
 <template>
@@ -33,8 +25,8 @@ function onClose() {
       <h3 class="text-xl font-semibold mb-2">{{ title }}</h3>
       <p class="text-gray-700 dark:text-gray-400 mb-6">{{ description }}</p>
       <div class="flex justify-center space-x-4">
-        <UButton label="Close" color="gray" class="px-4 py-2 rounded-md" @click="onClose" />
-        <UButton :label="confirmLabel" :color="confirmColor" class="px-4 py-2 rounded-md" @click="confirmAction()" />
+        <UButton label="Close" color="gray" class="px-4 py-2 rounded-md" @click="emits('close')" />
+        <UButton :label="confirmLabel" :color="confirmColor" class="px-4 py-2 rounded-md" @click="emits('confirm')" />
       </div>
     </UCard>
   </UModal>
