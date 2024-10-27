@@ -34,21 +34,26 @@ const items: DropdownItem[][] = [
             useRegisterModal()
           },
         }
-      : {
-          label: '',
-          class: 'hidden',
-          disabled: true,
-        },
+      : { label: '', class: 'hidden', disabled: true },
   ],
   [
     {
       label: 'Listings',
       icon: 'i-material-symbols-receipt-long',
       iconClass: 'text-orange-500 dark:text-orange-500',
+      disabled: !loggedIn.value,
       click: () => {
         navigateTo('/profile/listings')
       },
+    },
+    {
+      label: 'Messages',
+      icon: 'material-symbols:chat-outline',
+      iconClass: 'bg-blue-500',
       disabled: !loggedIn.value,
+      click: () => {
+        navigateTo('/profile/messages')
+      },
     },
   ],
   [
