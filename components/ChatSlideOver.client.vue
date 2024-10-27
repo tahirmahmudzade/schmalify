@@ -1,81 +1,64 @@
 <script setup lang="ts">
-import type { UseWebSocketReturn } from '@vueuse/core'
-
 const { sellerName, itemId } = defineProps<{ sellerName: string; itemId: string }>()
 
-const isChatboxOpen = useState<boolean>('is-chatbox-open', () => false)
+const isChatboxOpen = useChatboxState()
 
-const conversationId = ref<string | null>(null)
-const tempToken = ref<string | null>(null)
-let chatConnection: UseWebSocketReturn<any> | null = null
+const { user } = useUserSession()
 
-const messages = ref<string[]>([])
+const { data: conversationData, error: conversationError, pending } = await useFetch(`/api/items/${itemId}/conversation`)
 
-watch(isChatboxOpen, async isOpen => {
-  if (isOpen) {
-    if (!conversationId.value) {
-      try {
-        const { conversationId: generatedConvId, tempToken: generatedTemptoken } = await $fetch(
-          `/api/items/${itemId}/conversation`,
-        )
-        conversationId.value = generatedConvId
-        tempToken.value = generatedTemptoken
-      } catch (err) {
-        console.log('Error on getting conversationId', err)
-        useToast().add({ title: "Couldn't start the chat, please try again later or contact support", color: 'red' })
-        isChatboxOpen.value = false
-      }
-    }
+if (conversationError.value || !conversationData.value) {
+  throw createError({ statusCode: 404, message: 'Something went wrong, please try again later' })
+}
 
-    setupChatConnection()
-  } else {
-    closeChatConnection()
-  }
-})
+const { conversationId, tempToken } = conversationData.value
 
-watch(
-  () => chatConnection?.data,
-  newData => {
-    if (newData) {
-      console.log('Received data:', newData)
-      try {
-        messages.value.push(newData as unknown as string)
-      } catch (e) {
-        console.error('Failed to parse message', e)
-      }
-    }
-  },
+const { data: messagesData, error: messagesError } = await useFetch<{ statusCode: number; data: MessageData[] }>(
+  `/api/messages/${conversationId}`,
 )
 
-function setupChatConnection() {
-  if (conversationId.value && tempToken.value) {
-    console.log('found conversationId and tempToken, setting up chat connection')
-
-    chatConnection = useChatConnection(conversationId.value, tempToken.value, true)
-    console.log('chatConnection', chatConnection)
-  }
+if (messagesError.value || !messagesData.value) {
+  throw createError({ statusCode: 404, message: 'Failed to load messages' })
 }
+const messages = ref<MessageData[]>(messagesData.value.data || [])
 
-function closeChatConnection() {
-  if (chatConnection) {
-    chatConnection.close()
-    chatConnection = null
+const { close, data, send, status } = useChatConnection(conversationId, tempToken, true)
+
+watch(data, (newData, oldData) => {
+  console.log('newData', newData)
+  console.log('oldData', oldData)
+
+  try {
+    messages.value.push({
+      receiverId: messagesData.value!.data[0]!.receiverId,
+      senderId: messagesData.value!.data[0]!.senderId,
+      content: newData,
+      timestamp: new Date().toISOString(),
+    })
+  } catch (e) {
+    console.error('Failed to parse message', e)
   }
-}
+})
 
 const message = ref('')
 
 function sendData() {
   console.log('Sending message', message.value)
 
-  if (message.value.trim() && chatConnection && chatConnection.status.value === 'OPEN') {
+  if (message.value.trim() && status.value === 'OPEN') {
     console.log('open')
     console.log('message.value', message.value)
 
-    console.log('status', chatConnection.status.value)
-    console.log(chatConnection.send)
+    console.log('status', status.value)
 
-    chatConnection.send(message.value)
+    messages.value.push({
+      receiverId: '',
+      senderId: user.value!.id,
+      content: message.value,
+      timestamp: new Date().toISOString(),
+    })
+
+    send(message.value)
 
     message.value = ''
   } else {
@@ -84,7 +67,7 @@ function sendData() {
 }
 
 onBeforeUnmount(() => {
-  closeChatConnection()
+  close()
   isChatboxOpen.value = false
 })
 </script>
@@ -99,42 +82,43 @@ onBeforeUnmount(() => {
           <div class="rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center text-white">
             {{ sellerName.charAt(0).toUpperCase() || 'G' }}
           </div>
-          <div class="text-lg font-semibold">{{ sellerName || 'Garden Design' }}</div>
+          <div class="text-lg font-semibold">{{ sellerName || '' }}</div>
         </div>
         <button @click="isChatboxOpen = false" class="ml-auto text-gray-500 hover:text-gray-700">✕</button>
       </div>
 
       <!-- Messages Area -->
       <div class="flex-1 overflow-y-auto p-4 space-y-4">
-        <!-- <div
-          v-for="(message, index) in messages"
+        <div
+          v-for="(messageObj, index) in messages"
           :key="index"
           :class="{
-            'ml-auto': message.from === 'buyer',
-            'mr-auto': message.from === 'seller',
+            'ml-auto': messageObj.senderId === user?.id,
+            'mr-auto': messageObj.senderId !== user?.id,
           }"
           class="max-w-[75%]"
         >
           <div
             :class="[
               'relative px-4 py-2 rounded-lg',
-              message.from === 'buyer' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800',
+              messageObj.senderId === user?.id ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800',
             ]"
             class="break-words"
           >
-            <span>{{ message.text }}</span>
+            <span>{{ messageObj.content }}</span>
+            <!-- triangle arrow -->
             <div
               :class="[
                 'absolute bottom-0 h-4 w-4',
-                message.from === 'buyer' ? 'right-0 -mr-2 bg-blue-500' : 'left-0 -ml-2 bg-gray-300',
+                messageObj.senderId === user?.id ? 'right-0 -mr-2 bg-blue-500' : 'left-0 -ml-2 bg-gray-300',
               ]"
               :style="{
-                clipPath: message.from === 'buyer' ? 'polygon(0 0, 100% 0, 0 100%)' : 'polygon(100% 0, 0 0, 100% 100%)',
+                clipPath:
+                  messageObj.senderId === user?.id ? 'polygon(0 0, 100% 0, 0 100%)' : 'polygon(100% 0, 0 0, 100% 100%)',
               }"
             ></div>
           </div>
-        </div> -->
-        <p v-for="message in messages" :key="message">{{ message }}</p>
+        </div>
       </div>
 
       <!-- Input Area -->
