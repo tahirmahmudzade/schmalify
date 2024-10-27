@@ -1,5 +1,5 @@
-import { verify } from '@tsndr/cloudflare-worker-jwt'
 import { parseURL, getQuery } from 'ufo'
+import { verify } from '@tsndr/cloudflare-worker-jwt'
 import { getConversationById } from '~/server/service/conversation'
 
 export default defineWebSocketHandler({
@@ -16,9 +16,7 @@ export default defineWebSocketHandler({
 
     try {
       const decoded = (await verify(token, process.env.JWT_SECRET || 'prvscret')) as
-        | {
-            payload: { userId: string }
-          }
+        | { payload: { userId: string } }
         | undefined
 
       if (!decoded) {
@@ -42,11 +40,16 @@ export default defineWebSocketHandler({
     if (!peer.ctx) {
       peer.ctx = {}
     }
+
+    const otherParticipantId = conversation.participants.find(id => id !== decodedUserId)
+
     peer.ctx.userId = userId
     peer.ctx.conversationId = conversationId
     peer.ctx.room = `chat:item:${conversationId}`
+    peer.ctx.receiverId = otherParticipantId
 
     peer.subscribe(peer.ctx.room)
+    peer.publish(peer.ctx.room, `User ${userId} joined conversation ${conversationId}`)
 
     console.log(`User ${userId} joined conversation ${conversationId}`)
   },
@@ -63,14 +66,14 @@ export default defineWebSocketHandler({
       console.log('peer.ctx is not set in close function')
     }
   },
-  message(peer, message) {
+  async message(peer, message) {
     try {
       const room = peer.ctx?.room
-      const userId = peer.ctx?.userId
-      console.log('room: ', room)
-      console.log('userId: ', userId)
+      const senderId = peer.ctx?.userId
+      const receiverId = peer.ctx?.receiverId
+      const conversationId = peer.ctx?.conversationId
 
-      if (!room || !userId) {
+      if (!room || !senderId || !conversationId || !receiverId) {
         console.log('peer.ctx is not set in message function')
         peer.send(JSON.stringify({ error: 'Invalid connection context' }))
         return
@@ -80,17 +83,18 @@ export default defineWebSocketHandler({
       console.log('content: ', content)
 
       // Handle heartbeat
-      if (content.includes('ping')) {
+      if (content.trim() === 'ping') {
         peer.send('pong')
         return
       }
 
-      // Construct message payload
-      const msg = { senderId: userId, text: content, timestamp: Date.now() }
-      console.log('msg: ', msg)
+      const timestamp = new Date().toISOString()
+      const messageData: MessageData = { senderId, receiverId, content, timestamp }
 
-      // Broadcast the message to other participants
-      peer.publish(room, JSON.stringify(msg))
+      const key = `messages:${conversationId}:${timestamp}`
+      await hubKV().set(key, messageData, { ttl: 432000 }) // 5 days i
+
+      peer.publish(room, content)
     } catch (error) {
       console.error('Error in message handler:', error)
       peer.send(JSON.stringify({ error: 'An error occurred while processing your message.' }))

@@ -1,11 +1,12 @@
 export default defineEventHandler(async (event): Promise<{ statusCode: number; data: MessageData[] }> => {
-  const roomId = getRouterParam(event, 'roomId')
+  await requireUserSession(event)
+  const conversationId = getRouterParam(event, 'roomId')
 
-  if (!roomId) {
+  if (!conversationId) {
     throw createError({ statusCode: 400, message: 'roomId is required' })
   }
 
-  const keys = await hubKV().keys(`messages:${roomId}`)
+  const keys = await hubKV().keys(`messages:${conversationId}`)
 
   const messages = await hubKV().getItems<MessageData>(keys.map(key => ({ key })))
 
@@ -13,5 +14,12 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; d
 
   const sortedMessages = filteredMessages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
 
-  return { statusCode: 200, data: sortedMessages }
+  return {
+    statusCode: 200,
+    data: sortedMessages.map(sm => ({
+      ...sm,
+      senderId: encodeId(sm.senderId),
+      receiverId: encodeId(sm.receiverId),
+    })),
+  }
 })
