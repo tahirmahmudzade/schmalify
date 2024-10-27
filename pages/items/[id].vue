@@ -3,6 +3,8 @@ import type { Item } from '~/server/database/drizzle'
 
 const route = useRoute('items-id')
 
+const { user } = useUserSession()
+
 const { data: itemData, error } = await useFetch<{
   statusCode: number
   item: Item & {
@@ -23,6 +25,8 @@ if (error.value || !itemData.value) {
 }
 
 const { item } = itemData.value
+
+const isChatboxOpen = useChatboxState()
 
 useSeoMeta({
   title: `${item.title} - ${item.price} €`,
@@ -76,7 +80,7 @@ const previewImg = (imageUrl: string) => {
             :postedOn="product.postedOn"
             :categoryName="item.category?.name!"
           />
-          <div class="mt-6">
+          <div v-if="user?.id !== item.seller_id" class="mt-6">
             <ContactSeller :status="item.status" :phone="item.seller?.phone!" :title="item.title" />
           </div>
         </div>
@@ -84,6 +88,7 @@ const previewImg = (imageUrl: string) => {
     </div>
     <ModalsImagePreviewModal v-if="selectedImage" :imageUrl="selectedImage" @close="selectedImage = null" />
     <ChatSlideOver
+      v-if="isChatboxOpen"
       :item-id="item.id"
       :seller-name="item.seller?.username || `${item.seller?.firstName} ${item.seller?.lastName}`"
     />
