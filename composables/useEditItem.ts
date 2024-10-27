@@ -1,4 +1,3 @@
-import AlertModal from '~/components/modals/AlertModal.vue'
 import EditItemModal from '~/components/modals/EditItemModal.vue'
 import type { Item } from '~/server/database/drizzle'
 

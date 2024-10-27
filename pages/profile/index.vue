@@ -7,6 +7,10 @@ const { data: userData } = await useFetch(`/api/users/${user.value?.id}`, {
   pick: ['email', 'firstName', 'lastName', 'location', 'phone', 'avatar', 'username'],
 })
 
+if (!userData.value) {
+  throw createError({ statusCode: 404, message: 'Failed to load user data' })
+}
+
 function onPhoneInput(event: Event) {
   const input = event.target as HTMLInputElement
   input.value = input.value.replace(/[^0-9+]/g, '')
