@@ -25,13 +25,19 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
       description: 'Guests can only create one listing. Please sign in as a user to create more listings.',
       confirmLabel: 'Sign in as a user',
       confirmColor: 'green',
-      confirmAction() {
+      // confirmAction() {
+      //   modal.close()
+      //   setTimeout(() => {
+      //     useRegisterModal()
+      //   }, 500)
+      // },
+      onClose: () => modal.close(),
+      onConfirm: () => {
         modal.close()
         setTimeout(() => {
           useRegisterModal()
         }, 500)
       },
-      onClose: () => modal.close(),
     })
     return
   }
@@ -45,11 +51,15 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
       description: 'Please add a phone number to your account before creating a listing.',
       confirmLabel: 'Add Phone Number',
       confirmColor: 'green',
-      confirmAction() {
+      // confirmAction() {
+      //   modal.close()
+      //   navigateTo('/profile')
+      // },
+      onClose: () => modal.close(),
+      onConfirm: () => {
         modal.close()
         navigateTo('/profile')
       },
-      onClose: () => modal.close(),
     })
     return
   }

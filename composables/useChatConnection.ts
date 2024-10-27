@@ -9,14 +9,7 @@ export function useChatConnection(conversationId: string, tempToken: string, imm
     throw createError({ statusCode: 401, message: "You're not logged in, please log in to chat" })
   }
 
-  console.log('protocol: ', protocol)
-  console.log('host: ', host)
-
-  console.log('conversationId: ', conversationId)
-  console.log('tempToken: ', tempToken)
-
   return useWebSocket(`${protocol}://${host}/api/messages/websocket?conversationId=${conversationId}&token=${tempToken}`, {
-    // heartbeat: { message: 'ping', interval: 1000, pongTimeout: 1000 },
     autoReconnect: {
       retries: 3,
       delay: 1000,
