@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt',
     'nuxt-security',
+    '@nuxtjs/i18n',
   ],
 
   security: {
@@ -55,6 +56,18 @@ export default defineNuxtConfig({
     oauth: { google: { clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET } },
 
     public: { siteUrl: process.env.NUXT_PUBLIC_SITE_URL, canonicalUrl, buildDate: new Date(), appName: pkg.name },
+  },
+
+  i18n: {
+    detectBrowserLanguage: { useCookie: true, fallbackLocale: 'en' },
+    strategy: 'prefix_except_default',
+    langDir: 'internationalization',
+    defaultLocale: 'en',
+    lazy: true,
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'de-DE', name: 'Deutsch', file: 'de-DE.json' },
+    ],
   },
 
   $development: { hub: { database: true, blob: true, kv: true, remote: 'production' } },
