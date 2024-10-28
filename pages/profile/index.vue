@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { z } from 'zod'
+import type { Item, User } from '~/server/database/drizzle'
 
 const toast = useToast()
 const { user } = useUserSession()
-const { data: userData } = await useFetch(`/api/users/${user.value?.id}`, {
-  pick: ['email', 'firstName', 'lastName', 'location', 'phone', 'avatar', 'username'],
-})
+const { data: userData } = await useFetch<User & { items: (Item & { category: { name: string } | null })[] }>(
+  `/api/users/${user.value?.id}`,
+  { pick: ['email', 'firstName', 'lastName', 'location', 'phone', 'avatar', 'username'] },
+)
 
 if (!userData.value) {
   throw createError({ statusCode: 404, message: 'Failed to load user data' })
@@ -114,6 +116,7 @@ async function uploadImage(e: Event) {
 async function onSubmit() {
   loading.value = true
   try {
+    // @ts-ignore - for some reason method PATCH is not recognized
     await $fetch(`/api/users/${user.value?.id}`, { method: 'PATCH', body: state })
     toast.add({ title: 'Profile updated successfully' })
 
@@ -225,7 +228,13 @@ onMounted(() => {
               </div>
 
               <div class="mt-6 text-right">
-                <UButton @click="onSubmit" :disabled="isFormInvalid || isFormUnchanged" label="Save" />
+                <UButton
+                  @click="onSubmit"
+                  :color="isFormInvalid || isFormUnchanged ? 'red' : 'primary'"
+                  :disabled="isFormInvalid || isFormUnchanged"
+                  label="Save"
+                  variant="outline"
+                />
               </div>
             </UForm>
           </div>
