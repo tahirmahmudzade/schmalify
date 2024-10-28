@@ -24,10 +24,7 @@ const messages = ref<MessageData[]>(messagesData.value.data || [])
 
 const { close, data, send, status } = useChatConnection(conversationId, tempToken, true)
 
-watch(data, (newData, oldData) => {
-  console.log('newData', newData)
-  console.log('oldData', oldData)
-
+watch(data, newData => {
   try {
     messages.value.push({
       receiverId: messagesData.value!.data[0]!.receiverId,
@@ -43,14 +40,7 @@ watch(data, (newData, oldData) => {
 const message = ref('')
 
 function sendData() {
-  console.log('Sending message', message.value)
-
   if (message.value.trim() && status.value === 'OPEN') {
-    console.log('open')
-    console.log('message.value', message.value)
-
-    console.log('status', status.value)
-
     messages.value.push({
       receiverId: '',
       senderId: user.value!.id,
@@ -61,8 +51,6 @@ function sendData() {
     send(message.value)
 
     message.value = ''
-  } else {
-    console.log('not open')
   }
 }
 
@@ -72,11 +60,9 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<!-- ChatSlideOver.vue -->
 <template>
   <USlideover v-model="isChatboxOpen">
     <div class="flex flex-col h-full">
-      <!-- Chat Header -->
       <div class="flex items-center p-4 border-b border-gray-200">
         <div class="flex items-center space-x-2">
           <div class="rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center text-white">
@@ -87,15 +73,11 @@ onBeforeUnmount(() => {
         <button @click="isChatboxOpen = false" class="ml-auto text-gray-500 hover:text-gray-700">✕</button>
       </div>
 
-      <!-- Messages Area -->
       <div class="flex-1 overflow-y-auto p-4 space-y-4">
         <div
           v-for="(messageObj, index) in messages"
           :key="index"
-          :class="{
-            'ml-auto': messageObj.senderId === user?.id,
-            'mr-auto': messageObj.senderId !== user?.id,
-          }"
+          :class="{ 'ml-auto': messageObj.senderId === user?.id, 'mr-auto': messageObj.senderId !== user?.id }"
           class="max-w-[75%]"
         >
           <div

@@ -36,7 +36,11 @@ function openConversation(conversation: Conversation) {
         </UDashboardPanelContent>
       </UDashboardPanel>
       <USlideover v-model="isConversationOpen">
-        <InboxChat v-if="selectedConversation" :conversation="selectedConversation" />
+        <InboxChat
+          v-if="selectedConversation"
+          :conversation="selectedConversation"
+          @close-chat="selectedConversation = null"
+        />
       </USlideover>
     </UDashboardPage>
   </div>
