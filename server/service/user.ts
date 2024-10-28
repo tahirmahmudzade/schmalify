@@ -1,12 +1,14 @@
 import { count } from 'drizzle-orm'
-import { CreateUser, eq, tables, UpdateUser, useDrizzle } from '../database/drizzle'
+import { CreateUser, eq, Item, tables, UpdateUser, useDrizzle, User } from '../database/drizzle'
 import useNanoId from '../utils/nanoId'
 
 export function getUsers() {
   return useDrizzle().query.user.findMany({ with: { items: true } })
 }
 
-export function getUserById(userId: string) {
+export function getUserById(
+  userId: string,
+): Promise<(User & { items: (Item & { category: { name: string } | null })[] }) | undefined> {
   return useDrizzle().query.user.findFirst({
     where: eq(tables.user.id, userId),
     with: { items: { with: { category: { columns: { name: true } } } } },
