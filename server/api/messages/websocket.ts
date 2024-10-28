@@ -12,6 +12,9 @@ export default defineWebSocketHandler({
     if (!conversationId || !token) {
       throw createError({ statusCode: 400, message: 'Missing conversationId' })
     }
+
+    const decodedConversationId = decodeId(conversationId)
+
     let userId: string
 
     try {
@@ -29,7 +32,7 @@ export default defineWebSocketHandler({
       throw createError({ statusCode: 401, message: 'Invalid token' })
     }
 
-    const conversation = await getConversationById(conversationId)
+    const conversation = await getConversationById(decodedConversationId)
 
     const decodedUserId = decodeId(userId)
 
@@ -43,10 +46,14 @@ export default defineWebSocketHandler({
 
     const otherParticipantId = conversation.participants.find(id => id !== decodedUserId)
 
-    peer.ctx.userId = userId
-    peer.ctx.conversationId = conversationId
-    peer.ctx.room = `chat:item:${conversationId}`
-    peer.ctx.receiverId = otherParticipantId
+    if (!otherParticipantId) {
+      throw createError({ statusCode: 404, message: 'Other participant not found in conversation' })
+    }
+
+    peer.ctx.userId = userId // encoded userId
+    peer.ctx.conversationId = conversationId // encoded conversationId
+    peer.ctx.room = `chat:item:${conversationId}` // room name with encoded conversationId
+    peer.ctx.receiverId = encodeId(otherParticipantId) // encoded receiverId
 
     peer.subscribe(peer.ctx.room)
     peer.publish(peer.ctx.room, `User ${userId} joined conversation ${conversationId}`)
@@ -54,10 +61,8 @@ export default defineWebSocketHandler({
     console.log(`User ${userId} joined conversation ${conversationId}`)
   },
   close(peer) {
-    console.log('close')
-
-    const room = peer.ctx.room
-    const userId = peer.ctx.userId
+    const room = peer.ctx.room // room name with encoded conversationId
+    const userId = peer.ctx.userId // encoded userId
 
     if (room) {
       peer.unsubscribe(room)
@@ -68,10 +73,10 @@ export default defineWebSocketHandler({
   },
   async message(peer, message) {
     try {
-      const room = peer.ctx?.room
-      const senderId = peer.ctx?.userId
-      const receiverId = peer.ctx?.receiverId
-      const conversationId = peer.ctx?.conversationId
+      const room = peer.ctx?.room // room name with encoded conversationId
+      const senderId = peer.ctx?.userId // encoded userId
+      const receiverId = peer.ctx?.receiverId // encoded receiverId
+      const conversationId = peer.ctx?.conversationId // encoded conversationId
 
       if (!room || !senderId || !conversationId || !receiverId) {
         console.log('peer.ctx is not set in message function')
@@ -91,8 +96,8 @@ export default defineWebSocketHandler({
       const timestamp = new Date().toISOString()
       const messageData: MessageData = { senderId, receiverId, content, timestamp }
 
-      const key = `messages:${conversationId}:${timestamp}`
-      await hubKV().set(key, messageData, { ttl: 432000 }) // 5 days i
+      const key = `messages:${conversationId}:${timestamp}` // key for message data
+      await hubKV().set(key, messageData, { ttl: 259200 }) // days: 3
 
       peer.publish(room, content)
     } catch (error) {
@@ -106,16 +111,4 @@ export default defineWebSocketHandler({
     console.log('peer ', peer)
     console.error('WebSocket error:', error)
   },
-  // message(peer, message) {
-  //   const room = `${roomPrefix}${peer.id}`
-  //   const content = message.text()
-
-  //   if (content === 'ping') {
-  //     // Respond with 'pong'
-  //     peer.send('pong')
-  //     return // Exit early to prevent further processing
-  //   }
-
-  //   peer.publish(room, content)
-  // },
 })

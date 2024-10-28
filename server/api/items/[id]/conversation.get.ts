@@ -20,7 +20,6 @@ export default defineEventHandler(async event => {
     if (!item) {
       throw createError({ statusCode: 404, message: 'Item not found' })
     }
-    console.log('found item: ', item)
 
     const { seller_id } = item
 
@@ -29,19 +28,11 @@ export default defineEventHandler(async event => {
     let conversationId: string
 
     if (existingConversation) {
-      console.log('found existing conversation: ', existingConversation)
-
       conversationId = existingConversation.id
-      console.log('set up conversationId: ', conversationId)
     } else {
-      console.log('creating new conversation')
-
       conversationId = generateRandomToken(16)
 
-      console.log('generated conversationId: ', conversationId)
-
       await createConversation({ id: conversationId, participants: [decodedBuyerId, seller_id!] })
-      console.log('created conversation')
     }
 
     const tempToken = await sign(
@@ -49,16 +40,9 @@ export default defineEventHandler(async event => {
       process.env.JWT_SECRET || 'prvscret',
     )
 
-    console.log('generated tempToken: ', tempToken)
-
-    console.log('returning conversationId and tempToken', { conversationId, tempToken })
-
-    return { conversationId, tempToken }
+    return { conversationId: encodeId(conversationId), tempToken }
   } catch (error) {
     console.error('error: ', error)
-    throw createError({
-      statusCode: 500,
-      message: (error as string) || 'Something went wrong creating conversation',
-    })
+    throw createError({ statusCode: 500, message: (error as string) || 'Something went wrong creating conversation' })
   }
 })

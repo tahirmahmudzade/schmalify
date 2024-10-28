@@ -19,12 +19,10 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; c
     throw createError({ statusCode: 404, message: 'User not found' })
   }
 
-  const conversations: Conversation[] = await getUserConversations(user.id)
-
-  console.log('conversations', conversations)
+  const conversations: Conversation[] = await getUserConversations(decodedUserId)
 
   return {
     statusCode: 200,
-    conversations: conversations.map(c => ({ ...c, participants: c.participants!.map(encodeId) })),
+    conversations: conversations.map(c => ({ ...c, id: encodeId(c.id), participants: c.participants!.map(encodeId) })),
   }
 })

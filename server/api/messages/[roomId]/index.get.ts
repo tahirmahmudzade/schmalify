@@ -16,10 +16,6 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; d
 
   return {
     statusCode: 200,
-    data: sortedMessages.map(sm => ({
-      ...sm,
-      senderId: encodeId(sm.senderId),
-      receiverId: encodeId(sm.receiverId),
-    })),
+    data: sortedMessages.map(sm => ({ ...sm, senderId: encodeId(sm.senderId), receiverId: encodeId(sm.receiverId) })),
   }
 })
