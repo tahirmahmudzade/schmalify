@@ -13,9 +13,10 @@ const team = [
     imageUrl: '/img/team/baris_eroglu.png',
   },
   {
-    name: 'Kamila Mamedzade',
-    role: 'Designer',
-    description: 'Lindsey designs beautiful and user-friendly interfaces for our users.',
+    name: 'Kamila Mammadzada',
+    role: 'UI/UX Designer',
+    description:
+      'Crafting intuitive and visually engaging digital experiences that connect users effortlessly with technology.',
     imageUrl: '/img/team/kamila_mamedzade.jpeg',
   },
   {
@@ -40,7 +41,7 @@ const team = [
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl px-6 sm:my-10 mb-6 lg:px-8 text-center">
+  <div class="mx-auto max-w-7xl px-6 my-10 lg:px-8 text-center">
     <div class="mx-auto max-w-2xl">
       <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">Our Team</h2>
       <p class="mt-6 text-lg leading-8 text-gray-300">
