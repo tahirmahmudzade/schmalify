@@ -1,18 +1,24 @@
 import { z } from 'zod'
 
-const bodySchema = z.object({ content: z.string().max(400), senderId: z.string(), receiverId: z.string() })
+const bodySchema = z.object({ content: z.string().max(400), receiverId: z.string() })
 
 export default defineEventHandler(async (event): Promise<{ statusCode: number; message: string }> => {
-  const roomId = getRouterParam(event, 'roomId')
+  const { user } = await requireUserSession(event)
 
-  const { senderId, receiverId, content } = await readValidatedBody(event, bodySchema.parse)
+  const conversationId = getRouterParam(event, 'roomId')
+
+  if (!conversationId) {
+    throw createError({ statusCode: 400, message: 'Invalid Conversation ID' })
+  }
+
+  const { receiverId, content } = await readValidatedBody(event, bodySchema.parse)
 
   const timestamp = new Date().toISOString()
-  const key = `messages:${roomId}:${timestamp}`
+  const key = `messages:${conversationId}:${timestamp}`
 
-  const messageData: MessageData = { senderId, receiverId, content, timestamp }
+  const messageData: MessageData = { senderId: user.id, receiverId, content, timestamp }
 
-  await hubKV().set(key, messageData, { ttl: 432000 })
+  await hubKV().set(key, messageData, { ttl: 259200 }) // days: 3
 
   return { statusCode: 201, message: `Message Saved` }
 })
