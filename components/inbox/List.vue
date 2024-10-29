@@ -3,23 +3,21 @@ import type { Conversation } from '~/server/database/drizzle'
 
 const { conversation } = defineProps<{ conversation: Conversation }>()
 
-// function getOtherParticipantName(participants: string[] = []) {
-//   const otherParticipantId = participants.find(id => id !== user.value?.id)
-//   if (!otherParticipantId) return 'Unknown'
-
-//   // Replace with your actual logic to fetch user data
-//   const otherUser = getUserById(otherParticipantId)
-//   return otherUser?.username || 'Unknown'
-// }
+const formattedDate = computed(() => {
+  const date = new Date(conversation.lastUpdated!)
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+})
 </script>
 
 <template>
   <div class="flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <!-- {{ getOtherParticipantName(conversation.participants!) }} -->
-      testing
-    </div>
-    <span>{{ conversation.lastUpdated }}</span>
+    <div class="flex items-center gap-3">testing</div>
+    <span>{{ formattedDate }}</span>
   </div>
   <p>hello</p>
   <p class="text-gray-400 dark:text-gray-500 line-clamp-1">
