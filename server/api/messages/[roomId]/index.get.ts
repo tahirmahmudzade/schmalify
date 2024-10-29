@@ -13,9 +13,5 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; d
   const filteredMessages = messages.filter(message => message.value !== null).map(message => message.value)
 
   const sortedMessages = filteredMessages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-
-  return {
-    statusCode: 200,
-    data: sortedMessages.map(sm => ({ ...sm, senderId: encodeId(sm.senderId), receiverId: encodeId(sm.receiverId) })),
-  }
+  return { statusCode: 200, data: sortedMessages }
 })
