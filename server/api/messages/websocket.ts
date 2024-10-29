@@ -56,9 +56,6 @@ export default defineWebSocketHandler({
     peer.ctx.receiverId = encodeId(otherParticipantId) // encoded receiverId
 
     peer.subscribe(peer.ctx.room)
-    peer.publish(peer.ctx.room, `User ${userId} joined conversation ${conversationId}`)
-
-    console.log(`User ${userId} joined conversation ${conversationId}`)
   },
   close(peer) {
     const room = peer.ctx.room // room name with encoded conversationId
@@ -79,24 +76,19 @@ export default defineWebSocketHandler({
       const conversationId = peer.ctx?.conversationId // encoded conversationId
 
       if (!room || !senderId || !conversationId || !receiverId) {
-        console.log('peer.ctx is not set in message function')
-        peer.send(JSON.stringify({ error: 'Invalid connection context' }))
-        return
+        throw createError({
+          statusCode: 400,
+          message: 'Something went wrong sending the message, please try again later or contact support',
+        })
       }
 
       const content = message.text()
-      console.log('content: ', content)
-
-      // Handle heartbeat
-      if (content.trim() === 'ping') {
-        peer.send('pong')
-        return
-      }
 
       const timestamp = new Date().toISOString()
       const messageData: MessageData = { senderId, receiverId, content, timestamp }
 
       const key = `messages:${conversationId}:${timestamp}` // key for message data
+
       await hubKV().set(key, messageData, { ttl: 259200 }) // days: 3
 
       peer.publish(room, content)
