@@ -5,26 +5,51 @@ const isChatboxOpen = useChatboxState()
 
 const { user } = useUserSession()
 
-const { data: conversationData, error: conversationError, pending } = await useFetch(`/api/items/${itemId}/conversation`)
+const conversationId = ref('')
+const tempToken = ref('')
 
-if (conversationError.value || !conversationData.value) {
-  throw createError({ statusCode: 404, message: 'Something went wrong, please try again later' })
-}
+const {
+  data: conversationData,
+  error: conversationError,
+  status: conversationStatus,
+} = await useLazyFetch(`/api/items/${itemId}/conversation`)
 
-const { conversationId, tempToken } = conversationData.value
+watch([conversationData, conversationError], ([dataValue, errorValue]) => {
+  if (!dataValue || errorValue) {
+    closeConnection()
+    useToast().add({ title: "Couldn't load messages, please try again later or contact support", color: 'red' })
+    return
+  }
+  conversationId.value = dataValue.conversationId
+  tempToken.value = dataValue.tempToken
+})
 
-const { data: messagesData, error: messagesError } = await useFetch<{ statusCode: number; data: MessageData[] }>(
-  `/api/messages/${conversationId}`,
-)
+const messages = ref<MessageData[]>([])
 
-if (messagesError.value || !messagesData.value) {
-  throw createError({ statusCode: 404, message: 'Failed to load messages' })
-}
-const messages = ref<MessageData[]>(messagesData.value.data || [])
+const {
+  close: closeConnection,
+  data: incomingData,
+  send,
+  status: connectionStatus,
+} = useChatConnection(conversationId.value, tempToken.value, true)
 
-const { close, data, send, status } = useChatConnection(conversationId, tempToken, true)
+const {
+  data: messagesData,
+  error: messagesError,
+  status: messagesStatus,
+} = await useLazyFetch<{ statusCode: number; data: MessageData[] }>(`/api/messages/${conversationId}`)
 
-watch(data, newData => {
+watch([messagesData, messagesError], ([dataValue, errorValue]) => {
+  if (!dataValue || errorValue) {
+    closeConnection()
+    useToast().add({ title: "Couldn't load messages, please try again later or contact support", color: 'red' })
+    return
+  } else {
+    messages.value = dataValue.data || []
+  }
+})
+
+watch(incomingData, newData => {
   try {
     messages.value.push({
       receiverId: messagesData.value!.data[0]!.receiverId,
@@ -40,7 +65,7 @@ watch(data, newData => {
 const message = ref('')
 
 function sendData() {
-  if (message.value.trim() && status.value === 'OPEN') {
+  if (message.value.trim() && connectionStatus.value === 'OPEN') {
     messages.value.push({
       receiverId: '',
       senderId: user.value!.id,
@@ -55,12 +80,13 @@ function sendData() {
 }
 
 onBeforeUnmount(() => {
-  close()
+  closeConnection()
   isChatboxOpen.value = false
 })
 </script>
 
 <template>
+  <LoadingSpinner v-if="messagesStatus === 'pending' || conversationStatus === 'pending' || connectionStatus !== 'OPEN'" />
   <USlideover v-model="isChatboxOpen">
     <div class="flex flex-col h-full">
       <div class="flex items-center p-4 border-b border-gray-200">
