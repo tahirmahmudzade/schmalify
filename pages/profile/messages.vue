@@ -3,7 +3,9 @@ import type { Conversation } from '~/server/database/drizzle'
 
 const { user } = useUserSession()
 
-const isConversationOpen = useProfileConversationState()
+const messageStore = useMessageStore()
+
+const { isChatOpen } = storeToRefs(messageStore)
 
 const { data: conversationsData, error } = await useFetch(`/api/users/${user.value?.id}/conversations`)
 
@@ -16,8 +18,8 @@ const conversations = conversationsData.value.conversations
 const selectedConversation = ref<Conversation | null>(null)
 
 function openConversation(conversation: Conversation) {
-  isConversationOpen.value = true
   selectedConversation.value = conversation
+  isChatOpen.value = true
 }
 </script>
 
@@ -35,13 +37,11 @@ function openConversation(conversation: Conversation) {
           </div>
         </UDashboardPanelContent>
       </UDashboardPanel>
-      <USlideover v-model="isConversationOpen">
-        <InboxChat
-          v-if="selectedConversation"
-          :conversation="selectedConversation"
-          @close-chat="selectedConversation = null"
-        />
-      </USlideover>
+      <InboxChat
+        v-if="selectedConversation"
+        :conversation="selectedConversation"
+        @close-chat="selectedConversation = null"
+      />
     </UDashboardPage>
   </div>
 </template>
