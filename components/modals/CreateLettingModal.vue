@@ -74,13 +74,12 @@ function handleImgChange(e: Event) {
   if (target.files) {
     const selectedFiles = Array.from(target.files)
 
-    if (selectedFiles.length > 3) {
+    // Check if adding new images exceeds the 3-image limit
+    if (imageFiles.value.length + selectedFiles.length > 3) {
       toast.add({ color: 'red', title: 'You can only upload up to 3 images', timeout: 2000 })
+      target.value = '' // Reset the input so the same file can be re-selected
       return
     }
-
-    imageFiles.value = []
-    imagePreviews.value = []
 
     selectedFiles.forEach(file => {
       if (file.size > 2 * 1024 * 1024) {
@@ -88,12 +87,10 @@ function handleImgChange(e: Event) {
           .then(compressedBlob => {
             const compressedFile = new File([compressedBlob], file.name, { type: file.type })
             imageFiles.value.push(compressedFile)
-
             imagePreviews.value.push(URL.createObjectURL(compressedFile))
           })
           .catch(err => {
             console.log('Failed to compress image:', err)
-
             toast.add({ color: 'red', title: 'Failed to compress the image', timeout: 3000 })
           })
       } else {
@@ -101,9 +98,9 @@ function handleImgChange(e: Event) {
         imagePreviews.value.push(URL.createObjectURL(file))
       }
     })
-  } else {
-    imagePreviews.value = []
-    imageFiles.value = []
+
+    // Clear the input to allow re-selection of the same file if needed
+    target.value = ''
   }
 }
 
