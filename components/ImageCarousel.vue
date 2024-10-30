@@ -7,7 +7,9 @@ const {
 
 const emit = defineEmits<{ (e: 'removeImage', index: number): void }>()
 
-function removeImage(index: number) {
+function removeImage(event: Event, index: number) {
+  event.stopPropagation() // Prevent click from bubbling up
+  event.preventDefault() // Prevent default behavior of the click
   emit('removeImage', index)
 }
 </script>
@@ -29,7 +31,7 @@ function removeImage(index: number) {
           <button
             v-if="removable"
             class="absolute top-1 right-1 bg-gray-600 text-white rounded-full p-1 hover:bg-red-500 flex items-center justify-center"
-            @click="removeImage(index)"
+            @click="event => removeImage(event, index)"
             style="width: 24px; height: 24px"
           >
             <Icon name="mdi:close" class="w-3 h-3" />
