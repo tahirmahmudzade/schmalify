@@ -104,7 +104,6 @@ function handleImgChange(e: Event) {
             toast.add({ color: 'red', title: 'Failed to compress the image' })
           })
       } else {
-        // If file is within the size limit, just show the preview
         imageFiles.value.push(file)
         imagePreviews.value.push(URL.createObjectURL(file))
       }
@@ -196,17 +195,17 @@ async function onSubmit() {
 
               <div class="mt-3">
                 <label for="imageInput" class="relative cursor-pointer">
-                  <!-- Use UCarousel for image previews -->
-                  <ImageCarousel
-                    v-if="imagePreviews.length"
-                    type="arrows"
-                    :images="imagePreviews"
-                    :removable="true"
-                    @removeImage="removeImage"
-                  />
-
-                  <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                    <span class="text-gray-500">Click to upload images</span>
+                  <div @click.stop>
+                    <ImageCarousel
+                      v-if="imagePreviews.length"
+                      type="arrows"
+                      :images="imagePreviews"
+                      :removable="true"
+                      @removeImage="removeImage"
+                    />
+                    <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
+                      <span class="text-gray-500">Click to upload images</span>
+                    </div>
                   </div>
                 </label>
                 <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
