@@ -3,14 +3,15 @@ import type { DropdownItem } from '#ui/types'
 import type { FooterLink } from '#ui-pro/types'
 
 const { loggedIn, user } = useUserSession()
+const { t, locale } = useI18n()
 
 const path = computed(() => useRoute().path)
-
+console.log('current locale', locale.value)
 const items: DropdownItem[][] = [
   [
     loggedIn.value
       ? {
-          label: 'Profile',
+          label: t('Profile'),
           icon: 'i-healthicons-ui-user-profile',
           iconClass: 'text-green-500 dark:text-green-500',
           click: () => {
@@ -18,7 +19,7 @@ const items: DropdownItem[][] = [
           },
         }
       : {
-          label: 'Log in',
+          label: t('Log in'),
           icon: 'i-ri-login-circle-line',
           iconClass: 'text-green-500 dark:text-green-500',
           click: () => {
@@ -38,7 +39,7 @@ const items: DropdownItem[][] = [
   ],
   [
     {
-      label: 'Listings',
+      label: t('Listings'),
       icon: 'i-material-symbols-receipt-long',
       iconClass: 'text-orange-500 dark:text-orange-500',
       disabled: !loggedIn.value,
@@ -47,7 +48,7 @@ const items: DropdownItem[][] = [
       },
     },
     {
-      label: 'Messages',
+      label: t('Messages'),
       icon: 'material-symbols:chat-outline',
       iconClass: 'bg-blue-500',
       disabled: !loggedIn.value,
@@ -58,7 +59,7 @@ const items: DropdownItem[][] = [
   ],
   [
     {
-      label: 'Log out',
+      label: t('Log out'),
       icon: 'i-ri-logout-circle-line',
       iconClass: 'text-red-500 dark:text-red-500',
       disabled: !loggedIn.value,
@@ -70,22 +71,13 @@ const items: DropdownItem[][] = [
 ]
 
 const footerLinks: FooterLink[] = [
-  {
-    label: 'Hochschule Schmalkalden',
-    to: 'https://www.hs-schmalkalden.de/',
-  },
-  {
-    label: 'About us',
-    to: '/about',
-  },
+  { label: 'Hochschule Schmalkalden', to: 'https://www.hs-schmalkalden.de/' },
+  { label: t('About us'), to: '/about' },
   {
     label: 'Feedback',
     to: 'mailto:support@schmalify.com?subject=Support%20Request&body=Hello%20Schmalify%20Support%2C%0A%0AI%20need%20help%20with...',
   },
-  {
-    label: `Bored? Let's play some games!`,
-    to: 'https://tahirmahmudzade.github.io/guessmynumber/',
-  },
+  { label: t(`Bored? Let's play some games!`), to: 'https://tahirmahmudzade.github.io/guessmynumber/' },
 ]
 
 function handleSellNowClick() {
@@ -137,6 +129,8 @@ function handleSellNowClick() {
           target="_blank"
         />
         <UButton icon="mdi:github" color="gray" variant="ghost" to="https://github.com/tahirmahmudzade/" target="_blank" />
+
+        <LanguageSwitcher />
       </template>
     </UFooter>
   </div>
