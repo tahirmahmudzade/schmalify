@@ -27,6 +27,9 @@ export function compressImage(file: File, quality: number = 0.7): Promise<Blob> 
       // Draw the image on the canvas
       ctx.drawImage(img, 0, 0, width, height)
 
+      // PNG guard: If the image is a PNG, skip compression or convert it to JPEG
+      const outputType = file.type === 'image/png' ? 'image/jpeg' : file.type
+
       // Convert the canvas content to a Blob (compressed image)
       canvas.toBlob(
         blob => {
@@ -36,8 +39,8 @@ export function compressImage(file: File, quality: number = 0.7): Promise<Blob> 
             reject(new Error('Compression failed'))
           }
         },
-        file.type, // Keep the original file type
-        quality, // Compression quality (between 0 and 1, e.g., 0.7 for 70% quality)
+        outputType, // Use JPEG for PNGs or keep the original type for other formats
+        file.type === 'image/png' ? 0.9 : quality, // Higher quality for converted PNGs
       )
     }
 
