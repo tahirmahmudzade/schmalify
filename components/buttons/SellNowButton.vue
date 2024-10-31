@@ -5,6 +5,8 @@ const { buttonSize = 'xs', isLabelHidden = true } = defineProps<{
   isLabelHidden?: boolean
   click: () => void
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -27,6 +29,6 @@ const { buttonSize = 'xs', isLabelHidden = true } = defineProps<{
       <Icon name="i-mdi-shopping-basket-plus-outline" size="1.3em" />
     </template>
 
-    <span :class="isLabelHidden ? 'hidden md:inline' : ''">Sell Now</span>
+    <span :class="isLabelHidden ? 'hidden md:inline' : ''">{{ t('Sell Now') }}</span>
   </UButton>
 </template>

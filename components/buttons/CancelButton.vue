@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n()
 defineProps<{ click: () => void }>()
 </script>
 
@@ -6,7 +7,7 @@ defineProps<{ click: () => void }>()
   <UButton
     color="white"
     class="mt-5 py-2 justify-center bg-gray-800 dark:text-white hover:bg-gray-700 hover:text-white"
-    label="Cancel"
+    :label="t('Cancel')"
     :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-600' } } }"
     @click="click"
   >
