@@ -96,6 +96,9 @@ importers:
       '@iconify-json/mdi':
         specifier: ^1.2.0
         version: 1.2.0
+      '@iconify-json/openmoji':
+        specifier: ^1.2.4
+        version: 1.2.4
       '@iconify-json/ri':
         specifier: ^1.2.0
         version: 1.2.0
@@ -1243,6 +1246,9 @@ packages:
 
   '@iconify-json/mdi@1.2.0':
     resolution: {integrity: sha512-E9/3l5Syg3wfuarorFodhn4s8YorxhH3U3U20LaNBNiqw1kFNIDWhF6HymuzAD35k7RH0OBasJ+ZUyFtVVV6eg==}
+
+  '@iconify-json/openmoji@1.2.4':
+    resolution: {integrity: sha512-9ZwvLcUyVWxsTRgR5cQBRk1AwGAdhYXEvSRJBjTum+o2KkkXJxKvuwYuQ26XvCfahBirm72J3a4gxff9iB6pzw==}
 
   '@iconify-json/ri@1.2.0':
     resolution: {integrity: sha512-br8It3uRHylNhEH72aU9VF6gIdL4BAi6JMdcxsCaVbAyWBJ0jd4RxfmsYnil6TmEfP5wxihiCKbtbQmIHZdqKg==}
@@ -5945,6 +5951,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/mdi@1.2.0':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/openmoji@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
 
