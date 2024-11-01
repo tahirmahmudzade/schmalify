@@ -1,27 +1,17 @@
-<script setup>
-const { locale, locales, setLocale } = useI18n()
+<script setup lang="ts">
+import type { DropdownItem } from '#ui/types'
+const { setLocale } = useI18n()
 
-const availableLocales = computed(() => {
-  return locales.value
-})
-
-function updateLocale(event) {
-  setLocale(event.target.value)
-}
-
-onMounted(() => {
-  const langSwitcher = document.querySelector('#langSwitcher')
-  langSwitcher.value = locale.value
-})
+const availableLocales: DropdownItem[][] = [
+  [
+    { icon: 'i-openmoji-flag-united-kingdom', label: 'English', click: () => setLocale('en') },
+    { icon: 'i-openmoji-flag-germany', label: 'Deutsch', click: () => setLocale('de') },
+  ],
+]
 </script>
 
 <template>
-  <div mt-5 flex items-center gap2>
-    Language:
-    <select id="langSwitcher" rounded-md p-1 text-sm @change="updateLocale">
-      <option v-for="loc in availableLocales" :key="loc.code" :value="loc.code" p-1>
-        {{ loc.name }}
-      </option>
-    </select>
-  </div>
+  <UDropdown :items="availableLocales"
+    ><UButton icon="i-material-symbols-language" color="blue" variant="ghost" />
+  </UDropdown>
 </template>
