@@ -36,6 +36,9 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
     message: 'Something went wrong loading the page, please try again later or contact support.',
   })
 }
+
+const schmalifyDescription =
+  'Schmalify is a second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more efficient way for students to connect and exchange goods.'
 </script>
 
 <template>
@@ -130,9 +133,7 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
         {{ t('What is Schmalify?') }}
       </h2>
       <p class="text-gray-700 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
-        Schmalify is a second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy
-        and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more
-        efficient way for students to connect and exchange goods.
+        {{ t(schmalifyDescription) }}
       </p>
     </div>
   </div>
