@@ -6,6 +6,7 @@ const { categories, asGuest } = defineProps<{ categories: readonly Category[]; a
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
+const { t } = useI18n()
 const toast = useToast()
 
 const buttonLoading = ref(false)
@@ -22,26 +23,34 @@ const schema = computed(() =>
     title: z
       .string()
       .trim()
-      .min(1, { message: 'Title is required' })
-      .max(35, { message: 'Title must be at most 35 characters long' }),
-    description: z.string().trim().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
+      .min(1, { message: t('Title is required') })
+      .max(35, { message: t('Title must be at most 35 characters long') }),
+    description: z
+      .string()
+      .trim()
+      .max(200, { message: t('Description must be at most 200 characters long') })
+      .optional(),
     ...(itemData.category !== 'Free' && {
       price: z
         .number()
-        .min(1, { message: 'Price must be greater than 0' })
-        .max(5000, { message: 'Price must be at most 5000' }),
+        .min(1, { message: t('Price must be greater than 0') })
+        .max(5000, { message: t('Price must be at most 5000') }),
     }),
-    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
+    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
     ...(asGuest && {
-      firstName: z.string().trim().min(1, { message: 'First name is required' }).max(40),
+      firstName: z
+        .string()
+        .trim()
+        .min(1, { message: t('First name is required') })
+        .max(40),
       lastName: z.string().trim().max(50).optional(),
       phone: z
         .string()
         .trim()
-        .min(MIN_PHONE_NUMBER_LENGTH, { message: `Phone number must be at least ${MIN_PHONE_NUMBER_LENGTH} digits` })
-        .max(MAX_PHONE_NUMBER_LENGTH, { message: `Phone number must be at most ${MAX_PHONE_NUMBER_LENGTH} digits` })
-        .regex(phoneRegex, { message: 'Phone number must start with + and include the country code' })
-        .refine(value => validatePhoneNumber(value), { message: 'Invalid phone number' }),
+        .min(MIN_PHONE_NUMBER_LENGTH, { message: t(`Phone number must be at least ${MIN_PHONE_NUMBER_LENGTH} digits`) })
+        .max(MAX_PHONE_NUMBER_LENGTH, { message: t(`Phone number must be at most ${MAX_PHONE_NUMBER_LENGTH} digits`) })
+        .regex(phoneRegex, { message: t('Phone number must start with + and include the country code') })
+        .refine(value => validatePhoneNumber(value), { message: t('Invalid phone number') }),
     }),
   }),
 )
@@ -74,10 +83,9 @@ function handleImgChange(e: Event) {
   if (target.files) {
     const selectedFiles = Array.from(target.files)
 
-    // Check if adding new images exceeds the 3-image limit
     if (imageFiles.value.length + selectedFiles.length > 3) {
-      toast.add({ color: 'red', title: 'You can only upload up to 3 images', timeout: 2000 })
-      target.value = '' // Reset the input so the same file can be re-selected
+      toast.add({ color: 'red', title: t('You can only upload up to 3 images'), timeout: 2000 })
+      target.value = ''
       return
     }
 
@@ -91,7 +99,7 @@ function handleImgChange(e: Event) {
           })
           .catch(err => {
             console.log('Failed to compress image:', err)
-            toast.add({ color: 'red', title: 'Failed to compress the image', timeout: 3000 })
+            toast.add({ color: 'red', title: t('Failed to compress the image'), timeout: 3000 })
           })
       } else {
         imageFiles.value.push(file)
@@ -99,13 +107,11 @@ function handleImgChange(e: Event) {
       }
     })
 
-    // Clear the input to allow re-selection of the same file if needed
     target.value = ''
   }
 }
 
 function removeImage(index: number) {
-  // Remove images from new image previews
   if (imagePreviews.value.length > 0) {
     imageFiles.value.splice(index, 1)
     imagePreviews.value.splice(index, 1)
@@ -142,7 +148,7 @@ async function onSubmit() {
 
     const { message } = await $fetch('/api/items', { method: 'POST', body: formData })
 
-    toast.add({ color: 'green', title: message, timeout: 500 })
+    toast.add({ color: 'green', title: t(message), timeout: 500 })
     setTimeout(() => {
       reloadNuxtApp({ path: '/profile/listings', force: true })
     }, 500)
@@ -150,7 +156,7 @@ async function onSubmit() {
     console.log('Failed to create item:', err)
     toast.add({
       color: 'red',
-      title: err.data.message || 'Failed to create letting, please try again later with valid data',
+      title: t(err.data.message) || t('Failed to create letting, please try again later with valid data'),
     })
   } finally {
     onClose()
@@ -170,9 +176,7 @@ async function onSubmit() {
 <template>
   <UModal>
     <template #default>
-      <!-- Modal Overlay (provided by UModal) -->
       <div class="modal-container">
-        <!-- Modal Content -->
         <div class="relative modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
           <button
             @click="onClose"
@@ -182,39 +186,38 @@ async function onSubmit() {
           </button>
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
-              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Create Item</h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">Fill in the details to list an item</p>
+              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Create Item') }}</h3>
+              <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Fill in the details to list an item') }}</p>
 
               <UForm :schema="schema" :state="itemData">
-                <!-- Display guest fields when asGuest is true -->
                 <div v-if="asGuest">
                   <div class="flex space-x-4">
                     <UFormGroup name="firstName" class="w-1/2">
                       <template #label>
                         <div class="flex items-center justify-start space-x-1">
-                          <span>First Name</span>
+                          <span>{{ t('First Name') }}</span>
                           <span class="text-red-500">*</span>
                         </div>
                       </template>
-                      <UInput v-model="itemData.firstName" placeholder="First name" />
+                      <UInput v-model="itemData.firstName" :placeholder="t('First Name')" />
                     </UFormGroup>
 
-                    <UFormGroup label="Last Name" name="lastName" class="w-1/2">
-                      <UInput v-model="itemData.lastName" placeholder="Last name" />
+                    <UFormGroup :label="t('Last Name')" name="lastName" class="w-1/2">
+                      <UInput v-model="itemData.lastName" :placeholder="t('Last Name')" />
                     </UFormGroup>
                   </div>
 
                   <UFormGroup class="mt-3" name="phone">
                     <template #label>
                       <div class="flex items-center justify-start space-x-1">
-                        <span>Phone Number</span>
+                        <span>{{ t('Phone Number') }}</span>
                         <span class="text-red-500">*</span>
                       </div>
                     </template>
                     <UInput
                       v-model="itemData.phone"
                       type="tel"
-                      placeholder="Number with country code (e.g. +495556667788)"
+                      :placeholder="t('Number with country code (e.g. +495556667788)')"
                       @input="onPhoneInput"
                     />
                   </UFormGroup>
@@ -223,17 +226,18 @@ async function onSubmit() {
                 <UFormGroup class="mt-3" name="title">
                   <template #label>
                     <div class="flex items-center justify-start space-x-1">
-                      <span>Title</span>
+                      <span>{{ t('Title') }}</span>
                       <span class="text-red-500">*</span>
                     </div>
                   </template>
-                  <UInput v-model="itemData.title" placeholder="Short title (max 35 characters)" />
+                  <UInput v-model="itemData.title" :placeholder="t('Short title (max 35 characters)')" />
                 </UFormGroup>
 
-                <UFormGroup class="mt-3" label="Description" name="description">
-                  <UInput v-model="itemData.description" placeholder="Item description (max length: 200 characters)" />
+                <UFormGroup class="mt-3" :label="t('Description')" name="description">
+                  <UInput v-model="itemData.description" :placeholder="t('Item description (max length: 200 characters)')" />
                 </UFormGroup>
-                <UFormGroup class="mt-3" label="Category" name="category" required>
+
+                <UFormGroup class="mt-3" :label="t('Category')" name="category" required>
                   <USelectMenu v-model="itemData.category" :options="categoryNames" />
                 </UFormGroup>
 
@@ -248,28 +252,28 @@ async function onSubmit() {
                         @removeImage="removeImage"
                       />
                       <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                        <span class="text-gray-500">Click to upload images</span>
+                        <span class="text-gray-500">{{ t('Click to upload images') }}</span>
                       </div>
                     </div>
                   </label>
                   <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
-                  <p class="text-sm text-gray-500 mt-1">Maximum of 3 images, size limit: 4 MB each</p>
+                  <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
                 </div>
 
                 <UFormGroup v-if="itemData.category !== 'Free'" class="mt-3" name="price">
                   <template #label>
                     <div class="flex items-center justify-start space-x-1">
-                      <span>Price</span>
+                      <span>{{ t('Price') }}</span>
                       <span class="text-red-500">*</span>
                     </div>
                   </template>
-                  <UInput v-model.number="itemData.price" type="number" placeholder="Price in euro (max 5000)" />
+                  <UInput v-model.number="itemData.price" type="number" :placeholder="t('Price in euro (max 5000)')" />
                 </UFormGroup>
 
-                <UFormGroup class="mt-3" label="Condition" name="condition">
+                <UFormGroup class="mt-3" :label="t('Condition')" name="condition">
                   <USelect
                     v-model="itemData.condition"
-                    :options="['new', 'like new', 'very good', 'good', 'fair', 'poor']"
+                    :options="['new', 'like new', 'very good', 'good', 'fair', 'poor'].map(t)"
                   />
                 </UFormGroup>
               </UForm>
@@ -279,7 +283,7 @@ async function onSubmit() {
                 :loading="buttonLoading"
                 :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
                 class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                label="Create Item"
+                :label="t('Create Item')"
                 :ui="{
                   rounded: 'rounded-lg',
                   color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
@@ -307,13 +311,13 @@ async function onSubmit() {
   height: 100%;
   padding: 1rem;
   pointer-events: none;
-  overflow-y: auto; /* Allow scrolling when content is too large */
+  overflow-y: auto;
 }
 
 .modal-content {
   pointer-events: auto;
-  max-height: 90vh; /* Limit modal height to 90% of the viewport height */
-  overflow-y: auto; /* Enable scrolling inside the modal if content exceeds the height */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 @media (max-height: 500px) {

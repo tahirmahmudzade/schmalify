@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Item } from '~/server/database/drizzle'
 
+const { t } = useI18n()
 const toast = useToast()
 const { data: itemsData, error: getItemsError, refresh: refreshItems } = await useMyItems()
 const { data: categoryData } = await useFetch(`/api/category`)
@@ -51,7 +52,7 @@ function handleDelete(itemId: string) {
           <!-- Sold Badge -->
           <UBadge
             v-if="item.status === 'sold'"
-            label="Sold"
+            :label="t('Sold')"
             color="red"
             size="md"
             class="absolute top-2 right-2 z-10 font-bold"
@@ -76,12 +77,14 @@ function handleDelete(itemId: string) {
               <h3 class="text-gray-800 dark:text-gray-100 font-semibold text-sm mb-2 text-left break-words">
                 {{ item.title }}
               </h3>
-              <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">Price: {{ item.price }}</p>
               <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">
-                Condition: {{ item.condition }}
+                {{ t('Price') }}: {{ item.price }}
+              </p>
+              <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">
+                {{ t('Condition') }}: {{ item.condition }}
               </p>
               <p class="text-gray-700 dark:text-gray-300 text-xs text-left break-words">
-                Posted on: {{ formatDateToDDMMYYYY(item.createdAt!) }}
+                {{ t('Posted on') }}: {{ formatDateToDDMMYYYY(item.createdAt!) }}
               </p>
             </div>
 
@@ -95,7 +98,7 @@ function handleDelete(itemId: string) {
                 <span
                   class="text-white text-xs flex items-center justify-center font-extrabold text-transparent bg-clip-text bg-gradient-to-r drop-shadow-lg"
                 >
-                  Edit
+                  {{ t('Edit') }}
                 </span>
               </button>
 
@@ -107,7 +110,7 @@ function handleDelete(itemId: string) {
                 <span
                   class="text-white text-xs flex items-center justify-center font-extrabold text-transparent bg-clip-text bg-gradient-to-r drop-shadow-lg"
                 >
-                  Delete
+                  {{ t('Delete') }}
                 </span>
               </button>
             </div>

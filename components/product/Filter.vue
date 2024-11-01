@@ -30,6 +30,7 @@ const {
   hideCategory?: boolean
 }>()
 
+const { t } = useI18n()
 const itemStore = useItemStore()
 const { itemFilters } = storeToRefs(itemStore)
 const { setCategoryFilter, setConditionFilter, setSortOption, setPriceFilter } = itemStore
@@ -37,9 +38,9 @@ const { setCategoryFilter, setConditionFilter, setSortOption, setPriceFilter } =
 const open = ref(false)
 
 const sortOptions = [
-  { name: 'Lowest Price', value: 'lowest-price' },
-  { name: 'Highest Price', value: 'highest-price' },
-  { name: 'Newest', value: 'newest' },
+  { name: t('Lowest Price'), value: 'lowest-price' },
+  { name: t('Highest Price'), value: 'highest-price' },
+  { name: t('Newest'), value: 'newest' },
 ]
 
 const minPrice = ref(MIN_ITEM_PRICE)
@@ -69,19 +70,19 @@ const filters = computed(() => {
   const baseFilters = [
     {
       id: 'condition',
-      name: 'Condition',
+      name: t('Condition'),
       options: [
-        { value: 'new', label: 'New' },
-        { value: 'like new', label: 'Like New' },
-        { value: 'very good', label: 'Very Good' },
-        { value: 'good', label: 'Good' },
-        { value: 'fair', label: 'Fair' },
-        { value: 'poor', label: 'Poor' },
+        { value: 'new', label: t('New') },
+        { value: 'like new', label: t('Like New') },
+        { value: 'very good', label: t('Very Good') },
+        { value: 'good', label: t('Good') },
+        { value: 'fair', label: t('Fair') },
+        { value: 'poor', label: t('Poor') },
       ],
     },
     {
       id: 'price',
-      name: 'Price',
+      name: t('Price'),
       options: [], // Empty as we'll handle this with a range input
     },
   ]
@@ -89,7 +90,7 @@ const filters = computed(() => {
   if (!hideCategory) {
     baseFilters.unshift({
       id: 'category',
-      name: 'Category',
+      name: t('Category'),
       options: categories?.map(category => ({ value: category.id, label: category.name })) || [],
     })
   }
@@ -156,13 +157,13 @@ function handleConditionChange(condition: Condition) {
               class="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-6 shadow-xl mt-14"
             >
               <div class="flex items-center justify-between px-4">
-                <h2 class="text-lg font-medium text-white dark:text-gray-900">Filters</h2>
+                <h2 class="text-lg font-medium text-white dark:text-gray-900">{{ t('Filters') }}</h2>
                 <button
                   type="button"
                   class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md p-2 text-gray-700 dark:text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   @click="open = false"
                 >
-                  <span class="sr-only">Close menu</span>
+                  <span class="sr-only">{{ t('Close menu') }}</span>
                   <Icon name="i-material-symbols-close-small-outline" size="2rem" />
                 </button>
               </div>
@@ -208,7 +209,7 @@ function handleConditionChange(condition: Condition) {
                         </label>
                       </div>
                       <div v-if="section.id === 'price'">
-                        <h4 class="font-semibold text-gray-400 dark:text-gray-700">Price</h4>
+                        <h4 class="font-semibold text-gray-400 dark:text-gray-700">{{ t('Price') }}</h4>
                         <div class="flex space-x-2 items-center mt-2">
                           <input
                             v-model="minPrice"
@@ -271,12 +272,12 @@ function handleConditionChange(condition: Condition) {
 
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:max-w-7xl lg:px-8">
       <div class="py-8">
-        <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{{ title }}</h1>
-        <p class="mx-auto mt-4 max-w-3xl text-base text-gray-700 dark:text-gray-300">{{ description }}</p>
+        <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{{ t(title) }}</h1>
+        <p class="mx-auto mt-4 max-w-3xl text-base text-gray-700 dark:text-gray-300">{{ t(description) }}</p>
       </div>
 
       <section aria-labelledby="filter-heading" class="border-t border-gray-200 py-6">
-        <h2 id="filter-heading" class="sr-only">Product filters</h2>
+        <h2 id="filter-heading" class="sr-only">{{ t('Product filters') }}</h2>
 
         <div class="flex items-center justify-between">
           <!-- Sort Menu -->
@@ -285,7 +286,7 @@ function handleConditionChange(condition: Condition) {
               <MenuButton
                 class="group inline-flex justify-center text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-gray-300"
               >
-                Sort
+                {{ t('Sort') }}
                 <Icon class="ml-1 h-5 w-5 flex-shrink-0" name="i-mdi-chevron-down" />
               </MenuButton>
             </div>
@@ -324,7 +325,7 @@ function handleConditionChange(condition: Condition) {
             class="inline-block text-sm font-medium text-gray-900 dark:text-gray-200 hover:text-gray-300 sm:hidden"
             @click="open = true"
           >
-            Filters
+            {{ t('Filters') }}
           </button>
 
           <!-- Filters (Desktop) -->
@@ -340,7 +341,7 @@ function handleConditionChange(condition: Condition) {
                 <PopoverButton
                   class="group inline-flex justify-center text-sm font-medium text-gray-900 dark:text-gray-200 hover:text-gray-300"
                 >
-                  <span>{{ section.name }}</span>
+                  <span>{{ t(section.name) }}</span>
                   <Icon class="ml-1 h-5 w-5 flex-shrink-0" name="i-mdi-chevron-down" />
                 </PopoverButton>
               </div>
@@ -361,7 +362,7 @@ function handleConditionChange(condition: Condition) {
                       <input
                         :id="`filter-${section.id}-${optionIdx}`"
                         :name="`${section.id}[]`"
-                        :value="option.value"
+                        :value="t(option.value)"
                         :checked="
                           section.id === 'category'
                             ? itemFilters.category.includes(option.value)
@@ -379,11 +380,11 @@ function handleConditionChange(condition: Condition) {
                         :for="`filter-${section.id}-${optionIdx}`"
                         class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-white dark:text-gray-900"
                       >
-                        {{ option.label }}
+                        {{ t(option.label) }}
                       </label>
                     </div>
                     <div v-if="section.id === 'price'">
-                      <h4 class="font-semibold text-gray-400 dark:text-gray-700">Price</h4>
+                      <h4 class="font-semibold text-gray-400 dark:text-gray-700">{{ t('Price') }}</h4>
                       <div class="flex space-x-2 items-center mt-2">
                         <input
                           v-model="minPrice"

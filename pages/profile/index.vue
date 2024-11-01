@@ -2,6 +2,7 @@
 import { z } from 'zod'
 import type { Item, User } from '~/server/database/drizzle'
 
+const { t } = useI18n()
 const toast = useToast()
 const { user } = useUserSession()
 const { data: userData } = await useFetch<User & { items: (Item & { category: { name: string } | null })[] }>(
@@ -146,7 +147,7 @@ onMounted(() => {
               class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white text-xs rounded px-2 py-1"
               style="white-space: nowrap"
             >
-              Click to change your profile picture.
+              {{ t('Click to change your profile picture.') }}
               <div
                 class="absolute left-1/2 transform -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-700"
               ></div>
@@ -175,50 +176,50 @@ onMounted(() => {
           <p class="text-gray-700 dark:text-gray-400">{{ state.firstName }} {{ state.lastName }}</p>
           <p class="text-gray-700 dark:text-gray-400">{{ state.email }}</p>
           <p class="text-gray-700 dark:text-gray-400">{{ state.location }}</p>
-          <p class="text-gray-700 dark:text-gray-400">{{ state.phone || 'Phone number not provided' }}</p>
+          <p class="text-gray-700 dark:text-gray-400">{{ state.phone || t('Phone number not provided') }}</p>
         </div>
 
         <div class="w-full lg:w-3/4">
           <div class="bg-gray-300 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold mb-4">Account Details</h3>
+            <h3 class="text-lg font-semibold mb-4">{{ t('Account Details') }}</h3>
 
             <UForm :schema="schema" :state="state">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div v-if="!user?.isGuest" class="bg-gray-400 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
-                    <h4 class="block mb-2">Email</h4>
+                    <h4 class="block mb-2">{{ t('Email') }}</h4>
                     <UInput v-model="state.email" placeholder="johncena@gmail.com" type="email" id="email" />
                   </UFormGroup>
                 </div>
 
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
-                    <h4 class="block mb-2">First Name</h4>
+                    <h4 class="block mb-2">{{ t('First Name') }}</h4>
                     <UInput v-model="state.firstName" placeholder="John" type="text" id="first-name" />
                   </UFormGroup>
                 </div>
 
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup
-                    ><h4 class="block mb-2">Last Name</h4>
+                    ><h4 class="block mb-2">{{ t('Last Name') }}</h4>
                     <UInput v-model="state.lastName" placeholder="Cena" type="text" id="last-name" />
                   </UFormGroup>
                 </div>
 
                 <div v-if="!user?.isGuest" class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
-                    <h4 class="block mb-2">Address</h4>
+                    <h4 class="block mb-2">{{ t('Address') }}</h4>
                     <UInput v-model="state.location" placeholder="Blechammer 9B Haus 2, 999" type="text" id="location" />
                   </UFormGroup>
                 </div>
 
                 <div class="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg">
                   <UFormGroup>
-                    <h4 class="block mb-2">Phone</h4>
+                    <h4 class="block mb-2">{{ t('Phone Number') }}</h4>
                     <UInput
                       v-model="state.phone"
                       type="text"
-                      placeholder="Number with country code (e.g. +495556667788)"
+                      :placeholder="t('Number with country code (e.g. +495556667788)')"
                       id="phone"
                       class="w-full"
                       @input="onPhoneInput"
@@ -232,7 +233,7 @@ onMounted(() => {
                   @click="onSubmit"
                   :color="isFormInvalid || isFormUnchanged ? 'red' : 'primary'"
                   :disabled="isFormInvalid || isFormUnchanged"
-                  label="Save"
+                  :label="t('Save')"
                   variant="outline"
                 />
               </div>

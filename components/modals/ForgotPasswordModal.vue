@@ -3,6 +3,7 @@ import z from 'zod'
 
 const emit = defineEmits<{ (e: 'close'): void }>()
 
+const { t } = useI18n()
 const toast = useToast()
 
 // State to track the current step
@@ -12,7 +13,7 @@ const emailLoading = ref(false)
 const resetLoading = ref(false)
 
 // Validation schemas
-const emailSchema = z.object({ email: z.string().email({ message: 'Invalid email' }) })
+const emailSchema = z.object({ email: z.string().email({ message: t('Invalid email') }) })
 
 const resetSchema = z
   .object({
@@ -20,12 +21,12 @@ const resetSchema = z
     password: z
       .string()
       .trim()
-      .min(8, { message: 'Password must be at least 8 characters long' })
-      .max(15, { message: 'Password must be at most 15 characters long' }),
+      .min(8, { message: t('Password must be at least 8 characters long') })
+      .max(15, { message: t('Password must be at most 15 characters long') }),
     confirmPassword: z.string().trim(),
   })
   .refine(data => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
+    message: t('Passwords do not match'),
     path: ['confirmPassword'],
   })
 
@@ -83,15 +84,15 @@ async function onSubmitEmail() {
     })
 
     if (res.statusCode === 404) {
-      toast.add({ color: 'red', title: res.message })
+      toast.add({ color: 'red', title: t(res.message) })
     } else {
-      toast.add({ color: 'green', title: 'Reset link sent to your email' })
+      toast.add({ color: 'green', title: t('Reset link sent to your email') })
       step.value = 'reset'
     }
   } catch (err: any) {
     toast.add({
       color: 'red',
-      title: err.data?.message || 'Something went wrong, please try again later or contact support.',
+      title: t(err.data?.message || 'Something went wrong, please try again later or contact support.'),
     })
   } finally {
     emailLoading.value = false
@@ -115,23 +116,19 @@ async function onSubmitReset() {
       },
     })
 
-    // Reset lockout state upon successful reset
     resetPasswordValidation.value.failedAttempts = 0
     resetPasswordValidation.value.lockoutExpiration = null
 
-    toast.add({ color: 'green', title: 'Password reset successfully' })
+    toast.add({ color: 'green', title: t('Password reset successfully') })
     onClose()
   } catch (err: any) {
-    const message = err.data?.message || 'Error resetting password'
+    const message = t(err.data?.message || 'Error resetting password')
     toast.add({ color: 'red', title: message })
 
-    // Increment the failed attempts
     resetPasswordValidation.value.failedAttempts += 1
 
     if (resetPasswordValidation.value.failedAttempts >= 5) {
-      // Set lockout expiration time to current time + 1 minute
-      resetPasswordValidation.value.lockoutExpiration = now.value.getTime() + 60 * 1000 // 1 minute
-      // Reset failed attempts to 2 for subsequent lockouts
+      resetPasswordValidation.value.lockoutExpiration = now.value.getTime() + 60 * 1000
       resetPasswordValidation.value.failedAttempts = 0
     }
   } finally {
@@ -148,27 +145,26 @@ async function onSubmitReset() {
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
               <h3 class="mb-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">
-                {{ step === 'email' ? 'Forgot Password' : 'Reset Password' }}
+                {{ step === 'email' ? t('Forgot Password') : t('Reset Password') }}
               </h3>
               <p class="mb-4 text-gray-700 dark:text-gray-300">
                 {{
                   step === 'email'
-                    ? 'Enter your email address to reset your password.'
-                    : 'Enter the code you received and your new password below.'
+                    ? t('Enter your email address to reset your password.')
+                    : t('Enter the code you received and your new password below.')
                 }}
               </p>
 
-              <!-- Email Form -->
               <div v-if="step === 'email'">
                 <UForm :schema="emailSchema" :state="emailState">
-                  <UFormGroup label="Email" name="email">
-                    <UInput v-model="emailState.email" placeholder="your-email@example.com" />
+                  <UFormGroup :label="t('Email')" name="email">
+                    <UInput v-model="emailState.email" :placeholder="t('your-email@example.com')" />
                   </UFormGroup>
                 </UForm>
                 <UButton
                   color="white"
                   class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                  label="Send reset link"
+                  :label="t('Send reset link')"
                   :ui="{ rounded: 'rounded-lg' }"
                   :disabled="isEmailFormInvalid"
                   :loading="emailLoading"
@@ -176,38 +172,37 @@ async function onSubmitReset() {
                 />
               </div>
 
-              <!-- Reset Password Form -->
               <div v-else-if="step === 'reset'">
                 <UForm :schema="resetSchema" :state="resetState">
-                  <UFormGroup label="Code" name="token">
-                    <UInput v-model="resetState.token" placeholder="Enter your code" />
+                  <UFormGroup :label="t('Code')" name="token">
+                    <UInput v-model="resetState.token" :placeholder="t('Enter your code')" />
                   </UFormGroup>
-                  <UFormGroup label="New Password" name="password">
+                  <UFormGroup :label="t('New Password')" name="password">
                     <UInput v-model="resetState.password" type="password" />
                   </UFormGroup>
-                  <UFormGroup class="mt-3" label="Confirm Password" name="confirmPassword">
+                  <UFormGroup class="mt-3" :label="t('Confirm Password')" name="confirmPassword">
                     <UInput v-model="resetState.confirmPassword" type="password" />
                   </UFormGroup>
                 </UForm>
                 <UButton
                   color="white"
                   class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                  :label="isResetLockedOut ? `Wait ${resetLockoutRemainingTime}s` : 'Reset Password'"
+                  :label="isResetLockedOut ? `${t('Wait')} ${resetLockoutRemainingTime}s` : t('Reset Password')"
                   :ui="{ rounded: 'rounded-lg' }"
                   :disabled="isResetFormInvalid || isResetLockedOut"
                   :loading="resetLoading"
                   @click="onSubmitReset"
                 />
-                <!-- Lockout Message -->
                 <p v-if="isResetLockedOut" class="text-red-500 mt-2">
-                  Too many failed attempts. Please wait {{ resetLockoutRemainingTime }} seconds before trying again.
+                  {{ t('Too many failed attempts. Please wait') }} {{ resetLockoutRemainingTime }}
+                  {{ t('seconds before trying again.') }}
                 </p>
               </div>
 
               <UButton
                 color="white"
                 class="mt-3 py-2 w-full flex items-center justify-center bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 hover:text-white"
-                label="Cancel"
+                :label="t('Cancel')"
                 :ui="{ rounded: 'rounded-lg' }"
                 @click="onClose"
               />
@@ -224,18 +219,17 @@ async function onSubmitReset() {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Use fixed positioning to cover the entire viewport */
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  padding: 1rem; /* Adjust padding as needed */
-  pointer-events: none; /* Allow clicks to pass through */
+  padding: 1rem;
+  pointer-events: none;
 }
 
 .modal-content {
-  pointer-events: auto; /* Enable clicks on modal content */
+  pointer-events: auto;
 }
 
 @media (max-height: 500px) {

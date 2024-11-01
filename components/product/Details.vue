@@ -10,6 +10,8 @@ const { name, price, description, avatarUrl, sellerName, condition, location, po
   postedOn: string
   categoryName: string
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -29,12 +31,12 @@ const { name, price, description, avatarUrl, sellerName, condition, location, po
         :to="`/categories/${categoryName.toLowerCase().trim()}`"
         class="text-blue-600 hover:underline text-sm font-medium"
       >
-        {{ categoryName }}
+        {{ t(categoryName) }}
       </NuxtLink>
     </div>
 
     <div class="mt-6">
-      <h3 class="sr-only">Description</h3>
+      <h3 class="sr-only">{{ t('Description') }}</h3>
       <div
         class="space-y-6 text-base text-gray-700 break-words overflow-hidden"
         style="word-wrap: break-word; max-height: 200px; overflow-y: auto"
@@ -51,17 +53,17 @@ const { name, price, description, avatarUrl, sellerName, condition, location, po
       <ul class="mt-2 text-base text-gray-700 space-y-1">
         <li class="flex items-center">
           <Icon name="mdi:hammer-wrench" class="text-blue-500 mr-2" />
-          <strong class="text-[15px]">Condition:</strong>
+          <strong class="text-[15px]">{{ t('Condition') }}:</strong>
           <span class="ml-2 text-[15px]">{{ condition }}</span>
         </li>
         <li class="flex items-center">
           <Icon name="mdi:map-marker" class="text-red-500 mr-2" />
-          <strong class="text-[15px]">Location:</strong>
+          <strong class="text-[15px]">{{ t('Location') }}:</strong>
           <span class="ml-2 text-[15px]">{{ location }}</span>
         </li>
         <li class="flex items-center">
           <Icon name="mdi:calendar" class="text-yellow-500 mr-2" />
-          <strong class="text-[15px]">Posted on:</strong>
+          <strong class="text-[15px]">{{ t('Posted on') }}:</strong>
           <span class="ml-2 text-[15px]">{{ postedOn }}</span>
         </li>
       </ul>

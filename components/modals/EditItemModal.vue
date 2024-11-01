@@ -9,6 +9,7 @@ const { item: itemData } = defineProps<{
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
+const { t } = useI18n()
 const toast = useToast()
 
 const buttonLoading = ref(false)
@@ -22,19 +23,22 @@ const schema = computed(() =>
     title: z
       .string()
       .trim()
-      .min(1, { message: 'Title is required' })
-      .max(35, { message: 'Title must be at most 35 characters long' }),
-    description: z.string().trim().max(200, { message: 'Description must be at most 200 characters long' }).optional(),
-    // Only validate price if the category is not "Free" or price is not 0
+      .min(1, { message: t('Title is required') })
+      .max(35, { message: t('Title must be at most 35 characters long') }),
+    description: z
+      .string()
+      .trim()
+      .max(200, { message: t('Description must be at most 200 characters long') })
+      .optional(),
     ...(itemData.category?.name !== 'Free' &&
       itemSchemaData.price !== 0 && {
         price: z
           .number()
-          .min(1, { message: 'Price must be greater than 0' })
-          .max(5000, { message: 'Price must be at most 5000' }),
+          .min(1, { message: t('Price must be greater than 0') })
+          .max(5000, { message: t('Price must be at most 5000') }),
       }),
-    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: 'Condition is required' }),
-    status: z.enum(['available', 'sold'], { message: 'Status is required' }),
+    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
+    status: z.enum(['available', 'sold'], { message: t('Status is required') }),
   }),
 )
 
@@ -76,11 +80,10 @@ function handleImgChange(e: Event) {
     const selectedFiles = Array.from(target.files)
 
     if (selectedFiles.length > 3) {
-      toast.add({ color: 'red', title: 'You can only upload up to 3 images', timeout: 2000 })
+      toast.add({ color: 'red', title: t('You can only upload up to 3 images'), timeout: 2000 })
       return
     }
 
-    // Reset previous images
     imageFiles.value = []
     imagePreviews.value = []
 
@@ -91,7 +94,7 @@ function handleImgChange(e: Event) {
             const compressedSizeMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
 
             if (parseFloat(compressedSizeMB) > 4) {
-              toast.add({ color: 'red', title: 'Compressed image size must be less than 4 MB' })
+              toast.add({ color: 'red', title: t('Compressed image size must be less than 4 MB') })
               target.value = ''
               return
             }
@@ -101,7 +104,7 @@ function handleImgChange(e: Event) {
             imagePreviews.value.push(URL.createObjectURL(compressedFile))
           })
           .catch(() => {
-            toast.add({ color: 'red', title: 'Failed to compress the image' })
+            toast.add({ color: 'red', title: t('Failed to compress the image') })
           })
       } else {
         imageFiles.value.push(file)
@@ -115,7 +118,6 @@ function handleImgChange(e: Event) {
 }
 
 function removeImage(index: number) {
-  // Remove images from new image previews
   if (imagePreviews.value.length > 0) {
     imageFiles.value.splice(index, 1)
     imagePreviews.value.splice(index, 1)
@@ -127,7 +129,6 @@ async function onSubmit() {
 
   try {
     const formData = new FormData()
-    // Append new images
     if (imageFiles.value.length) {
       imageFiles.value.forEach((file, index) => {
         formData.append(`image_${index}`, file)
@@ -145,13 +146,13 @@ async function onSubmit() {
       body: formData,
     })
 
-    toast.add({ color: 'green', title: message, timeout: 500 })
+    toast.add({ color: 'green', title: t(message), timeout: 500 })
     setTimeout(() => {
       reloadNuxtApp({ path: '/profile/listings', force: true })
     }, 500)
   } catch (err: any) {
     console.log('Error:', err)
-    toast.add({ color: 'red', title: err.data.message || 'Failed to update item, please try again.' })
+    toast.add({ color: 'red', title: t(err.data.message) || t('Failed to update item, please try again.') })
   } finally {
     buttonLoading.value = false
   }
@@ -171,26 +172,29 @@ async function onSubmit() {
 
         <div class="p-6">
           <form class="flex flex-col w-full text-center">
-            <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Edit Item</h3>
-            <p class="mb-4 text-gray-700 dark:text-gray-300">Update the details of your item</p>
+            <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Edit Item') }}</h3>
+            <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Update the details of your item') }}</p>
 
             <UForm :schema="schema" :state="itemSchemaData">
               <UFormGroup class="mt-3" name="title">
                 <template #label>
                   <div class="flex items-center justify-start space-x-1">
-                    <span>Title</span>
+                    <span>{{ t('Title') }}</span>
                     <span class="text-red-500">*</span>
                   </div>
                 </template>
-                <UInput v-model="itemSchemaData.title" placeholder="Edit title (max 35 characters)" />
+                <UInput v-model="itemSchemaData.title" :placeholder="t('Edit title (max 35 characters)')" />
               </UFormGroup>
 
-              <UFormGroup class="mt-3" label="Description" name="description">
-                <UInput v-model="itemSchemaData.description" placeholder="Edit description (max length: 100 characters)" />
+              <UFormGroup class="mt-3" :label="t('Description')" name="description">
+                <UInput
+                  v-model="itemSchemaData.description"
+                  :placeholder="t('Edit description (max length: 100 characters)')"
+                />
               </UFormGroup>
 
-              <UFormGroup class="mt-3" label="Status" name="status">
-                <USelect v-model="itemSchemaData.status" :options="['available', 'sold']" />
+              <UFormGroup class="mt-3" :label="t('Status')" name="status">
+                <USelect v-model="itemSchemaData.status" :options="['available', 'sold'].map(t)" />
               </UFormGroup>
 
               <div class="mt-3">
@@ -204,22 +208,22 @@ async function onSubmit() {
                       @removeImage="removeImage"
                     />
                     <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                      <span class="text-gray-500">Click to upload images</span>
+                      <span class="text-gray-500">{{ t('Click to upload images') }}</span>
                     </div>
                   </div>
                 </label>
                 <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
-                <p class="text-sm text-gray-500 mt-1">Maximum of 3 images, size limit: 4 MB each</p>
+                <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
               </div>
 
-              <UFormGroup v-if="itemData.category?.name !== 'Free'" class="mt-3" label="Price" name="price">
-                <UInput v-model.number="itemSchemaData.price" type="number" placeholder="Edit price in euros" />
+              <UFormGroup v-if="itemData.category?.name !== 'Free'" class="mt-3" :label="t('Price')" name="price">
+                <UInput v-model.number="itemSchemaData.price" type="number" :placeholder="t('Edit price in euros')" />
               </UFormGroup>
 
-              <UFormGroup class="mt-3" label="Condition" name="condition">
+              <UFormGroup class="mt-3" :label="t('Condition')" name="condition">
                 <USelect
                   v-model="itemSchemaData.condition"
-                  :options="['new', 'like new', 'very good', 'good', 'fair', 'poor']"
+                  :options="['new', 'like new', 'very good', 'good', 'fair', 'poor'].map(t)"
                 />
               </UFormGroup>
             </UForm>
@@ -229,7 +233,7 @@ async function onSubmit() {
               :loading="buttonLoading"
               :icon="isFormInvalid || isFormUnchanged ? 'i-flat-color-icons-lock' : ''"
               class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-              label="Update Item"
+              :label="t('Update Item')"
               :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } } }"
               :disabled="isFormInvalid || isFormUnchanged"
               @click="onSubmit"

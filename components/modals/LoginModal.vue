@@ -3,6 +3,7 @@ import z from 'zod'
 
 const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void; (e: 'forgotPassword'): void }>()
 
+const { t } = useI18n()
 const toast = useToast()
 
 const store = useStore()
@@ -15,13 +16,13 @@ const schema = z.object({
   email: z
     .string()
     .trim()
-    .email({ message: 'Invalid email' })
-    .max(40, { message: 'Email must be at most 40 characters long' }),
+    .email({ message: t('Invalid email') })
+    .max(40, { message: t('Email must be at most 40 characters long') }),
   password: z
-    .string({ message: 'Invalid password' })
+    .string({ message: t('Invalid password') })
     .trim()
-    .min(8, { message: 'Password must be at least 8 characters long' })
-    .max(15, { message: 'Password must be at most 15 characters long' }),
+    .min(8, { message: t('Password must be at least 8 characters long') })
+    .max(15, { message: t('Password must be at most 15 characters long') }),
 })
 
 type Schema = z.output<typeof schema>
@@ -72,10 +73,10 @@ async function onSubmit() {
     credentials.password = ''
     const message =
       err.data.statusCode === 429
-        ? 'You have exceeded the maximum number of login attempts, please try again in one minute.'
+        ? t('You have exceeded the maximum number of login attempts, please try again in one minute.')
         : err.data.message
 
-    toast.add({ color: 'red', title: message || 'Invalid email or password' })
+    toast.add({ color: 'red', title: message || t('Invalid email or password') })
     loginValidation.value.failedAttempts += 1
 
     if (loginValidation.value.failedAttempts >= 5) {
@@ -104,13 +105,13 @@ function onForgotPassword() {
         <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
           <div class="p-6">
             <form class="flex flex-col w-full text-center">
-              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">Log in</h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">Enter your email and password</p>
+              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Log in') }}</h3>
+              <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Enter your email and password') }}</p>
               <UButton
                 icon="i-flat-color-icons-google"
                 color="white"
                 class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                label="Log in With Google"
+                :label="t('Log in With Google')"
                 :ui="{
                   base: 'max-w-lg',
                   rounded: 'rounded-lg',
@@ -119,23 +120,23 @@ function onForgotPassword() {
               />
               <div class="flex items-center my-3">
                 <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
-                <p class="mx-4 text-gray-600 dark:text-gray-400">or</p>
+                <p class="mx-4 text-gray-600 dark:text-gray-400">{{ t('or') }}</p>
                 <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
               </div>
 
               <UForm :schema="schema" :state="credentials">
-                <UFormGroup label="Email" name="email">
-                  <UInput v-model="credentials.email" placeholder="your-email@example.com" />
+                <UFormGroup :label="t('Email')" name="email">
+                  <UInput v-model="credentials.email" :placeholder="t('your-email@example.com')" />
                 </UFormGroup>
 
-                <UFormGroup class="mt-3" label="Password" name="password">
+                <UFormGroup class="mt-3" :label="t('Password')" name="password">
                   <UInput v-model="credentials.password" type="password" />
                 </UFormGroup>
 
                 <!-- Forgot Password Link -->
                 <div class="text-right mt-2">
                   <a @click="onForgotPassword" class="text-sm text-blue-500 hover:underline cursor-pointer">
-                    Forgot Password?
+                    {{ t('Forgot Password?') }}
                   </a>
                 </div>
               </UForm>
@@ -144,7 +145,7 @@ function onForgotPassword() {
                 color="white"
                 :icon="isFormInvalid || isLockedOut ? 'i-flat-color-icons-lock' : ''"
                 class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                :label="isLockedOut ? `Wait ${lockoutRemainingTime}s` : 'Log in'"
+                :label="isLockedOut ? `${t('Wait')} ${lockoutRemainingTime}s` : t('Log in')"
                 :ui="{
                   rounded: 'rounded-lg',
                   color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
@@ -156,12 +157,13 @@ function onForgotPassword() {
 
               <!-- Lockout Message -->
               <p v-if="isLockedOut" class="text-red-500 mt-2">
-                Too many failed attempts. Please wait {{ lockoutRemainingTime }} seconds before trying again.
+                {{ t('Too many failed attempts. Please wait') }} {{ lockoutRemainingTime }}
+                {{ t('seconds before trying again.') }}
               </p>
               <p class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300">
-                Not registered yet?
+                {{ t('Not registered yet?') }}
                 <span @click="onRegister" class="font-bold cursor-pointer text-blue-500 dark:text-blue-400">
-                  Create an Account
+                  {{ t('Create an Account') }}
                 </span>
               </p>
             </form>

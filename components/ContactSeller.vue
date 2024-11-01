@@ -3,6 +3,7 @@ import type { DropdownItem } from '#ui/types'
 
 const { status, phone, title } = defineProps<{ status: 'available' | 'sold' | null; phone: string; title: string }>()
 
+const { t } = useI18n()
 const { loggedIn } = useUserSession()
 const isChatboxOpen = useChatboxState()
 
@@ -41,7 +42,7 @@ const contactDropdownItems: DropdownItem[][] = [
         type="button"
         class="flex max-w-xs flex-1 items-center justify-center rounded-md bg-red-500 px-8 py-3 text-base font-medium text-white opacity-50 cursor-not-allowed sm:w-full"
       >
-        This item is sold
+        {{ t('This item is sold') }}
       </button>
     </template>
     <template v-else>
@@ -49,7 +50,7 @@ const contactDropdownItems: DropdownItem[][] = [
         <button
           class="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-blue-500 px-8 py-3 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
         >
-          Contact Seller
+          {{ t('Contact Seller') }}
         </button>
       </UDropdown>
     </template>

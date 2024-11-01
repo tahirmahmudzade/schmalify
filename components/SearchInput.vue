@@ -16,6 +16,8 @@ const {
   textSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl'
 }>()
 
+const { t } = useI18n()
+
 // Reactive variables
 const searchQuery = ref('')
 const debouncedSearchQuery = refDebounced(searchQuery, 500) // Debouncing to avoid too many requests
@@ -91,7 +93,7 @@ const onInput = () => {
   <div class="relative">
     <!-- Search Input -->
     <UInput
-      :placeholder="placeholder"
+      :placeholder="t(placeholder)"
       variant="outline"
       :color="inputColor"
       :size="inputSize"
@@ -128,7 +130,7 @@ const onInput = () => {
       v-else-if="!loading && searchPerformed && searchQuery && dropdownVisible && !filteredItems.length"
       class="absolute w-full bg-gray-200 border rounded-lg shadow-lg z-10 mt-1 p-2 text-xs text-gray-500"
     >
-      No items found
+      {{ t('No items found') }}
     </p>
   </div>
 </template>
