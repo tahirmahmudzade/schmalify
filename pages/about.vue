@@ -15,17 +15,17 @@ const team = [
     imageUrl: '/img/team/baris_eroglu.png',
   },
   {
+    name: 'Ismail Mahili',
+    role: 'AI Engineer',
+    description: 'A passionate software developer focused on building innovative AI solutions using Python  ',
+    imageUrl: '/img/team/ismail_mahili.jpg',
+  },
+  {
     name: 'Kamila Mammadzada',
     role: 'UI/UX Designer',
     description:
       'Crafting intuitive and visually engaging digital experiences that connect users effortlessly with technology.',
     imageUrl: '/img/team/kamila_mamedzade.jpeg',
-  },
-  {
-    name: 'Test',
-    role: 'CEO',
-    description: 'Tina provides visionary leadership and guides the company’s strategy.',
-    imageUrl: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?auto=format&fit=crop&w=150&h=150&q=80',
   },
   {
     name: 'Fahmin Mahili',
