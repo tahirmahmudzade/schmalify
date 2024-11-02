@@ -17,7 +17,7 @@ const team = [
   {
     name: 'Ismail Mahili',
     role: 'AI Engineer',
-    description: 'A passionate software developer focused on building innovative AI solutions using Python  ',
+    description: 'A passionate software developer focused on building innovative AI solutions using Python.',
     imageUrl: '/img/team/ismail_mahili.jpg',
   },
   {

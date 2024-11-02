@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DropdownItem } from '#ui/types'
+
 const { setLocale } = useI18n()
 
 const availableLocales: DropdownItem[][] = [

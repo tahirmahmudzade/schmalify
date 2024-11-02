@@ -3,10 +3,10 @@ import type { DropdownItem } from '#ui/types'
 import type { FooterLink } from '#ui-pro/types'
 
 const { loggedIn, user } = useUserSession()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const path = computed(() => useRoute().path)
-console.log('current locale', locale.value)
+
 const items: DropdownItem[][] = [
   [
     loggedIn.value
