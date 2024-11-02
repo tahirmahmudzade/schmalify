@@ -178,7 +178,7 @@ function handleConditionChange(condition: Condition) {
                 >
                   <h3 class="-mx-2 -my-3 flow-root">
                     <DisclosureButton class="flex w-full items-center justify-between px-2 py-3 text-sm">
-                      <span class="font-medium text-white dark:text-gray-900">{{ section.name }}</span>
+                      <span class="font-medium text-white dark:text-gray-900">{{ t(section.name) }}</span>
                     </DisclosureButton>
                   </h3>
                   <DisclosurePanel class="pt-6">
@@ -205,7 +205,7 @@ function handleConditionChange(condition: Condition) {
                           :for="`filter-mobile-${section.id}-${optionIdx}`"
                           class="ml-3 text-sm text-white dark:text-gray-900"
                         >
-                          {{ option.label }}
+                          {{ t(option.label) }}
                         </label>
                       </div>
                       <div v-if="section.id === 'price'">

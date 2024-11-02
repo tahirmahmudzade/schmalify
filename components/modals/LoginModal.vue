@@ -126,7 +126,7 @@ function onForgotPassword() {
 
               <UForm :schema="schema" :state="credentials">
                 <UFormGroup :label="t('Email')" name="email">
-                  <UInput v-model="credentials.email" :placeholder="t('your-email@example.com')" />
+                  <UInput v-model="credentials.email" placeholder="your-email@example.com" />
                 </UFormGroup>
 
                 <UFormGroup class="mt-3" :label="t('Password')" name="password">

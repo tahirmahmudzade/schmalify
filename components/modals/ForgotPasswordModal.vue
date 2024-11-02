@@ -158,7 +158,7 @@ async function onSubmitReset() {
               <div v-if="step === 'email'">
                 <UForm :schema="emailSchema" :state="emailState">
                   <UFormGroup :label="t('Email')" name="email">
-                    <UInput v-model="emailState.email" :placeholder="t('your-email@example.com')" />
+                    <UInput v-model="emailState.email" placeholder="your-email@example.com" />
                   </UFormGroup>
                 </UForm>
                 <UButton
