@@ -1,83 +1,120 @@
 <script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+
 const { sellerName, itemId } = defineProps<{ sellerName: string; itemId: string }>()
 
+const { t } = useI18n()
 const isChatboxOpen = useChatboxState()
-
 const { user } = useUserSession()
 
 const conversationId = ref('')
 const tempToken = ref('')
+const messages = ref<MessageData[]>([])
+const message = ref('')
 
+// New loading state
+const isLoading = ref(true)
+
+// Fetch conversation data
 const {
   data: conversationData,
   error: conversationError,
   status: conversationStatus,
-} = await useLazyFetch(`/api/items/${itemId}/conversation`)
+} = await useFetch(`/api/items/${itemId}/conversation`)
 
-watch([conversationData, conversationError], ([dataValue, errorValue]) => {
-  if (!dataValue || errorValue) {
-    closeConnection()
-    useToast().add({ title: "Couldn't load messages, please try again later or contact support", color: 'red' })
-    return
-  }
-  conversationId.value = dataValue.conversationId
-  tempToken.value = dataValue.tempToken
-})
+if (!conversationData.value || conversationError.value) {
+  useToast().add({ title: t("Couldn't load messages, please try again later or contact support"), color: 'red' })
+  throw createError({ statusCode: 500, message: t("Couldn't load messages, please try again later or contact support") })
+}
 
-const messages = ref<MessageData[]>([])
+conversationId.value = conversationData.value.conversationId
+tempToken.value = conversationData.value.tempToken
+
+// Initialize chat connection
+console.log('conversation id here in chat slide over', conversationId.value)
 
 const {
   close: closeConnection,
   data: incomingData,
-  send,
+  send: sendMessage,
   status: connectionStatus,
-} = useChatConnection(conversationId.value, tempToken.value, true)
+} = useChatConnection<MessageData>(conversationId.value, tempToken.value, true)
 
+// Fetch messages lazily
 const {
   data: messagesData,
   error: messagesError,
   status: messagesStatus,
-} = await useLazyFetch<{ statusCode: number; data: MessageData[] }>(`/api/messages/${conversationId}`)
+} = await useLazyFetch<{ statusCode: number; data: MessageData[] }>(`/api/messages/${conversationId.value}`)
+
+// Variable to track if messages are loaded
+const messagesLoaded = ref(false)
+// Variable to track if the timer is completed
+const timerCompleted = ref(false)
 
 watch([messagesData, messagesError], ([dataValue, errorValue]) => {
   if (!dataValue || errorValue) {
     closeConnection()
-    useToast().add({ title: "Couldn't load messages, please try again later or contact support", color: 'red' })
+    useToast().add({ title: t("Couldn't load messages, please try again later or contact support"), color: 'red' })
     return
   } else {
+    console.log('back with the data')
+
+    console.log('data value is', dataValue.data)
     messages.value = dataValue.data || []
+    console.log('assigned messages', messages.value)
+
+    messagesLoaded.value = true
+    // If the timer is already completed, hide the loading spinner
+    if (timerCompleted.value) {
+      isLoading.value = false
+    }
   }
 })
 
 watch(incomingData, newData => {
   try {
-    messages.value.push({
-      receiverId: messagesData.value!.data[0]!.receiverId,
-      senderId: messagesData.value!.data[0]!.senderId,
-      content: newData,
-      timestamp: new Date().toISOString(),
-    })
+    let messageData: MessageData | undefined
+    // Parse the incoming data as JSON
+    if (typeof newData === 'string') {
+      messageData = JSON.parse(newData)
+    }
+
+    if (messageData && messageData.senderId !== user.value!.id) {
+      messages.value.push(messageData)
+    }
   } catch (e) {
     console.error('Failed to parse message', e)
   }
 })
 
-const message = ref('')
-
 function sendData() {
   if (message.value.trim() && connectionStatus.value === 'OPEN') {
-    messages.value.push({
+    const newMessage: MessageData = {
       receiverId: '',
       senderId: user.value!.id,
       content: message.value,
       timestamp: new Date().toISOString(),
-    })
+    }
 
-    send(message.value)
+    messages.value.push(newMessage)
+
+    sendMessage(message.value)
 
     message.value = ''
   }
 }
+
+onMounted(() => {
+  // Start a 2-second timer
+  setTimeout(() => {
+    timerCompleted.value = true
+    // Check if messages are loaded
+    if (messagesLoaded.value) {
+      isLoading.value = false
+    }
+  }, 2000)
+})
 
 onBeforeUnmount(() => {
   closeConnection()
@@ -86,9 +123,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <LoadingSpinner v-if="messagesStatus === 'pending' || conversationStatus === 'pending' || connectionStatus !== 'OPEN'" />
   <USlideover v-model="isChatboxOpen">
-    <div class="flex flex-col h-full">
+    <div v-if="messagesStatus === 'pending' || conversationStatus === 'pending' || connectionStatus !== 'OPEN' || isLoading">
+      <UAlert :title="t('Loading messages...')" />
+      <LoadingSpinner />
+    </div>
+    <div v-else class="flex flex-col h-full">
       <div class="flex items-center p-4 border-b border-gray-200">
         <div class="flex items-center space-x-2">
           <div class="rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center text-white">
@@ -136,14 +176,14 @@ onBeforeUnmount(() => {
             v-model="message"
             @keyup.enter="sendData"
             type="text"
-            placeholder="Type your message..."
+            :placeholder="t('Type your message...')"
             class="flex-1 p-2 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 text-gray-900"
           />
           <button
             @click="sendData"
             class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
           >
-            Send
+            {{ t('Send') }}
           </button>
         </div>
       </div>

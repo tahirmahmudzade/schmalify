@@ -40,9 +40,7 @@ export default defineWebSocketHandler({
       throw createError({ statusCode: 404, message: 'Conversation not found' })
     }
 
-    if (!peer.ctx) {
-      peer.ctx = {}
-    }
+    !peer.ctx && (peer.ctx = {})
 
     const otherParticipantId = conversation.participants.find(id => id !== decodedUserId)
 
@@ -52,7 +50,7 @@ export default defineWebSocketHandler({
 
     peer.ctx.userId = userId // encoded userId
     peer.ctx.conversationId = conversationId // encoded conversationId
-    peer.ctx.room = `chat:item:${conversationId}` // room name with encoded conversationId
+    peer.ctx.room = `chat:${conversationId}` // room name with encoded conversationId
     peer.ctx.receiverId = encodeId(otherParticipantId) // encoded receiverId
 
     peer.subscribe(peer.ctx.room)
@@ -70,15 +68,15 @@ export default defineWebSocketHandler({
   },
   async message(peer, message) {
     try {
-      const room = peer.ctx?.room // room name with encoded conversationId
-      const senderId = peer.ctx?.userId // encoded userId
-      const receiverId = peer.ctx?.receiverId // encoded receiverId
-      const conversationId = peer.ctx?.conversationId // encoded conversationId
+      const room: string = peer.ctx?.room // room name with encoded conversationId
+      const senderId: string = peer.ctx?.userId // encoded userId
+      const receiverId: string = peer.ctx?.receiverId // encoded receiverId
+      const conversationId: string = peer.ctx?.conversationId // encoded conversationId
 
       if (!room || !senderId || !conversationId || !receiverId) {
         throw createError({
           statusCode: 400,
-          message: 'Something went wrong sending the message, please try again later or contact support',
+          message: 'Something went wrong sending the message, please try again later or contact support.',
         })
       }
 
@@ -91,7 +89,7 @@ export default defineWebSocketHandler({
 
       await hubKV().set(key, messageData, { ttl: 259200 }) // days: 3
 
-      peer.publish(room, content)
+      peer.publish(room, messageData)
     } catch (error) {
       console.error('Error in message handler:', error)
       peer.send(JSON.stringify({ error: 'An error occurred while processing your message.' }))

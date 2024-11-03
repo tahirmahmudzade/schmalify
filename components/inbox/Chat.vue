@@ -9,6 +9,7 @@ const messageStore = useMessageStore()
 
 const { message, isChatOpen, allMessages } = storeToRefs(messageStore)
 
+const { t } = useI18n()
 const { user } = useUserSession()
 
 const {
@@ -20,7 +21,7 @@ const {
 watch([messagesData, messagesError], ([dataValue, errorValue]) => {
   if (!dataValue || errorValue) {
     closeChat()
-    useToast().add({ title: "Couldn't load messages, please try again later or contact support", color: 'red' })
+    useToast().add({ title: t("Couldn't load messages, please try again later or contact support"), color: 'red' })
     return
   } else {
     allMessages.value = dataValue.data || []
@@ -40,17 +41,19 @@ const {
   send: sendMessage,
   status: connectionStatus,
   close: closeConnection,
-} = useChatConnection(conversation.id, tempToken, true)
+} = useChatConnection<string>(conversation.id, tempToken, true)
 
-watch(incomingMessageData, (newData: string) => {
+watch(incomingMessageData, newData => {
   try {
-    const otherUserId = conversation.participants!.find(id => id !== user.value?.id) || ''
-    allMessages.value.push({
-      senderId: otherUserId,
-      content: newData,
-      receiverId: user.value!.id,
-      timestamp: new Date().toISOString(),
-    })
+    let messageData: MessageData | undefined
+    // Parse the incoming data as JSON
+    if (typeof newData === 'string') {
+      messageData = JSON.parse(newData)
+    }
+
+    if (messageData && messageData.senderId !== user.value!.id) {
+      allMessages.value.push(messageData)
+    }
   } catch (e) {
     console.error('Failed to parse message', e)
   }
@@ -58,17 +61,19 @@ watch(incomingMessageData, (newData: string) => {
 
 function sendData() {
   if (message.value.trim() && connectionStatus.value === 'OPEN') {
-    const msgObj = {
+    const msgObj: MessageData = {
       senderId: user.value!.id,
       receiverId: conversation.participants!.find(id => id !== user.value?.id) || '',
       content: message.value,
       timestamp: new Date().toISOString(),
     }
     allMessages.value.push(msgObj)
+
     sendMessage(message.value)
+
     message.value = ''
   } else {
-    useToast().add({ title: 'Failed to send message, please try again later or contact support', color: 'red' })
+    useToast().add({ title: t('Failed to send message, please try again later or contact support'), color: 'red' })
   }
 }
 
@@ -82,7 +87,10 @@ function closeChat() {
 <template>
   <div>
     <USlideover v-model="isChatOpen" @after-leave="closeChat()">
-      <LoadingSpinner v-if="messagesStatus === 'pending' || temptokenStatus === 'pending' || connectionStatus !== 'OPEN'" />
+      <div v-if="messagesStatus === 'pending' || temptokenStatus === 'pending' || connectionStatus !== 'OPEN'">
+        <UAlert :title="t('Loading messages...')" />
+        <LoadingSpinner />
+      </div>
       <div v-else class="flex flex-col h-full">
         <ChatHeader />
 
