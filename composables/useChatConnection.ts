@@ -4,7 +4,8 @@ console.log('node env: ', process.env.NODE_ENV)
 
 export function useChatConnection<T>(conversationId: string, tempToken: string, immediate = false) {
   const { user } = useUserSession()
-  const { t } = useI18n()
+  const { $i18n } = useNuxtApp()
+  const t = $i18n.t
 
   if (!user.value) {
     throw createError({ statusCode: 401, message: t("You're not logged in, please log in to chat") })

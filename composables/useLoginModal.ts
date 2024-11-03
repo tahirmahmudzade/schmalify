@@ -3,7 +3,8 @@ import LoginModal from '~/components/modals/LoginModal.vue'
 export function useLoginModal() {
   const modal = useModal()
   const toast = useToast()
-  const { t } = useI18n()
+  const { $i18n } = useNuxtApp()
+  const t = $i18n.t
 
   modal.open(LoginModal, {
     transition: true,

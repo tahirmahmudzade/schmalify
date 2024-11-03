@@ -4,7 +4,8 @@ export function useDeleteItem(itemId: string, refresh: () => Promise<void>) {
   const modal = useModal()
   const toast = useToast()
   const store = useStore()
-  const { t } = useI18n()
+  const { $i18n } = useNuxtApp()
+  const t = $i18n.t
 
   const { refetchEntities } = storeToRefs(store)
 

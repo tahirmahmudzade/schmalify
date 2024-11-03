@@ -3,7 +3,8 @@ import RegisterModal from '~/components/modals/RegisterModal.vue'
 export function useRegisterModal() {
   const modal = useModal()
   const toast = useToast()
-  const { t } = useI18n()
+  const { $i18n } = useNuxtApp()
+  const t = $i18n.t
 
   const { user } = useUserSession()
 

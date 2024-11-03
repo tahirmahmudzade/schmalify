@@ -1,6 +1,7 @@
 export const useLogout = () => {
   const toast = useToast()
-  const { t } = useI18n()
+  const { $i18n } = useNuxtApp()
+  const t = $i18n.t
   $fetch('/api/auth/logout')
     .then(() => {
       reloadNuxtApp({ path: '/' })
