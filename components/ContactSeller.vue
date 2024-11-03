@@ -30,7 +30,7 @@ const contactDropdownItems: DropdownItem[][] = [
       },
     },
     { label: 'Whatsapp', icon: 'logos:whatsapp-icon', to: getWhatsappLink(), target: '_blank' },
-    { label: 'Telegram', icon: 'logos:telegram' },
+    // { label: 'Telegram', icon: 'logos:telegram' },
   ],
 ]
 </script>
