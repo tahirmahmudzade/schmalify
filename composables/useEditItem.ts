@@ -9,5 +9,4 @@ export function useEditItem(item: Item & { category?: { name: string } | null },
     refreshItems,
     onClose: () => modal.close(),
   })
-  // }
 }

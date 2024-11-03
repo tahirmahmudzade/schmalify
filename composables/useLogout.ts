@@ -1,5 +1,6 @@
 export const useLogout = () => {
   const toast = useToast()
+  const { t } = useI18n()
   $fetch('/api/auth/logout')
     .then(() => {
       reloadNuxtApp({ path: '/' })
@@ -7,6 +8,6 @@ export const useLogout = () => {
     .catch(err => {
       console.log('Error logging out', err)
 
-      toast.add({ title: err.data.message || 'Something went wrong, please try again later' })
+      toast.add({ title: err.data.message || t('Something went wrong, please try again later or contact support.') })
     })
 }

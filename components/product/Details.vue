@@ -54,7 +54,7 @@ const { t } = useI18n()
         <li class="flex items-center">
           <Icon name="mdi:hammer-wrench" class="text-blue-500 mr-2" />
           <strong class="text-[15px]">{{ t('Condition') }}:</strong>
-          <span class="ml-2 text-[15px]">{{ condition }}</span>
+          <span class="ml-2 text-[15px]">{{ t(condition) }}</span>
         </li>
         <li class="flex items-center">
           <Icon name="mdi:map-marker" class="text-red-500 mr-2" />

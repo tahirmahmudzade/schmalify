@@ -3,6 +3,7 @@ import LoginModal from '~/components/modals/LoginModal.vue'
 export function useLoginModal() {
   const modal = useModal()
   const toast = useToast()
+  const { t } = useI18n()
 
   modal.open(LoginModal, {
     transition: true,
@@ -14,7 +15,7 @@ export function useLoginModal() {
           useRegisterModal()
         }, 500)
       } else {
-        toast.add({ id: 'login-success', title: 'Successfully logged in', timeout: 1500 })
+        toast.add({ id: 'login-success', title: t('Successfully logged in'), timeout: 1500 })
         setTimeout(() => {
           reloadNuxtApp({ path: '/profile', force: true })
         }, 1600)

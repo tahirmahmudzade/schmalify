@@ -65,7 +65,7 @@ async function onSubmit() {
     console.error(err)
     toast.add({
       color: 'red',
-      title: err.data.message || t('Something went wrong, please try again later or contact support'),
+      title: err.data.message || t('Something went wrong, please try again later or contact support.'),
     })
   }
 }

@@ -4,6 +4,7 @@ import type { Item } from '~/server/database/drizzle'
 const route = useRoute('items-id')
 
 const { user } = useUserSession()
+const { t } = useI18n()
 
 const { data: itemData, error } = await useFetch<{
   statusCode: number
@@ -21,7 +22,7 @@ const { data: itemData, error } = await useFetch<{
 }>(`/api/items/${route.params.id}`)
 
 if (error.value || !itemData.value) {
-  throw createError({ statusCode: 404, message: 'Item might be already sold or removed, please check back later' })
+  throw createError({ statusCode: 404, message: t('Item might be already sold or removed, please check back later') })
 }
 
 const { item } = itemData.value
@@ -51,8 +52,8 @@ const product = reactive({
     alt: `Image ${index + 1} of ${item.title}`,
   })),
   description: item.description || '',
-  condition: item.condition || 'Not specified',
-  location: item.seller?.location || 'Not specified',
+  condition: item.condition || t('Not specified'),
+  location: item.seller?.location || t('Not specified'),
   postedOn: formatDateToDDMMYYYY(item.createdAt!),
 })
 

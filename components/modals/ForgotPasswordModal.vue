@@ -119,7 +119,7 @@ async function onSubmitReset() {
     resetPasswordValidation.value.failedAttempts = 0
     resetPasswordValidation.value.lockoutExpiration = null
 
-    toast.add({ color: 'green', title: t('Password reset successfully') })
+    toast.add({ color: 'green', title: t('Password reset successfull') })
     onClose()
   } catch (err: any) {
     const message = t(err.data?.message || 'Error resetting password')

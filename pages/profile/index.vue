@@ -11,7 +11,7 @@ const { data: userData } = await useFetch<User & { items: (Item & { category: { 
 )
 
 if (!userData.value) {
-  throw createError({ statusCode: 404, message: 'Failed to load user data' })
+  throw createError({ statusCode: 404, message: t('Failed to load user data') })
 }
 
 function onPhoneInput(event: Event) {
@@ -20,10 +20,22 @@ function onPhoneInput(event: Event) {
 }
 
 const schema = z.object({
-  email: z.string().email({ message: 'Invalid email' }).max(40, { message: 'Email must be at most 40 characters long' }),
-  firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
-  lastName: z.string().max(50, { message: 'Last name must be at most 50 characters long' }).optional(),
-  location: z.string().max(50, { message: 'Location must be at most 50 characters long' }).optional(),
+  email: z
+    .string()
+    .email({ message: t('Invalid email') })
+    .max(40, { message: t('Email must be at most 40 characters long') }),
+  firstName: z
+    .string()
+    .max(40, { message: t('First name must be at most 40 characters long') })
+    .optional(),
+  lastName: z
+    .string()
+    .max(50, { message: t('Last name must be at most 50 characters long') })
+    .optional(),
+  location: z
+    .string()
+    .max(50, { message: t('Location must be at most 50 characters long') })
+    .optional(),
   phone: z
     .string()
     .optional()
@@ -31,17 +43,23 @@ const schema = z.object({
       (value: string | undefined): boolean => {
         return initialData.phone ? validatePhoneNumber(value!) && value !== '' : !value || validatePhoneNumber(value)
       },
-      { message: 'Invalid phone number or cannot be empty' },
+      { message: t('Invalid phone number') },
     ),
   avatar: z.string().optional(),
 })
 
 const guestSchema = z.object({
-  firstName: z.string().max(40, { message: 'First name must be at most 40 characters long' }).optional(),
-  lastName: z.string().max(50, { message: 'Last name must be at most 50 characters long' }).optional(),
+  firstName: z
+    .string()
+    .max(40, { message: t('First name must be at most 40 characters long') })
+    .optional(),
+  lastName: z
+    .string()
+    .max(50, { message: t('Last name must be at most 50 characters long') })
+    .optional(),
   phone: z
-    .string({ message: 'Phone number is required' })
-    .refine((value: string): boolean => validatePhoneNumber(value), { message: 'Invalid phone number' }),
+    .string({ message: t('Phone number is required') })
+    .refine((value: string): boolean => validatePhoneNumber(value), { message: t('Invalid phone number') }),
 })
 
 type Schema = z.infer<typeof schema>
@@ -86,11 +104,11 @@ async function handleLogout() {
   }
   try {
     await $fetch('/api/auth/logout')
-    toast.add({ title: 'User logged out' })
+    toast.add({ title: t('User logged out') })
     reloadNuxtApp({ path: '/' })
   } catch (err: any) {
     console.log('Error logging out', err)
-    toast.add({ title: err.data.message || 'Something went wrong, please try again later' })
+    toast.add({ title: t(err.data.message) || t('Something went wrong, please try again later or contact support') })
   }
 }
 
@@ -108,7 +126,7 @@ async function uploadImage(e: Event) {
   } catch (err: any) {
     console.log('Error uploading image', err.data)
     toast.add({
-      title: err.data.message || 'Error uploading image, please try again later or contact support',
+      title: err.data.message || t('Error uploading image, please try again later or contact support'),
       color: 'red',
     })
   }
@@ -119,11 +137,11 @@ async function onSubmit() {
   try {
     // @ts-ignore - for some reason method PATCH is not recognized
     await $fetch(`/api/users/${user.value?.id}`, { method: 'PATCH', body: state })
-    toast.add({ title: 'Profile updated successfully' })
+    toast.add({ title: t('Profile updated successfully') })
 
     Object.assign(initialData, state)
   } catch (error: any) {
-    toast.add({ title: error.data.message || 'Error updating profile' })
+    toast.add({ title: error.data.message || t('Error updating profile') })
   } finally {
     loading.value = false
   }

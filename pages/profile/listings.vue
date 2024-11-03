@@ -8,7 +8,7 @@ const { data: categoryData } = await useFetch(`/api/category`)
 const { filterItems } = useItemStore()
 
 if (!itemsData.value && getItemsError.value) {
-  throw createError({ statusCode: 500, message: 'Something went wrong, please try again later.' })
+  throw createError({ statusCode: 500, message: t('Something went wrong, please try again later or contact support.') })
 }
 
 const filteredItems = computed(() => {
@@ -20,7 +20,7 @@ function handleEdit(item: Item & { category?: { name: string } | null }) {
     useEditItem(item, refreshItems)
   } catch (err: any) {
     console.log('Error editing item:', err)
-    toast.add({ title: err.data.message || 'Something went wrong, please try again later or contact support.' })
+    toast.add({ title: err.data.message || t('Something went wrong, please try again later or contact support.') })
   }
 }
 
@@ -29,14 +29,14 @@ function handleDelete(itemId: string) {
     useDeleteItem(itemId, refreshItems)
   } catch (err: any) {
     console.log('Error deleting item:', err)
-    toast.add({ title: err.data.message || 'Something went wrong, please try again later or contact support.' })
+    toast.add({ title: err.data.message || t('Something went wrong, please try again later or contact support.') })
   }
 }
 </script>
 
 <template>
   <div class="container mx-auto">
-    <ProductFilter :categories="categoryData?.categories" title="My Listings" description="" />
+    <ProductFilter :categories="categoryData?.categories" :title="t('My Listings')" description="" />
     <!-- Items Section -->
     <div class="px-4 py-8">
       <div

@@ -4,6 +4,7 @@ export function useDeleteItem(itemId: string, refresh: () => Promise<void>) {
   const modal = useModal()
   const toast = useToast()
   const store = useStore()
+  const { t } = useI18n()
 
   const { refetchEntities } = storeToRefs(store)
 
@@ -14,7 +15,7 @@ export function useDeleteItem(itemId: string, refresh: () => Promise<void>) {
     onConfirm: async () => {
       // @ts-ignore
       await $fetch(`/api/items/${itemId}`, { method: 'DELETE' })
-      toast.add({ title: 'Item deleted successfully' })
+      toast.add({ title: t('Item deleted successfully') })
       refetchEntities.value.items = true
       refetchEntities.value.myItems = true
       refetchEntities.value.latestItems = true

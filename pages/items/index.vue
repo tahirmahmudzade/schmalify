@@ -13,14 +13,15 @@ useSeoMeta({
 
 const { data: categoryData } = useFetch('/api/category')
 
+const { t } = useI18n()
+const itemStore = useItemStore()
+const { filterItems } = itemStore
+
 const limit = 16
 const offset = ref(0)
 const items = ref<(Item & { seller: { avatar: string | null; location: string | null } | null })[]>([])
 const loadingMore = ref(false)
 const hasMoreItems = ref(true)
-
-const itemStore = useItemStore()
-const { filterItems } = itemStore
 
 const loadItems = async () => {
   try {
@@ -40,7 +41,7 @@ const loadItems = async () => {
     }
   } catch (e) {
     console.error('Error loading items:', e)
-    throw createError({ statusCode: 500, message: 'Something went wrong, please try again later.' })
+    throw createError({ statusCode: 500, message: t('Something went wrong, please try again later or contact support.') })
   } finally {
     loadingMore.value = false
   }
