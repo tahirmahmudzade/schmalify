@@ -17,8 +17,8 @@ function onContinueAsGuest() {
 </script>
 
 <template>
-  <UModal>
-    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }" class="modal-container">
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
+    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
       <template #header>
         <div class="flex items-center justify-start space-x-1">
           <Icon name="i-mdi-shopping-basket-plus-outline" style="color: turquoise" />
@@ -66,17 +66,3 @@ function onContinueAsGuest() {
     </UCard>
   </UModal>
 </template>
-
-<style scoped>
-/* Ensure modal is centered on small screens */
-@media (max-width: 640px) {
-  .modal-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%; /* Ensure the modal is responsive */
-    max-width: 400px; /* Set a maximum width */
-  }
-}
-</style>

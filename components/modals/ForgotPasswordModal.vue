@@ -119,10 +119,10 @@ async function onSubmitReset() {
     resetPasswordValidation.value.failedAttempts = 0
     resetPasswordValidation.value.lockoutExpiration = null
 
-    toast.add({ color: 'green', title: t('Password reset successfull') })
+    toast.add({ color: 'green', title: t('Password reset successfully') })
     onClose()
   } catch (err: any) {
-    const message = t(err.data?.message || 'Error resetting password')
+    const message = t(err.data?.message.split(':')[1] || 'Error resetting password')
     toast.add({ color: 'red', title: message })
 
     resetPasswordValidation.value.failedAttempts += 1
@@ -138,106 +138,74 @@ async function onSubmitReset() {
 </script>
 
 <template>
-  <UModal :transition="true">
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
     <template #default>
-      <div class="modal-container">
-        <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
-          <div class="p-6">
-            <form class="flex flex-col w-full text-center">
-              <h3 class="mb-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">
-                {{ step === 'email' ? t('Forgot Password') : t('Reset Password') }}
-              </h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">
-                {{
-                  step === 'email'
-                    ? t('Enter your email address to reset your password.')
-                    : t('Enter the code you received and your new password below.')
-                }}
-              </p>
+      <div class="p-6">
+        <form class="flex flex-col w-full text-center">
+          <h3 class="mb-3 text-2xl font-extrabold text-gray-900 dark:text-gray-100">
+            {{ step === 'email' ? t('Forgot Password') : t('Reset Password') }}
+          </h3>
+          <p class="mb-4 text-gray-700 dark:text-gray-300">
+            {{
+              step === 'email'
+                ? t('Enter your email address to reset your password.')
+                : t('Enter the code you received and your new password below.')
+            }}
+          </p>
 
-              <div v-if="step === 'email'">
-                <UForm :schema="emailSchema" :state="emailState">
-                  <UFormGroup :label="t('Email')" name="email">
-                    <UInput v-model="emailState.email" placeholder="your-email@example.com" />
-                  </UFormGroup>
-                </UForm>
-                <UButton
-                  color="white"
-                  class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                  :label="t('Send reset link')"
-                  :ui="{ rounded: 'rounded-lg' }"
-                  :disabled="isEmailFormInvalid"
-                  :loading="emailLoading"
-                  @click="onSubmitEmail"
-                />
-              </div>
-
-              <div v-else-if="step === 'reset'">
-                <UForm :schema="resetSchema" :state="resetState">
-                  <UFormGroup :label="t('Code')" name="token">
-                    <UInput v-model="resetState.token" :placeholder="t('Enter your code')" />
-                  </UFormGroup>
-                  <UFormGroup :label="t('New Password')" name="password">
-                    <UInput v-model="resetState.password" type="password" />
-                  </UFormGroup>
-                  <UFormGroup class="mt-3" :label="t('Confirm Password')" name="confirmPassword">
-                    <UInput v-model="resetState.confirmPassword" type="password" />
-                  </UFormGroup>
-                </UForm>
-                <UButton
-                  color="white"
-                  class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                  :label="isResetLockedOut ? `${t('Wait')} ${resetLockoutRemainingTime}s` : t('Reset Password')"
-                  :ui="{ rounded: 'rounded-lg' }"
-                  :disabled="isResetFormInvalid || isResetLockedOut"
-                  :loading="resetLoading"
-                  @click="onSubmitReset"
-                />
-                <p v-if="isResetLockedOut" class="text-red-500 mt-2">
-                  {{ t('Too many failed attempts. Please wait') }} {{ resetLockoutRemainingTime }}
-                  {{ t('seconds before trying again.') }}
-                </p>
-              </div>
-
-              <UButton
-                color="white"
-                class="mt-3 py-2 w-full flex items-center justify-center bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 hover:text-white"
-                :label="t('Cancel')"
-                :ui="{ rounded: 'rounded-lg' }"
-                @click="onClose"
-              />
-            </form>
+          <div v-if="step === 'email'">
+            <UForm :schema="emailSchema" :state="emailState">
+              <UFormGroup :label="t('Email')" name="email">
+                <UInput v-model="emailState.email" placeholder="your-email@example.com" />
+              </UFormGroup>
+            </UForm>
+            <UButton
+              color="white"
+              class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+              :label="t('Send reset link')"
+              :ui="{ rounded: 'rounded-lg' }"
+              :disabled="isEmailFormInvalid"
+              :loading="emailLoading"
+              @click="onSubmitEmail"
+            />
           </div>
-        </div>
+
+          <div v-else-if="step === 'reset'">
+            <UForm :schema="resetSchema" :state="resetState">
+              <UFormGroup :label="t('Code')" name="token">
+                <UInput v-model="resetState.token" :placeholder="t('Enter your code')" />
+              </UFormGroup>
+              <UFormGroup :label="t('New Password')" name="password">
+                <UInput v-model="resetState.password" type="password" />
+              </UFormGroup>
+              <UFormGroup class="mt-3" :label="t('Confirm Password')" name="confirmPassword">
+                <UInput v-model="resetState.confirmPassword" type="password" />
+              </UFormGroup>
+            </UForm>
+            <UButton
+              color="white"
+              class="mt-5 py-2 w-full flex items-center justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+              :label="isResetLockedOut ? `${t('Wait')} ${resetLockoutRemainingTime}s` : t('Reset Password')"
+              :ui="{ rounded: 'rounded-lg' }"
+              :disabled="isResetFormInvalid || isResetLockedOut"
+              :loading="resetLoading"
+              @click="onSubmitReset"
+            />
+            <p v-if="isResetLockedOut" class="text-red-500 mt-2">
+              {{ t('Too many failed attempts. Please wait') }} {{ resetLockoutRemainingTime }}
+              {{ t('seconds before trying again.') }}
+            </p>
+          </div>
+
+          <UButton
+            color="white"
+            class="mt-3 py-2 w-full flex items-center justify-center bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 hover:text-white"
+            :label="t('Cancel')"
+            :ui="{ rounded: 'rounded-lg' }"
+            @click="onClose"
+          />
+        </form>
       </div>
     </template>
   </UModal>
 </template>
-
-<style scoped>
-.modal-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 1rem;
-  pointer-events: none;
-}
-
-.modal-content {
-  pointer-events: auto;
-}
-
-@media (max-height: 500px) {
-  .modal-container {
-    align-items: flex-start;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    overflow-y: auto;
-  }
-}
-</style>

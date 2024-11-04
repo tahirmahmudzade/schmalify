@@ -19,7 +19,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <UModal>
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
     <UCard class="p-6 text-center">
       <div class="text-yellow-500 text-5xl mb-4">
         <Icon name="i-material-symbols-warning-outline" size="4rem" />

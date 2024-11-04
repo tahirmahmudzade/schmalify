@@ -80,65 +80,59 @@ function onLogin() {
 </script>
 
 <template>
-  <UModal>
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
     <template #default>
-      <!-- Modal Overlay (provided by UModal) -->
-      <div class="modal-container">
-        <!-- Modal Content -->
-        <div class="modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
-          <div class="p-6">
-            <form class="flex flex-col w-full text-center">
-              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Sign Up') }}</h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Create your account') }}</p>
-              <UButton
-                icon="i-flat-color-icons-google"
-                color="white"
-                class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                :label="t('Sign Up With Google')"
-                :ui="{ base: 'max-w-lg', rounded: 'rounded-lg' }"
-                @click="reloadNuxtApp({ path: '/api/auth/google' })"
-              />
-              <div class="flex items-center my-3">
-                <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
-                <p class="mx-4 text-gray-600 dark:text-gray-400">{{ t('or') }}</p>
-                <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
-              </div>
-
-              <UForm :schema="schema" :state="credentials">
-                <UFormGroup :label="t('Email')" name="email">
-                  <UInput v-model="credentials.email" required placeholder="your-email@example.com" />
-                </UFormGroup>
-
-                <UFormGroup class="mt-3" :label="t('Password')" name="password">
-                  <UInput v-model="credentials.password" required type="password" />
-                </UFormGroup>
-
-                <UFormGroup class="mt-3" :label="t('Username')" name="username">
-                  <UInput v-model="credentials.username" required :placeholder="t('yourusername')" />
-                </UFormGroup>
-              </UForm>
-              <UButton
-                color="white"
-                :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
-                class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                :label="t('Sign Up')"
-                :ui="{
-                  rounded: 'rounded-lg',
-                  color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
-                }"
-                :loading="loading"
-                :disabled="isFormInvalid"
-                @click="onSubmit"
-              />
-              <p class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300">
-                {{ t('Already have an account?') }}
-                <span @click="onLogin" class="font-bold cursor-pointer text-blue-500 dark:text-blue-400">
-                  {{ t('Log In') }}
-                </span>
-              </p>
-            </form>
+      <div class="p-6">
+        <form class="flex flex-col w-full text-center">
+          <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Sign Up') }}</h3>
+          <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Create your account') }}</p>
+          <UButton
+            icon="i-flat-color-icons-google"
+            color="white"
+            class="py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+            :label="t('Sign Up With Google')"
+            :ui="{ base: 'max-w-lg', rounded: 'rounded-lg' }"
+            @click="reloadNuxtApp({ path: '/api/auth/google' })"
+          />
+          <div class="flex items-center my-3">
+            <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
+            <p class="mx-4 text-gray-600 dark:text-gray-400">{{ t('or') }}</p>
+            <hr class="h-0 border-b border-gray-500 dark:border-gray-600 grow" />
           </div>
-        </div>
+
+          <UForm :schema="schema" :state="credentials">
+            <UFormGroup :label="t('Email')" name="email">
+              <UInput v-model="credentials.email" required placeholder="your-email@example.com" />
+            </UFormGroup>
+
+            <UFormGroup class="mt-3" :label="t('Password')" name="password">
+              <UInput v-model="credentials.password" required type="password" />
+            </UFormGroup>
+
+            <UFormGroup class="mt-3" :label="t('Username')" name="username">
+              <UInput v-model="credentials.username" required :placeholder="t('yourusername')" />
+            </UFormGroup>
+          </UForm>
+          <UButton
+            color="white"
+            :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
+            class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+            :label="t('Sign Up')"
+            :ui="{
+              rounded: 'rounded-lg',
+              color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
+            }"
+            :loading="loading"
+            :disabled="isFormInvalid"
+            @click="onSubmit"
+          />
+          <p class="text-sm leading-relaxed mt-3 text-gray-700 dark:text-gray-300">
+            {{ t('Already have an account?') }}
+            <span @click="onLogin" class="font-bold cursor-pointer text-blue-500 dark:text-blue-400">
+              {{ t('Log In') }}
+            </span>
+          </p>
+        </form>
       </div>
     </template>
   </UModal>

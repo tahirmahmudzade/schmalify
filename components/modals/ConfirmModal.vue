@@ -14,7 +14,7 @@ function onConfirm() {
 </script>
 
 <template>
-  <UModal>
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
     <UCard class="p-6 text-center">
       <div class="text-red-500 text-5xl mb-4">
         <Icon name="i-material-symbols-cancel-outline" size="4rem" />
