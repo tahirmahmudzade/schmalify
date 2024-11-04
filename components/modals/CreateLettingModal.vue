@@ -18,6 +18,15 @@ function onPhoneInput(event: Event) {
   input.value = input.value.replace(/[^0-9+]/g, '') // Only allow + and numbers
 }
 
+const conditionOptions = computed(() => [
+  { value: 'new', label: t('New') },
+  { value: 'like_new', label: t('Like New') },
+  { value: 'very_good', label: t('Very Good') },
+  { value: 'good', label: t('Good') },
+  { value: 'fair', label: t('Fair') },
+  { value: 'poor', label: t('Poor') },
+])
+
 const schema = computed(() =>
   z.object({
     title: z
@@ -36,7 +45,7 @@ const schema = computed(() =>
         .min(1, { message: t('Price must be greater than 0') })
         .max(5000, { message: t('Price must be at most 5000') }),
     }),
-    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
+    condition: z.enum(['new', 'like_new', 'very_good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
     ...(asGuest && {
       firstName: z
         .string()
@@ -71,7 +80,7 @@ const isFormInvalid = computed(() => {
   return !result.success || !imageFiles.value.length
 })
 
-const categoryNames = computed(() => categories.map(c => c.name))
+const categoryOptions = computed(() => categories.map(c => ({ value: c.name, label: t(c.name) })))
 
 function onClose() {
   emit('close', false)
@@ -90,9 +99,16 @@ function handleImgChange(e: Event) {
     }
 
     selectedFiles.forEach(file => {
+      console.log('file', file)
+
       if (file.size > 2 * 1024 * 1024) {
+        console.log('file size is greater than 2MB, compressing it')
+        console.log('file size before in mb: ', file.size / 1024 / 1024)
+
         compressImage(file, 0.7)
           .then(compressedBlob => {
+            console.log('file size after in mb: ', compressedBlob.size / 1024 / 1024)
+
             const compressedFile = new File([compressedBlob], file.name, { type: file.type })
             imageFiles.value.push(compressedFile)
             imagePreviews.value.push(URL.createObjectURL(compressedFile))
@@ -174,125 +190,120 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UModal>
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
     <template #default>
-      <div class="modal-container">
-        <div class="relative modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
-          <button
-            @click="onClose"
-            class="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent p-1 rounded-full focus:outline-none"
-          >
-            <Icon name="mdi:close" class="w-6 h-6" />
-          </button>
-          <div class="p-6">
-            <form class="flex flex-col w-full text-center">
-              <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Create Item') }}</h3>
-              <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Fill in the details to list an item') }}</p>
+      <div>
+        <button
+          @click="onClose"
+          class="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent p-1 rounded-full focus:outline-none"
+        >
+          <Icon name="mdi:close" class="w-6 h-6" />
+        </button>
+        <div class="p-6">
+          <form class="flex flex-col w-full text-center">
+            <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Create Item') }}</h3>
+            <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Fill in the details to list an item') }}</p>
 
-              <UForm :schema="schema" :state="itemData">
-                <div v-if="asGuest">
-                  <div class="flex space-x-4">
-                    <UFormGroup name="firstName" class="w-1/2">
-                      <template #label>
-                        <div class="flex items-center justify-start space-x-1">
-                          <span>{{ t('First Name') }}</span>
-                          <span class="text-red-500">*</span>
-                        </div>
-                      </template>
-                      <UInput v-model="itemData.firstName" :placeholder="t('First Name')" />
-                    </UFormGroup>
-
-                    <UFormGroup :label="t('Last Name')" name="lastName" class="w-1/2">
-                      <UInput v-model="itemData.lastName" :placeholder="t('Last Name')" />
-                    </UFormGroup>
-                  </div>
-
-                  <UFormGroup class="mt-3" name="phone">
+            <UForm :schema="schema" :state="itemData">
+              <div v-if="asGuest">
+                <div class="flex space-x-4">
+                  <UFormGroup name="firstName" class="w-1/2">
                     <template #label>
                       <div class="flex items-center justify-start space-x-1">
-                        <span>{{ t('Phone Number') }}</span>
+                        <span>{{ t('First Name') }}</span>
                         <span class="text-red-500">*</span>
                       </div>
                     </template>
-                    <UInput
-                      v-model="itemData.phone"
-                      type="tel"
-                      :placeholder="t('Number with country code (e.g. +495556667788)')"
-                      @input="onPhoneInput"
-                    />
+                    <UInput v-model="itemData.firstName" :placeholder="t('First Name')" />
+                  </UFormGroup>
+
+                  <UFormGroup :label="t('Last Name')" name="lastName" class="w-1/2">
+                    <UInput v-model="itemData.lastName" :placeholder="t('Last Name')" />
                   </UFormGroup>
                 </div>
 
-                <UFormGroup class="mt-3" name="title">
+                <UFormGroup class="mt-3" name="phone">
                   <template #label>
                     <div class="flex items-center justify-start space-x-1">
-                      <span>{{ t('Title') }}</span>
+                      <span>{{ t('Phone Number') }}</span>
                       <span class="text-red-500">*</span>
                     </div>
                   </template>
-                  <UInput v-model="itemData.title" :placeholder="t('Short title (max 35 characters)')" />
-                </UFormGroup>
-
-                <UFormGroup class="mt-3" :label="t('Description')" name="description">
-                  <UInput v-model="itemData.description" :placeholder="t('Item description (max length: 200 characters)')" />
-                </UFormGroup>
-
-                <UFormGroup class="mt-3" :label="t('Category')" name="category" required>
-                  <USelectMenu v-model="itemData.category" :options="categoryNames" />
-                </UFormGroup>
-
-                <div class="mt-3">
-                  <label for="imageInput" class="relative cursor-pointer">
-                    <div @click.stop>
-                      <ImageCarousel
-                        v-if="imagePreviews.length"
-                        type="arrows"
-                        :images="imagePreviews"
-                        :removable="true"
-                        @removeImage="removeImage"
-                      />
-                      <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                        <span class="text-gray-500">{{ t('Click to upload images') }}</span>
-                      </div>
-                    </div>
-                  </label>
-                  <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
-                  <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
-                </div>
-
-                <UFormGroup v-if="itemData.category !== 'Free'" class="mt-3" name="price">
-                  <template #label>
-                    <div class="flex items-center justify-start space-x-1">
-                      <span>{{ t('Price') }}</span>
-                      <span class="text-red-500">*</span>
-                    </div>
-                  </template>
-                  <UInput v-model.number="itemData.price" type="number" :placeholder="t('Price in euro (max 5000)')" />
-                </UFormGroup>
-
-                <UFormGroup class="mt-3" :label="t('Condition')" name="condition">
-                  <USelect
-                    v-model="itemData.condition"
-                    :options="['new', 'like new', 'very good', 'good', 'fair', 'poor'].map(t)"
+                  <UInput
+                    v-model="itemData.phone"
+                    type="tel"
+                    :placeholder="t('Number with country code (e.g. +495556667788)')"
+                    @input="onPhoneInput"
                   />
                 </UFormGroup>
-              </UForm>
+              </div>
 
-              <UButton
-                color="white"
-                :loading="buttonLoading"
-                :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
-                class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-                :label="t('Create Item')"
-                :ui="{
-                  rounded: 'rounded-lg',
-                  color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
-                }"
-                :disabled="isFormInvalid || itemData.category === ''"
-                @click="onSubmit"
-              />
-            </form>
-          </div>
+              <UFormGroup class="mt-3" name="title">
+                <template #label>
+                  <div class="flex items-center justify-start space-x-1">
+                    <span>{{ t('Title') }}</span>
+                    <span class="text-red-500">*</span>
+                  </div>
+                </template>
+                <UInput v-model="itemData.title" :placeholder="t('Short title (max 35 characters)')" />
+              </UFormGroup>
+
+              <UFormGroup class="mt-3" :label="t('Description')" name="description">
+                <UInput v-model="itemData.description" :placeholder="t('Item description (max length: 200 characters)')" />
+              </UFormGroup>
+
+              <UFormGroup class="mt-3" :label="t('Category')" name="category" required>
+                <USelectMenu v-model="itemData.category" :options="categoryOptions" valueAttribute="value" />
+              </UFormGroup>
+
+              <div class="mt-3">
+                <label for="imageInput" class="relative cursor-pointer">
+                  <div @click.stop>
+                    <ImageCarousel
+                      v-if="imagePreviews.length"
+                      type="arrows"
+                      :images="imagePreviews"
+                      :removable="true"
+                      @removeImage="removeImage"
+                    />
+                    <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
+                      <span class="text-gray-500">{{ t('Click to upload images') }}</span>
+                    </div>
+                  </div>
+                </label>
+                <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
+                <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
+              </div>
+
+              <UFormGroup v-if="itemData.category !== 'Free'" class="mt-3" name="price">
+                <template #label>
+                  <div class="flex items-center justify-start space-x-1">
+                    <span>{{ t('Price') }}</span>
+                    <span class="text-red-500">*</span>
+                  </div>
+                </template>
+                <UInput v-model.number="itemData.price" type="number" :placeholder="t('Price in euro (max 5000)')" />
+              </UFormGroup>
+
+              <UFormGroup class="mt-3" :label="t('Condition')" name="condition">
+                <USelect v-model="itemData.condition" :options="conditionOptions" />
+              </UFormGroup>
+            </UForm>
+
+            <UButton
+              color="white"
+              :loading="buttonLoading"
+              :icon="isFormInvalid ? 'i-flat-color-icons-lock' : ''"
+              class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+              :label="t('Create Item')"
+              :ui="{
+                rounded: 'rounded-lg',
+                color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } },
+              }"
+              :disabled="isFormInvalid || itemData.category === ''"
+              @click="onSubmit"
+            />
+          </form>
         </div>
       </div>
     </template>

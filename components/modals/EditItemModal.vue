@@ -17,6 +17,20 @@ const buttonLoading = ref(false)
 const imageFiles = ref<File[]>([]) // New images selected by the user
 const imagePreviews = ref<string[]>([]) // Previews of new images
 
+const conditionOptions = computed(() => [
+  { value: 'new', label: t('New') },
+  { value: 'like new', label: t('Like New') },
+  { value: 'very good', label: t('Very Good') },
+  { value: 'good', label: t('Good') },
+  { value: 'fair', label: t('Fair') },
+  { value: 'poor', label: t('Poor') },
+])
+
+const statusOptions = computed(() => [
+  { value: 'available', label: t('Available') },
+  { value: 'sold', label: t('Sold') },
+])
+
 // Zod schema for validation
 const schema = computed(() =>
   z.object({
@@ -160,86 +174,81 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UModal>
-    <div class="modal-container">
-      <div class="relative modal-content bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md">
-        <button
-          @click="onClose"
-          class="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent p-1 rounded-full focus:outline-none"
-        >
-          <Icon name="mdi:close" class="w-6 h-6" />
-        </button>
+  <UModal :ui="{ container: 'flex min-h-full items-center justify-center text-center' }">
+    <div>
+      <button
+        @click="onClose"
+        class="absolute top-2 right-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent p-1 rounded-full focus:outline-none"
+      >
+        <Icon name="mdi:close" class="w-6 h-6" />
+      </button>
 
-        <div class="p-6">
-          <form class="flex flex-col w-full text-center">
-            <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Edit Item') }}</h3>
-            <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Update the details of your item') }}</p>
+      <div class="p-6">
+        <form class="flex flex-col w-full text-center">
+          <h3 class="mb-3 text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ t('Edit Item') }}</h3>
+          <p class="mb-4 text-gray-700 dark:text-gray-300">{{ t('Update the details of your item') }}</p>
 
-            <UForm :schema="schema" :state="itemSchemaData">
-              <UFormGroup class="mt-3" name="title">
-                <template #label>
-                  <div class="flex items-center justify-start space-x-1">
-                    <span>{{ t('Title') }}</span>
-                    <span class="text-red-500">*</span>
+          <UForm :schema="schema" :state="itemSchemaData">
+            <UFormGroup class="mt-3" name="title">
+              <template #label>
+                <div class="flex items-center justify-start space-x-1">
+                  <span>{{ t('Title') }}</span>
+                  <span class="text-red-500">*</span>
+                </div>
+              </template>
+              <UInput v-model="itemSchemaData.title" :placeholder="t('Edit title (max 35 characters)')" />
+            </UFormGroup>
+
+            <UFormGroup class="mt-3" :label="t('Description')" name="description">
+              <UInput
+                v-model="itemSchemaData.description"
+                :placeholder="t('Edit description (max length: 100 characters)')"
+              />
+            </UFormGroup>
+
+            <UFormGroup class="mt-3" :label="t('Status')" name="status">
+              <USelect v-model="itemSchemaData.status" :options="statusOptions" />
+            </UFormGroup>
+
+            <div class="mt-3">
+              <label for="imageInput" class="relative cursor-pointer">
+                <div @click.stop>
+                  <ImageCarousel
+                    v-if="imagePreviews.length"
+                    type="arrows"
+                    :images="imagePreviews"
+                    :removable="true"
+                    @removeImage="removeImage"
+                  />
+                  <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
+                    <span class="text-gray-500">{{ t('Click to upload images') }}</span>
                   </div>
-                </template>
-                <UInput v-model="itemSchemaData.title" :placeholder="t('Edit title (max 35 characters)')" />
-              </UFormGroup>
+                </div>
+              </label>
+              <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
+              <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
+            </div>
 
-              <UFormGroup class="mt-3" :label="t('Description')" name="description">
-                <UInput
-                  v-model="itemSchemaData.description"
-                  :placeholder="t('Edit description (max length: 100 characters)')"
-                />
-              </UFormGroup>
+            <UFormGroup v-if="itemData.category?.name !== 'Free'" class="mt-3" :label="t('Price')" name="price">
+              <UInput v-model.number="itemSchemaData.price" type="number" :placeholder="t('Edit price in euros')" />
+            </UFormGroup>
 
-              <UFormGroup class="mt-3" :label="t('Status')" name="status">
-                <USelect v-model="itemSchemaData.status" :options="['available', 'sold'].map(t)" />
-              </UFormGroup>
+            <UFormGroup class="mt-3" :label="t('Condition')" name="condition">
+              <USelect v-model="itemSchemaData.condition" :options="conditionOptions" />
+            </UFormGroup>
+          </UForm>
 
-              <div class="mt-3">
-                <label for="imageInput" class="relative cursor-pointer">
-                  <div @click.stop>
-                    <ImageCarousel
-                      v-if="imagePreviews.length"
-                      type="arrows"
-                      :images="imagePreviews"
-                      :removable="true"
-                      @removeImage="removeImage"
-                    />
-                    <div v-else class="flex items-center justify-center w-full h-14 bg-gray-200 rounded-lg">
-                      <span class="text-gray-500">{{ t('Click to upload images') }}</span>
-                    </div>
-                  </div>
-                </label>
-                <input id="imageInput" type="file" class="hidden" @change="handleImgChange" multiple accept="image/*" />
-                <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
-              </div>
-
-              <UFormGroup v-if="itemData.category?.name !== 'Free'" class="mt-3" :label="t('Price')" name="price">
-                <UInput v-model.number="itemSchemaData.price" type="number" :placeholder="t('Edit price in euros')" />
-              </UFormGroup>
-
-              <UFormGroup class="mt-3" :label="t('Condition')" name="condition">
-                <USelect
-                  v-model="itemSchemaData.condition"
-                  :options="['new', 'like new', 'very good', 'good', 'fair', 'poor'].map(t)"
-                />
-              </UFormGroup>
-            </UForm>
-
-            <UButton
-              color="white"
-              :loading="buttonLoading"
-              :icon="isFormInvalid || isFormUnchanged ? 'i-flat-color-icons-lock' : ''"
-              class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-              :label="t('Update Item')"
-              :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } } }"
-              :disabled="isFormInvalid || isFormUnchanged"
-              @click="onSubmit"
-            />
-          </form>
-        </div>
+          <UButton
+            color="white"
+            :loading="buttonLoading"
+            :icon="isFormInvalid || isFormUnchanged ? 'i-flat-color-icons-lock' : ''"
+            class="mt-5 py-2 justify-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
+            :label="t('Update Item')"
+            :ui="{ rounded: 'rounded-lg', color: { white: { solid: 'disabled:bg-gray-400 dark:disabled:bg-gray-600' } } }"
+            :disabled="isFormInvalid || isFormUnchanged"
+            @click="onSubmit"
+          />
+        </form>
       </div>
     </div>
   </UModal>
@@ -257,10 +266,13 @@ async function onSubmit() {
   height: 100%;
   padding: 1rem;
   pointer-events: none;
+  overflow-y: auto; /* Ensures scrolling on mobile */
 }
 
 .modal-content {
   pointer-events: auto;
+  max-height: 90vh;
+  overflow-y: auto; /* Enable scrolling within the modal */
 }
 
 @media (max-height: 500px) {
@@ -268,7 +280,7 @@ async function onSubmit() {
     align-items: flex-start;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    overflow-y: auto;
+    overflow-y: auto; /* Ensures scrolling on smaller screens */
   }
 }
 </style>
