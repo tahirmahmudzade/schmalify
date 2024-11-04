@@ -362,7 +362,7 @@ function handleConditionChange(condition: Condition) {
                       <input
                         :id="`filter-${section.id}-${optionIdx}`"
                         :name="`${section.id}[]`"
-                        :value="t(option.value)"
+                        :value="option.value"
                         :checked="
                           section.id === 'category'
                             ? itemFilters.category.includes(option.value)
