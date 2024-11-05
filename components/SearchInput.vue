@@ -20,7 +20,7 @@ const { t } = useI18n()
 
 // Reactive variables
 const searchQuery = ref('')
-const debouncedSearchQuery = refDebounced(searchQuery, 500) // Debouncing to avoid too many requests
+const debouncedSearchQuery = refDebounced(searchQuery, 300) // Debouncing to avoid too many requests
 const items = ref<Item[]>([]) // Empty array to store the fetched items
 const dropdownVisible = ref(false)
 const loading = ref(false) // Loading state to track API calls
@@ -125,7 +125,6 @@ const onInput = () => {
       </li>
     </ul>
 
-    <!-- No items found message (only shows after search is performed and loading ends) -->
     <p
       v-else-if="!loading && searchPerformed && searchQuery && dropdownVisible && !filteredItems.length"
       class="absolute w-full bg-gray-200 border rounded-lg shadow-lg z-10 mt-1 p-2 text-xs text-gray-500"
