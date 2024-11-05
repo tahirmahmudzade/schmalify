@@ -20,8 +20,8 @@ function onPhoneInput(event: Event) {
 
 const conditionOptions = computed(() => [
   { value: 'new', label: t('New') },
-  { value: 'like_new', label: t('Like New') },
-  { value: 'very_good', label: t('Very Good') },
+  { value: 'like new', label: t('Like New') },
+  { value: 'very good', label: t('Very Good') },
   { value: 'good', label: t('Good') },
   { value: 'fair', label: t('Fair') },
   { value: 'poor', label: t('Poor') },
@@ -45,7 +45,7 @@ const schema = computed(() =>
         .min(1, { message: t('Price must be greater than 0') })
         .max(5000, { message: t('Price must be at most 5000') }),
     }),
-    condition: z.enum(['new', 'like_new', 'very_good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
+    condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
     ...(asGuest && {
       firstName: z
         .string()
@@ -172,7 +172,7 @@ async function onSubmit() {
     console.log('Failed to create item:', err)
     toast.add({
       color: 'red',
-      title: t(err.data.message) || t('Failed to create letting, please try again later with valid data'),
+      title: t(err.data.message) || t('Failed to create listing, please try again later with valid data'),
     })
   } finally {
     onClose()
@@ -309,34 +309,3 @@ async function onSubmit() {
     </template>
   </UModal>
 </template>
-
-<style scoped>
-.modal-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 1rem;
-  pointer-events: none;
-  overflow-y: auto;
-}
-
-.modal-content {
-  pointer-events: auto;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-@media (max-height: 500px) {
-  .modal-container {
-    align-items: flex-start;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    overflow-y: auto;
-  }
-}
-</style>

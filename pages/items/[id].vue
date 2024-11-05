@@ -76,7 +76,7 @@ const previewImg = (imageUrl: string) => {
             :description="product.description"
             :avatarUrl="getProfilePicUrl(item.seller?.avatar, item.seller_id)"
             :sellerName="item.seller?.username || `${item.seller?.firstName} ${item.seller?.lastName}`"
-            :condition="product.condition"
+            :condition="product.condition as Condition"
             :location="product.location"
             :postedOn="product.postedOn"
             :categoryName="item.category?.name!"

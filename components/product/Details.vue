@@ -5,13 +5,15 @@ const { name, price, description, avatarUrl, sellerName, condition, location, po
   description: string
   avatarUrl: string
   sellerName: string
-  condition: string
+  condition: Condition
   location: string
   postedOn: string
   categoryName: string
 }>()
 
 const { t } = useI18n()
+
+const formattedCondition = computed(() => formatCondition(condition))
 </script>
 
 <template>
@@ -54,11 +56,11 @@ const { t } = useI18n()
         <li class="flex items-center">
           <Icon name="mdi:hammer-wrench" class="text-blue-500 mr-2" />
           <strong class="text-[15px]">{{ t('Condition') }}:</strong>
-          <span class="ml-2 text-[15px]">{{ t(condition) }}</span>
+          <span class="ml-2 text-[15px]">{{ t(formattedCondition) }}</span>
         </li>
         <li class="flex items-center">
           <Icon name="mdi:map-marker" class="text-red-500 mr-2" />
-          <strong class="text-[15px]">{{ t('Location') }}:</strong>
+          <strong class="text-[15px]">{{ t('Address') }}:</strong>
           <span class="ml-2 text-[15px]">{{ location }}</span>
         </li>
         <li class="flex items-center">

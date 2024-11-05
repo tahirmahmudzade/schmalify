@@ -10,3 +10,10 @@ export function formatDateToDDMMYYYY(dateString: string): string {
   // Return in the format dd-mm-yyyy
   return `${day}-${month}-${year}`
 }
+
+export function formatCondition(condition: Condition) {
+  return condition
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}

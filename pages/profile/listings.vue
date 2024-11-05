@@ -81,7 +81,7 @@ function handleDelete(itemId: string) {
                 {{ t('Price') }}: {{ item.price }}
               </p>
               <p class="text-gray-700 dark:text-gray-300 text-xs mb-1 text-left break-words">
-                {{ t('Condition') }}: {{ item.condition }}
+                {{ t('Condition') }}: {{ t(formatCondition(item.condition as Condition)) }}
               </p>
               <p class="text-gray-700 dark:text-gray-300 text-xs text-left break-words">
                 {{ t('Posted on') }}: {{ formatDateToDDMMYYYY(item.createdAt!) }}
