@@ -18,7 +18,9 @@ export default defineNuxtConfig({
   ],
 
   security: {
+    removeLoggers: false,
     requestSizeLimiter: { maxRequestSizeInBytes: 8000000, maxUploadFileRequestInBytes: 10000000, throwError: true },
+    rateLimiter: { tokensPerInterval: 150, interval: 30000, throwError: true },
     headers: {
       crossOriginEmbedderPolicy: 'unsafe-none',
       contentSecurityPolicy: {
