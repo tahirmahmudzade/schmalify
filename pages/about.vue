@@ -55,13 +55,7 @@ const teamDescription =
     </div>
     <ul role="list" class="mx-auto mt-12 grid gap-x-8 gap-y-16 text-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <li v-for="person in team" :key="person.name" class="flex flex-col items-center">
-        <NuxtImg
-          :src="person.imageUrl"
-          alt="profile"
-          class="h-24 w-24 rounded-full mx-auto object-cover"
-          :class="{ 'rotate-180': person.name === 'Oleksii Muzyka' }"
-          format="webp"
-        />
+        <NuxtImg :src="person.imageUrl" alt="profile" class="h-24 w-24 rounded-full mx-auto object-cover" format="webp" />
         <h3 class="mt-4 text-base font-semibold leading-7 tracking-tight text-white">{{ person.name }}</h3>
         <p class="text-sm leading-6 text-gray-400">{{ t(person.role) }}</p>
         <p class="mt-2 text-sm leading-6 text-gray-500 max-w-xs">{{ t(person.description) }}</p>
