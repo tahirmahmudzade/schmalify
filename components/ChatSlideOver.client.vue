@@ -3,6 +3,8 @@ import { ref, watch, onMounted } from 'vue'
 
 const { sellerName, itemId } = defineProps<{ sellerName: string; itemId: string }>()
 
+console.log('loadiung chat slide over')
+
 const { t } = useI18n()
 const isChatboxOpen = useChatboxState()
 const { user } = useUserSession()
@@ -143,26 +145,36 @@ onBeforeUnmount(() => {
         <div
           v-for="(messageObj, index) in messages"
           :key="index"
-          :class="{ 'ml-auto': messageObj.senderId === user?.id, 'mr-auto': messageObj.senderId !== user?.id }"
-          class="max-w-[75%]"
+          :class="[
+            messageObj.senderId === 'system' ? 'text-center' : messageObj.senderId === user?.id ? 'ml-auto' : 'mr-auto',
+            'max-w-[75%]',
+          ]"
         >
           <div
             :class="[
               'relative px-4 py-2 rounded-lg',
-              messageObj.senderId === user?.id ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800',
+              messageObj.senderId === 'server'
+                ? ''
+                : messageObj.senderId === user?.id
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-300 text-gray-800',
             ]"
             class="break-words"
           >
             <span>{{ messageObj.content }}</span>
-            <!-- triangle arrow -->
+
+            <!-- triangle arrow, hidden for system messages -->
             <div
+              v-if="messageObj.senderId !== 'server'"
               :class="[
                 'absolute bottom-0 h-4 w-4',
                 messageObj.senderId === user?.id ? 'right-0 -mr-2 bg-blue-500' : 'left-0 -ml-2 bg-gray-300',
               ]"
               :style="{
                 clipPath:
-                  messageObj.senderId === user?.id ? 'polygon(0 0, 100% 0, 0 100%)' : 'polygon(100% 0, 0 0, 100% 100%)',
+                  messageObj.senderId === user?.id && messageObj.senderId !== 'server'
+                    ? 'polygon(0 0, 100% 0, 0 100%)'
+                    : 'polygon(100% 0, 0 0, 100% 100%)',
               }"
             ></div>
           </div>
