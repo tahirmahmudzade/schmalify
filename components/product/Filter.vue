@@ -154,7 +154,7 @@ function handleConditionChange(condition: Condition) {
             leave-to="translate-x-full opacity-0"
           >
             <DialogPanel
-              class="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-6 shadow-xl mt-14"
+              class="relative ml-auto flex-1 w-full max-w-xs flex flex-col bg-white py-4 pb-6 shadow-xl mt-14 overflow-y-auto"
             >
               <div class="flex items-center justify-between px-4">
                 <h2 class="text-lg font-medium text-white dark:text-gray-900">{{ t('Filters') }}</h2>
@@ -169,7 +169,7 @@ function handleConditionChange(condition: Condition) {
               </div>
 
               <!-- Filters -->
-              <form class="mt-4">
+              <form class="mt-4 overflow-y-auto">
                 <Disclosure
                   as="div"
                   v-for="section in filters"
