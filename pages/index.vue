@@ -105,12 +105,14 @@ const schmalifyDescription =
             <UBadge :label="t('Sold')" color="red" size="md" />
           </div>
 
-          <img
+          <NuxtImg
             :src="`/api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
             :alt="item.title"
+            :nonce="nonce"
+            provider="cloudflare"
             loading="lazy"
             class="w-full h-36 object-cover rounded-t-lg"
-            @error="event => handleImageError(event, 'item')"
+            @error="event => handleImageError(event as Event, 'item')"
           />
           <div class="p-4 flex flex-col flex-grow">
             <h3 class="text-gray-900 dark:text-gray-100 mb-1 text-sm font-semibold line-clamp-2">{{ item.title }}</h3>
