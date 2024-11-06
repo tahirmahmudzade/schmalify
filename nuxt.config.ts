@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    prerender: { routes: ['/about'] },
     experimental: { websocket: true },
     routeRules: {
       '/api/auth/reset-password': { security: { rateLimiter: { tokensPerInterval: 6, interval: 60000, throwError: true } } },
@@ -47,7 +48,7 @@ export default defineNuxtConfig({
   colorMode: { preference: 'dark', fallback: 'dark' },
 
   ui: { global: true },
-  image: { dir: 'public', format: ['webp', 'avif'], domains: ['schmalify.com'] },
+  image: { dir: 'public', format: ['webp'], domains: ['schmalify.com'], cloudflare: { baseURL: 'https://schmalify.com' } },
   icon: { clientBundle: { scan: true, sizeLimitKb: 256 } },
 
   runtimeConfig: {
