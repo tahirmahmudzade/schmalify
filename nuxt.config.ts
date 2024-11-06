@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
-    prerender: { routes: ['/about'] },
+    // prerender: { routes: ['/about'] },
     experimental: { websocket: true },
     routeRules: {
       '/api/auth/reset-password': { security: { rateLimiter: { tokensPerInterval: 6, interval: 60000, throwError: true } } },
