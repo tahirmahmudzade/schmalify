@@ -69,7 +69,7 @@ const schmalifyDescription =
         >
           <NuxtImg
             :src="`/img/categories/${category.img!}`"
-            :alt="category.name"
+            :alt="`${category.name} category`"
             :nonce="nonce"
             class="w-full h-36 object-cover rounded-lg"
             loading="lazy"
