@@ -99,28 +99,22 @@ function handleImgChange(e: Event) {
     }
 
     selectedFiles.forEach(file => {
-      console.log('file', file)
+      console.log('before processing image size in mb: ', file.size / 1024 / 1024)
+      console.log('before processing image name: ', file.name, 'type: ', file.type)
 
-      if (file.size > 2 * 1024 * 1024) {
-        console.log('file size is greater than 2MB, compressing it')
-        console.log('file size before in mb: ', file.size / 1024 / 1024)
+      processImageToWebP(file)
+        .then(webpBlob => {
+          const webpFile = new File([webpBlob], file.name.replace(/\.[^/.]+$/, '.webp'), { type: 'image/webp' })
+          console.log('after processing image size in mb: ', webpFile.size / 1024 / 1024)
+          console.log('after processing image name: ', webpFile.name, 'type: ', webpFile.type)
 
-        compressImage(file, 0.7)
-          .then(compressedBlob => {
-            console.log('file size after in mb: ', compressedBlob.size / 1024 / 1024)
-
-            const compressedFile = new File([compressedBlob], file.name, { type: file.type })
-            imageFiles.value.push(compressedFile)
-            imagePreviews.value.push(URL.createObjectURL(compressedFile))
-          })
-          .catch(err => {
-            console.log('Failed to compress image:', err)
-            toast.add({ color: 'red', title: t('Failed to compress the image'), timeout: 3000 })
-          })
-      } else {
-        imageFiles.value.push(file)
-        imagePreviews.value.push(URL.createObjectURL(file))
-      }
+          imageFiles.value.push(webpFile)
+          imagePreviews.value.push(URL.createObjectURL(webpFile))
+        })
+        .catch(err => {
+          console.log('Failed to process image:', err)
+          toast.add({ color: 'red', title: t('Failed to process the image'), timeout: 3000 })
+        })
     })
 
     target.value = ''

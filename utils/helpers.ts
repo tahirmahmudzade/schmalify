@@ -48,6 +48,63 @@ export function compressImage(file: File, quality: number = 0.7): Promise<Blob> 
   })
 }
 
+export function processImageToWebP(
+  file: File,
+  maxWidth: number = 1280,
+  maxHeight: number = 720,
+  compressionQuality: number = 0.95,
+  webpQuality: number = 0.95,
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const reader = new FileReader()
+
+    reader.onload = event => {
+      img.src = event.target?.result as string
+    }
+    reader.onerror = error => reject(error)
+    reader.readAsDataURL(file)
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')!
+
+      // Resize the image while maintaining aspect ratio
+      let { width, height } = img
+      if (width > maxWidth || height > maxHeight) {
+        const scalingFactor = Math.min(maxWidth / width, maxHeight / height)
+        width = width * scalingFactor
+        height = height * scalingFactor
+      }
+
+      canvas.width = width
+      canvas.height = height
+
+      // Draw the image on the canvas
+      ctx.drawImage(img, 0, 0, width, height)
+
+      // Determine quality based on file size
+      const isLargeFile = file.size > 2 * 1024 * 1024
+      const quality = isLargeFile ? compressionQuality : webpQuality
+
+      // Convert to WebP
+      canvas.toBlob(
+        webpBlob => {
+          if (webpBlob) {
+            resolve(webpBlob)
+          } else {
+            reject(new Error('Conversion to WebP failed'))
+          }
+        },
+        'image/webp',
+        quality,
+      )
+    }
+
+    img.onerror = error => reject(error)
+  })
+}
+
 export function validatePhoneNumber(phone: string) {
   const phoneNumber = parsePhoneNumberFromString(phone)
   return phoneNumber ? phoneNumber.isValid() : false
@@ -67,6 +124,6 @@ export const handleImageError = (event: Event, entityType: 'item' | 'user' | 'ca
       target.src = '/img/categories/default-category.webp'
       break
     default:
-      target.src = '/img/default-image.webp'
+      target.src = '/img/items/default-item.webp'
   }
 }
