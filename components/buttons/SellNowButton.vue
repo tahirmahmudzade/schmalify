@@ -24,6 +24,8 @@ const { t } = useI18n()
       },
     }"
     @click="click"
+    :aria-label="isLabelHidden ? t('Sell Now') : undefined"
+    title="Sell Now"
   >
     <template #leading>
       <Icon name="i-mdi-shopping-basket-plus-outline" size="1.3em" />

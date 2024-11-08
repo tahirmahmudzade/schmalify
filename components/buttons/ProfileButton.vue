@@ -12,6 +12,8 @@
         },
       },
     }"
+    aria-label="Open profile menu"
+    title="Profile"
   >
     <template #leading>
       <Icon name="i-healthicons-ui-user-profile" size="1.3em" />

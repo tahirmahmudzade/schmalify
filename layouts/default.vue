@@ -98,7 +98,7 @@ function handleSellNowClick() {
 
       <template #right>
         <ButtonsSellNowButton :click="handleSellNowClick" />
-        <UDropdown :items="items" :popper="{ placement: 'bottom' }">
+        <UDropdown :items="items" :popper="{ placement: 'bottom' }" aria-label="User menu dropdown">
           <ButtonsProfileButton />
         </UDropdown>
       </template>
@@ -120,6 +120,8 @@ function handleSellNowClick() {
           variant="ghost"
           to="https://www.instagram.com/hs_schmalkalden/"
           target="_blank"
+          aria-label="Visit Hochschule Schmalkalden's Instagram"
+          title="Visit Instagram"
         />
         <UButton
           icon="logos:google-gmail"
@@ -127,8 +129,18 @@ function handleSellNowClick() {
           variant="ghost"
           to="mailto:support@schmalify.com?subject=Support%20Request&body=Hello%20Schmalify%20Support%2C%0A%0AI%20need%20help%20with..."
           target="_blank"
+          aria-label="Contact Support via Email"
+          title="Send Email"
         />
-        <UButton icon="mdi:github" color="gray" variant="ghost" to="https://github.com/tahirmahmudzade/" target="_blank" />
+        <UButton
+          icon="mdi:github"
+          color="gray"
+          variant="ghost"
+          to="https://github.com/tahirmahmudzade/"
+          target="_blank"
+          aria-label="Visit GitHub Profile"
+          title="GitHub"
+        />
 
         <LanguageSwitcher />
       </template>

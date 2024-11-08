@@ -90,6 +90,7 @@ const schmalifyDescription =
         <NuxtLink
           to="/items"
           class="absolute right-0 top-1/2 transform -translate-y-1/2 text-sm sm:text-base lg:text-lg font-medium text-blue-500 hover:text-blue-400 transition-colors"
+          aria-label="Explore all items"
         >
           {{ t('Explore All') }}
         </NuxtLink>
@@ -107,7 +108,7 @@ const schmalifyDescription =
 
           <NuxtImg
             :src="`/api/blob/${item.id}/serveImg?fileName=${item.images![0]}`"
-            :alt="item.title"
+            :alt="`Image of ${item.title}`"
             :nonce="nonce"
             provider="cloudflare"
             loading="lazy"
@@ -131,12 +132,25 @@ const schmalifyDescription =
       </div>
     </div>
     <div class="description-section text-center mt-12 px-4 sm:px-6 lg:px-8">
-      <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+      <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">
         {{ t('What is Schmalify?') }}
-      </h2>
+      </h3>
       <p class="text-gray-700 dark:text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
         {{ t(schmalifyDescription) }}
       </p>
     </div>
   </div>
 </template>
+
+<!-- <NuxtImg
+            :src="`/img/categories/${category.img!}`"
+            :alt="category.name"
+            :nonce="nonce"
+            loading="lazy"
+            format="webp"
+            :height="144"
+            :width="112"
+            fit="cover"
+            placeholder="/img/categories/default-category.webp"
+            @error="event => handleImageError(event as Event, 'category')"
+          /> -->

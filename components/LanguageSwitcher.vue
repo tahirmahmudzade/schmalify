@@ -12,7 +12,13 @@ const availableLocales: DropdownItem[][] = [
 </script>
 
 <template>
-  <UDropdown :items="availableLocales"
-    ><UButton icon="i-material-symbols-language" color="blue" variant="ghost" />
+  <UDropdown :items="availableLocales" aria-label="Language selection dropdown"
+    ><UButton
+      icon="i-material-symbols-language"
+      color="blue"
+      variant="ghost"
+      aria-label="Change language"
+      title="Change language"
+    />
   </UDropdown>
 </template>
