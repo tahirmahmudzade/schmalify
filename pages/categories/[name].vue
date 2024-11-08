@@ -7,7 +7,7 @@ const { data: categoryData, error } = await useFetch(`/api/category/${name.value
 const { filterItems } = useItemStore()
 const { t } = useI18n()
 
-if (error.value) {
+if (!categoryData.value && error.value) {
   throw createError({
     statusCode: error.value.statusCode || 500,
     message: t('Category not found or another error occurred, please try again later or contact support.'),
