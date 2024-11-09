@@ -47,15 +47,15 @@ const items: DropdownItem[][] = [
         navigateTo('/profile/listings')
       },
     },
-    {
-      label: t('Messages'),
-      icon: 'material-symbols:chat-outline',
-      iconClass: 'bg-blue-500',
-      disabled: !loggedIn.value,
-      click: () => {
-        navigateTo('/profile/messages')
-      },
-    },
+    // {
+    //   label: t('Messages'),
+    //   icon: 'material-symbols:chat-outline',
+    //   iconClass: 'bg-blue-500',
+    //   disabled: !loggedIn.value,
+    //   click: () => {
+    //     navigateTo('/profile/messages')
+    //   },
+    // },
   ],
   [
     {

@@ -27,7 +27,7 @@ if (error.value || !itemData.value) {
 
 const { item } = itemData.value
 
-const isChatboxOpen = useChatboxState()
+// const isChatboxOpen = useChatboxState()
 
 useSeoMeta({
   title: `${item.title} - ${item.price} €`,
@@ -88,10 +88,10 @@ const previewImg = (imageUrl: string) => {
       </div>
     </div>
     <ModalsImagePreviewModal v-if="selectedImage" :imageUrl="selectedImage" @close="selectedImage = null" />
-    <ChatSlideOver
+    <!-- <ChatSlideOver
       v-if="isChatboxOpen"
       :item-id="item.id"
       :seller-name="item.seller?.username || `${item.seller?.firstName} ${item.seller?.lastName}`"
-    />
+    /> -->
   </div>
 </template>
