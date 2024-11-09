@@ -48,7 +48,7 @@ const schmalifyDescription =
         {{ t('Swap or Sell, Do It Well! - Student Deals in Schmalkalden!') }}
       </h1>
       <p class="xl:text-lg sm:text-lg md:text-xl lg:text-xl text-gray-700 dark:text-gray-300 mt-2">
-        {{ t('Discover great deals and unique items for sale near you') }}
+        {{ t('Discover great deals and unique items for sale near you!') }}
       </p>
 
       <div class="mt-6 relative mx-auto w-full max-w-xs sm:max-w-md lg:max-w-lg">

@@ -35,6 +35,6 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- No Products Message -->
-    <NoItems title="No items found. Create your listing by clicking 'Sell Now' on the top right corner!" v-else />
+    <NoItems :show-recommendations="true" v-else />
   </div>
 </template>
