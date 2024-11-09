@@ -93,7 +93,7 @@ function handleSellNowClick() {
       </template>
 
       <template #center>
-        <SearchInput :class="path === '/' ? 'hidden' : ''" :is-on-header="true" text-size="xs" icon-size="1.2rem" />
+        <LazySearchInput :class="path === '/' ? 'hidden' : ''" :is-on-header="true" text-size="xs" icon-size="1.2rem" />
       </template>
 
       <template #right>
