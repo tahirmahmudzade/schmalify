@@ -89,7 +89,7 @@ function handleSellNowClick() {
   <div class="flex flex-col min-h-screen">
     <UHeader>
       <template #logo>
-        <span class="font-black text-white text-base md:text-xl tracking-tighter leading-none">Schmalify</span>
+        <img src="/img/main-logo.png" class="h-32 sm:h-32 md:h-48 lg:h-48 w-auto -ml-4" alt="Schmalify Logo" />
       </template>
 
       <template #center>
@@ -129,6 +129,7 @@ function handleSellNowClick() {
           variant="ghost"
           to="mailto:support@schmalify.com?subject=Support%20Request&body=Hello%20Schmalify%20Support%2C%0A%0AI%20need%20help%20with..."
           target="_blank"
+          rel="noopener noreferrer"
           aria-label="Contact Support via Email"
           title="Send Email"
         />
