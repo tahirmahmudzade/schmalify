@@ -6,7 +6,7 @@ useSeoMeta({
   description: () => `Discover the best items`,
   ogTitle: () => `All Items`,
   ogDescription: () => `Discover the best items`,
-  ogImage: () => `/main-logo.png`,
+  ogImage: () => `/img/main-logo.png`,
   ogUrl: () => `${canonicalUrl}/items`,
   ogType: 'website',
 })

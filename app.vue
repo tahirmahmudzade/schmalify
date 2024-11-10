@@ -2,7 +2,7 @@
 useHead({
   titleTemplate: title => (title ? `${title} · Schmalify` : 'Schmalify: Student Deals in Schmalkalden!'),
   meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
-  link: [{ rel: 'icon', type: 'image/png', href: '/main-logo.png' }],
+  link: [{ rel: 'icon', type: 'image/png', href: '/img/logo-title.png' }],
   htmlAttrs: { lang: 'en' },
 })
 
