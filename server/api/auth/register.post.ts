@@ -36,10 +36,14 @@ export default defineEventHandler<{ body: CreateUser }>(async (event): Promise<{
 
     const user = await createUser(userData)
 
-    await setUserSession(event, {
-      loggedInAt: new Date().toISOString(),
-      user: { email: user.email!, id: encodeId(user.id), username: user.username!, isGuest: false },
-    })
+    await setUserSession(
+      event,
+      {
+        loggedInAt: new Date().toISOString(),
+        user: { email: user.email!, id: encodeId(user.id), username: user.username!, isGuest: false },
+      },
+      { maxAge: 60 * 60 * 24 * 3 },
+    )
 
     return { statusCode: 201, message: `Registration successful` }
   } catch (err) {

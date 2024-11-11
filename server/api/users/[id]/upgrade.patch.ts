@@ -53,10 +53,14 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       phone: guestUser.phone,
     })
 
-    await replaceUserSession(event, {
-      loggedInAt: new Date().toISOString(),
-      user: { id: paramId, isGuest: false, email: body.email, username: body.username },
-    })
+    await replaceUserSession(
+      event,
+      {
+        loggedInAt: new Date().toISOString(),
+        user: { id: paramId, isGuest: false, email: body.email, username: body.username },
+      },
+      { maxAge: 60 * 60 * 24 * 3 },
+    )
 
     return { statusCode: 200, message: 'User created successfully' }
   } catch (err) {

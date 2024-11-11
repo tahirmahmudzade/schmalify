@@ -20,10 +20,14 @@ export default defineOAuthGoogleEventHandler({
       id = isUser.id
     }
 
-    await replaceUserSession(event, {
-      loggedInAt: new Date().toISOString(),
-      user: { email, id: encodeId(id), username, isGuest: false },
-    })
+    await replaceUserSession(
+      event,
+      {
+        loggedInAt: new Date().toISOString(),
+        user: { email, id: encodeId(id), username, isGuest: false },
+      },
+      { maxAge: 60 * 60 * 24 * 3 },
+    )
 
     return sendRedirect(event, '/')
   },

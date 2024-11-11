@@ -26,10 +26,16 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       throw createError({ statusCode: 401, message: 'Invalid email or password' })
     }
 
-    await setUserSession(event, {
-      loggedInAt: new Date().toISOString(),
-      user: { email: isUser.email!, id: encodeId(isUser.id), username: isUser.username!, isGuest: false },
-    })
+    await setUserSession(
+      event,
+      {
+        loggedInAt: new Date().toISOString(),
+        user: { email: isUser.email!, id: encodeId(isUser.id), username: isUser.username!, isGuest: false },
+      },
+      {
+        maxAge: 60 * 60 * 24 * 3,
+      },
+    )
 
     return { statusCode: 200, message: 'Login successful' }
   } catch (err) {
