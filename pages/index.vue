@@ -13,8 +13,8 @@ useSeoMeta({
   ogTitle: title,
   description: description,
   ogDescription: description,
-  ogImage: joinURL('https://www.schmalify.com', '/img/main-logo.png'),
-  twitterImage: joinURL('https://www.schmalify.com', '/img/main-logo.png'),
+  ogImage: joinURL('https://www.schmalify.com', '/img/external-logo.png'),
+  twitterImage: joinURL('https://www.schmalify.com', '/img/external-logo.png'),
 })
 
 const nonce = useNonce()
