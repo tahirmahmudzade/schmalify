@@ -8,7 +8,6 @@ const { images } = defineProps<{ images: { id: number; name: string; src: string
 
 <template>
   <TabGroup as="div" class="flex flex-col-reverse lg:border-r lg:border-gray-200">
-    <!-- Image selector -->
     <div class="mx-auto mt-6 w-full max-w-2xl lg:max-w-none">
       <TabList class="grid grid-cols-4 gap-6">
         <Tab
@@ -32,7 +31,6 @@ const { images } = defineProps<{ images: { id: number; name: string; src: string
       </TabList>
     </div>
 
-    <!-- Adjusted TabPanels to enforce consistent image sizes -->
     <TabPanels>
       <TabPanel v-for="image in images" :key="image.id" class="w-full">
         <div class="relative h-96 w-full overflow-hidden rounded-lg">
@@ -42,6 +40,14 @@ const { images } = defineProps<{ images: { id: number; name: string; src: string
             class="h-full w-full object-cover object-center"
             @click="emits('preview', image.src)"
           />
+
+          <div
+            class="absolute top-2 right-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 bg-opacity-40 text-white shadow-md"
+            title="Icon action"
+            @click="emits('preview', image.src)"
+          >
+            <Icon name="material-symbols:pan-zoom" size="1.3rem" />
+          </div>
         </div>
       </TabPanel>
     </TabPanels>
