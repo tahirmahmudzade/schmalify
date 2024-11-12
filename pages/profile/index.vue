@@ -160,16 +160,7 @@ onMounted(() => {
       <div class="mt-8 flex flex-col lg:flex-row items-start lg:space-x-8 w-full max-w-6xl space-y-8 lg:space-y-0">
         <div class="w-full lg:w-1/4 text-center lg:text-left flex flex-col items-center lg:items-start">
           <div class="w-32 h-32 relative">
-            <div
-              v-if="showTooltip && !user?.isGuest"
-              class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white text-xs rounded px-2 py-1"
-              style="white-space: nowrap"
-            >
-              {{ t('Click to change your profile picture.') }}
-              <div
-                class="absolute left-1/2 transform -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-700"
-              ></div>
-            </div>
+            <Tooltip text="Click to change your profile picture." :duration="2000" />
 
             <label for="avatarInput" :class="user?.isGuest ? '' : 'cursor-pointer'">
               <img
