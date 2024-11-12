@@ -39,9 +39,7 @@ Schmalify leverages **NuxtHub** as the backbone of its application for:
 
 - Seamless deployment and scaling on Cloudflare infrastructure.
 - Database management with **Cloudflare D1** integration.
-
-- Blob image serving and static asset management with **Cloudflare R2**.
-- Key-value storage with **Cloudflare Kv**.
+- Blob image serving and static asset management.
 - Full-stack capabilities to optimize app performance and user experience.
 
 ## Performance
@@ -68,4 +66,4 @@ These metrics showcase how Schmalify ensures a fast, seamless, and user-friendly
 
 ## Contact
 
-Created by [Tahir Mahmudzade](mailto:tahirmahmudzade25@gmail.com) - feel free to reach out!
+Created by [Tahir Mahmudzade](tahirmahmudzade25@gmail.com) - feel free to reach out!
