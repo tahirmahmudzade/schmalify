@@ -7,7 +7,7 @@
     "build:cf": "nuxt build --preset=cloudflare_pages",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --port=9562",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "prepare": "nuxi prepare",
