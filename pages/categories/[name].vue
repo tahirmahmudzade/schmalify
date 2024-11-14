@@ -14,10 +14,12 @@ if (!categoryData.value && error.value) {
   })
 }
 
+const pageTitle = name.value.charAt(0).toUpperCase() + name.value.slice(1)
+
 useSeoMeta({
-  title: `${name.value.charAt(0).toUpperCase() + name.value.slice(1)} Products`,
+  title: `${pageTitle} Products`,
   description: () => `Discover the best ${name.value} products`,
-  ogTitle: () => `${name.value} Products`,
+  ogTitle: () => `${pageTitle} Products`,
   ogDescription: () => `Discover the best ${name.value} products`,
   ogImage: () => `/img/categories/${categoryData.value?.category.img}`,
   ogUrl: () => `${canonicalUrl}/categories/${name.value}`,
