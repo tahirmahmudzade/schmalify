@@ -17,7 +17,7 @@ onBeforeUnmount(() => {
     <div v-if="items && items.length" class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 lg:gap-x-8">
       <div v-for="item in items" :key="item.id" class="group relative">
         <!-- Badge for Sold Items -->
-        <div v-if="item.status === 'sold'" class="absolute top-2 right-2 z-10">
+        <div v-if="item.status === 'sold'" class="absolute top-2 right-2" style="z-index: 5">
           <LazyUBadge :label="t('Sold')" color="red" size="md" />
         </div>
         <!-- Item Image -->
