@@ -93,13 +93,12 @@ function handleImgChange(e: Event) {
   if (target.files) {
     const selectedFiles = Array.from(target.files)
 
-    if (selectedFiles.length > 3) {
+    // Adjust the image count check
+    if (imageFiles.value.length + selectedFiles.length > 3) {
       toast.add({ color: 'red', title: t('You can only upload up to 3 images'), timeout: 2000 })
+      target.value = ''
       return
     }
-
-    imageFiles.value = []
-    imagePreviews.value = []
 
     selectedFiles.forEach(file => {
       if (file.size > 2 * 1024 * 1024) {
@@ -125,9 +124,9 @@ function handleImgChange(e: Event) {
         imagePreviews.value.push(URL.createObjectURL(file))
       }
     })
-  } else {
-    imagePreviews.value = []
-    imageFiles.value = []
+
+    // Clear the input value to allow re-selection of the same file if needed
+    target.value = ''
   }
 }
 
@@ -253,34 +252,3 @@ async function onSubmit() {
     </div>
   </UModal>
 </template>
-
-<style scoped>
-.modal-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 1rem;
-  pointer-events: none;
-  overflow-y: auto; /* Ensures scrolling on mobile */
-}
-
-.modal-content {
-  pointer-events: auto;
-  max-height: 90vh;
-  overflow-y: auto; /* Enable scrolling within the modal */
-}
-
-@media (max-height: 500px) {
-  .modal-container {
-    align-items: flex-start;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    overflow-y: auto; /* Ensures scrolling on smaller screens */
-  }
-}
-</style>
