@@ -1,9 +1,3 @@
-import parsePhoneNumberFromString from 'libphonenumber-js'
-
-export function getProfilePicUrl(avatar?: string | null, userId?: string | null): string {
-  return avatar?.startsWith('https') ? avatar : `/api/blob/${userId}/serveProfile`
-}
-
 export function compressImage(file: File, quality: number = 0.7): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -103,11 +97,6 @@ export function processImageToWebP(
 
     img.onerror = error => reject(error)
   })
-}
-
-export function validatePhoneNumber(phone: string) {
-  const phoneNumber = parsePhoneNumberFromString(phone)
-  return phoneNumber ? phoneNumber.isValid() : false
 }
 
 export const handleImageError = (event: Event, entityType: 'item' | 'user' | 'category') => {
