@@ -18,7 +18,7 @@ export function useLoginModal() {
       } else {
         toast.add({ id: 'login-success', title: t('Successfully logged in'), timeout: 1500 })
         setTimeout(() => {
-          reloadNuxtApp({ path: '/profile', force: true })
+          reloadNuxtApp({ path: '/', force: true })
         }, 1600)
       }
     },
