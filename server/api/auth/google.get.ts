@@ -22,10 +22,7 @@ export default defineOAuthGoogleEventHandler({
 
     await replaceUserSession(
       event,
-      {
-        loggedInAt: new Date().toISOString(),
-        user: { email, id: encodeId(id), username, isGuest: false },
-      },
+      { loggedInAt: new Date().toISOString(), user: { email, id: encodeId(id), username, isGuest: false } },
       { maxAge: 60 * 60 * 24 * 3 },
     )
 
