@@ -21,9 +21,11 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
     const price = parseInt(body.get('price')!.toString())
     const condition = body.get('condition')!.toString() as Condition
     const status = body.get('status')!.toString() as Status
+    const categoryId = body.get('category')!.toString()
 
     // 6. Decode the item id
     const decodedItemId = decodeId(paramId)
+    const decodedCategoryId = decodeId(categoryId)
     // 7. Get the item by id
     const isItem = await getItemById(decodedItemId)
     // 8. If the item is not found, return a 404 error
@@ -62,7 +64,8 @@ export default defineEventHandler(async (event): Promise<{ statusCode: number; m
       description,
       condition,
       status,
-      images: finalImages, // Use final images array
+      images: finalImages,
+      category_id: decodedCategoryId,
     }
     await updateItemById(decodedItemId, itemData)
 
