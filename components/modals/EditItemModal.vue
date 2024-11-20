@@ -11,6 +11,15 @@ const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
 
 const { t } = useI18n()
 const toast = useToast()
+const { data: categoryData, error: categoryError } = await useFetch('/api/category')
+
+if (!categoryData.value && categoryError.value) {
+  toast.add({ color: 'red', title: t('Something went wrong, please try again or contact support') })
+  throw createError({
+    statusCode: 500,
+    message: 'Failed to fetch categories',
+  })
+}
 
 const buttonLoading = ref(false)
 
@@ -26,14 +35,23 @@ const conditionOptions = computed(() => [
   { value: 'poor', label: t('Poor') },
 ])
 
+const categoryOptions = computed(() => categoryData.value?.categories.map(c => ({ value: c.name, label: t(c.name) })))
+
 const statusOptions = computed(() => [
   { value: 'available', label: t('Available') },
   { value: 'sold', label: t('Sold') },
 ])
 
 // Zod schema for validation
-const schema = computed(() =>
-  z.object({
+const schema = computed(() => {
+  const baseSchema: {
+    title: z.ZodString
+    description: z.ZodOptional<z.ZodString>
+    condition: z.ZodEnum<['new', 'like new', 'very good', 'good', 'fair', 'poor']>
+    status: z.ZodEnum<['available', 'sold']>
+    category: z.ZodString
+    price?: z.ZodNumber
+  } = {
     title: z
       .string()
       .trim()
@@ -44,17 +62,20 @@ const schema = computed(() =>
       .trim()
       .max(200, { message: t('Description must be at most 200 characters long') })
       .optional(),
-    ...(itemData.category?.name !== 'Free' &&
-      itemSchemaData.price !== 0 && {
-        price: z
-          .number()
-          .min(1, { message: t('Price must be greater than 0') })
-          .max(5000, { message: t('Price must be at most 5000') }),
-      }),
     condition: z.enum(['new', 'like new', 'very good', 'good', 'fair', 'poor'], { message: t('Condition is required') }),
     status: z.enum(['available', 'sold'], { message: t('Status is required') }),
-  }),
-)
+    category: z.string().min(1, { message: t('Category is required') }),
+  }
+
+  if (itemSchemaData.category !== 'Free') {
+    baseSchema.price = z
+      .number()
+      .min(1, { message: t('Price must be greater than 0') })
+      .max(5000, { message: t('Price must be at most 5000') })
+  }
+
+  return z.object(baseSchema)
+})
 
 const itemSchemaData = reactive({
   title: itemData.title,
@@ -79,7 +100,8 @@ const isFormUnchanged = computed(() => {
     (itemSchemaData.price === initialData.price || itemSchemaData.category === 'Free') &&
     itemSchemaData.condition === initialData.condition &&
     itemSchemaData.status === initialData.status &&
-    imageFiles.value.length === 0
+    imageFiles.value.length === 0 &&
+    itemSchemaData.category === initialData.category
   )
 })
 
@@ -139,6 +161,13 @@ function removeImage(index: number) {
 
 async function onSubmit() {
   buttonLoading.value = true
+  const categoryId = categoryData.value?.categories.find(c => c.name === itemSchemaData.category)?.id
+
+  if (!categoryId) {
+    toast.add({ color: 'red', title: t('Category not found') })
+    buttonLoading.value = false
+    return
+  }
 
   try {
     const formData = new FormData()
@@ -150,9 +179,10 @@ async function onSubmit() {
 
     formData.append('title', itemSchemaData.title.trim())
     formData.append('description', itemSchemaData.description.trim())
-    formData.append('price', itemSchemaData.price.toString().trim())
+    formData.append('price', itemSchemaData.category === 'Free' ? '0' : itemSchemaData.price.toString().trim())
     formData.append('condition', itemSchemaData.condition.trim())
     formData.append('status', itemSchemaData.status.trim())
+    formData.append('category', categoryId?.trim())
 
     const { message } = await $fetch<{ statusCode: number; message: string }>(`/api/items/${itemData.id}`, {
       method: 'PATCH',
@@ -209,6 +239,15 @@ async function onSubmit() {
               <USelect v-model="itemSchemaData.status" :options="statusOptions" />
             </UFormGroup>
 
+            <UFormGroup class="mt-3" :label="t('Category')" name="category">
+              <USelect
+                v-model="itemSchemaData.category"
+                :options="categoryOptions"
+                optionAttribute="label"
+                valueAttribute="value"
+              />
+            </UFormGroup>
+
             <div class="mt-3">
               <label for="imageInput" class="relative cursor-pointer">
                 <div @click.stop>
@@ -228,7 +267,7 @@ async function onSubmit() {
               <p class="text-sm text-gray-500 mt-1">{{ t('Maximum of 3 images, size limit: 4 MB each') }}</p>
             </div>
 
-            <UFormGroup v-if="itemData.category?.name !== 'Free'" class="mt-3" :label="t('Price')" name="price">
+            <UFormGroup v-if="itemSchemaData.category !== 'Free'" class="mt-3" :label="t('Price')" name="price">
               <UInput v-model.number="itemSchemaData.price" type="number" :placeholder="t('Edit price in euros')" />
             </UFormGroup>
 
