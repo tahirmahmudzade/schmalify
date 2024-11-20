@@ -4,7 +4,7 @@ export const useLogout = () => {
   const t = $i18n.t
   $fetch('/api/auth/logout')
     .then(() => {
-      reloadNuxtApp({ path: '/' })
+      reloadNuxtApp({ path: '/', force: true })
     })
     .catch(err => {
       console.log('Error logging out', err)
