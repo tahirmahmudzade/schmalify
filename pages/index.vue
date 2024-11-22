@@ -1,12 +1,18 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { Category, Item } from '~/server/database/drizzle'
 import { joinURL } from 'ufo'
-
-const { t } = useI18n()
-
 const title = 'Schmalify: Student Deals in Schmalkalden!'
 const description =
   'Second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community.'
+const schmalifyDescription =
+  'Schmalify is a second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more efficient way for students to connect and exchange goods.'
+</script>
+
+<script setup lang="ts">
+const { t } = useI18n()
+
+const categories = ref<Category[]>([])
+const items = ref<(Item & { seller: { location: string | null } | null })[]>([])
 
 useSeoMeta({
   title,
@@ -24,9 +30,6 @@ const [{ data: categoryRes, error: categoryError }, { data: itemRes, error: item
   useFetch('/api/items/latest'),
 ])
 
-const categories = ref<Category[]>([])
-const items = ref<(Item & { seller: { location: string | null } | null })[]>([])
-
 if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.value) {
   categories.value = categoryRes.value.categories
   items.value = itemRes.value
@@ -36,9 +39,6 @@ if (categoryRes.value && itemRes.value && !categoryError.value && !itemsError.va
     message: 'Something went wrong loading the page, please try again later or contact support.',
   })
 }
-
-const schmalifyDescription =
-  'Schmalify is a second-hand marketplace designed for students in Schmalkalden, providing a dedicated platform to buy and sell items within the local student community. Schmalify aims to simplify the trading process and foster a more efficient way for students to connect and exchange goods.'
 </script>
 
 <template>
