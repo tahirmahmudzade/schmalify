@@ -17,9 +17,7 @@ useSeoMeta({ ogSiteName: 'Schmalify', ogType: 'website' })
     </template>
   </NuxtRouteAnnouncer>
 
-  <!-- Flex container for the entire page -->
   <div class="app-container">
-    <!-- Content section grows to fill available space -->
     <div class="content-container">
       <NuxtLayout>
         <NuxtPage />
@@ -35,7 +33,7 @@ useSeoMeta({ ogSiteName: 'Schmalify', ogType: 'website' })
 html,
 body,
 #__nuxt {
-  height: 100%; /* Ensure the page takes the full viewport height */
+  height: 100%;
   margin: 0;
   padding: 0;
   background: #111827;
@@ -46,10 +44,10 @@ body,
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensures the container takes up at least the full viewport height */
+  min-height: 100vh;
 }
 
 .content-container {
-  flex-grow: 1; /* This makes the content grow to fill available space */
+  flex-grow: 1;
 }
 </style>
