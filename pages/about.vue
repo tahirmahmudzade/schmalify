@@ -5,18 +5,21 @@ const team = [
     role: 'Founder / Developer',
     description: 'Full Stack Developer with a passion for building products that people love.',
     imageUrl: '/img/team/tahir_mahmudzade.webp',
+    link: 'https://www.linkedin.com/in/tahir-mahmudzade/',
   },
   {
     name: 'Baris Eroglu',
     role: 'QA Engineer',
     description: 'I test it, perfect it, so you love it.',
     imageUrl: '/img/team/baris_eroglu.webp',
+    link: '/',
   },
   {
     name: 'Ismail Mahili',
     role: 'AI Engineer',
     description: 'A passionate software developer focused on building innovative AI solutions using Python.',
     imageUrl: '/img/team/ismail_mahili.webp',
+    link: '/',
   },
   {
     name: 'Kamila Mammadzada',
@@ -24,18 +27,21 @@ const team = [
     description:
       'Crafting intuitive and visually engaging digital experiences that connect users effortlessly with technology.',
     imageUrl: '/img/team/kamila_mamedzade.webp',
+    link: '/',
   },
   {
     name: 'Fahmin Mahili',
     role: 'AI Engineer',
     description: 'Innovating with machine learning and AI technologies to create impactful real-world solutions.',
     imageUrl: '/img/team/fahmin_mahili.webp',
+    link: '/',
   },
   {
     name: 'Oleksii Muzyka',
     role: 'UI/UX Designer',
     description: 'UI/UX Designer, responsible for user friendly design and marketing',
     imageUrl: '/img/team/oleksii_muzyka.webp',
+    link: '/',
   },
 ]
 
@@ -58,7 +64,14 @@ const { t } = useI18n()
     <ul role="list" class="mx-auto mt-12 grid gap-x-8 gap-y-16 text-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <li v-for="person in team" :key="person.name" class="flex flex-col items-center">
         <NuxtImg :src="person.imageUrl" alt="profile" class="h-24 w-24 rounded-full mx-auto object-cover" />
-        <h3 class="mt-4 text-base font-semibold leading-7 tracking-tight text-white">{{ person.name }}</h3>
+        <div class="mt-4 flex items-center space-x-2">
+          <h3 class="text-base font-semibold leading-7 tracking-tight text-white">
+            {{ person.name }}
+          </h3>
+          <NuxtLink :to="person.link" target="_blank" rel="noopener noreferrer" class="inline-block">
+            <Icon name="i-logos:linkedin-icon" />
+          </NuxtLink>
+        </div>
         <p class="text-sm leading-6 text-gray-400">{{ t(person.role) }}</p>
         <p class="mt-2 text-sm leading-6 text-gray-500 max-w-xs">{{ t(person.description) }}</p>
       </li>
