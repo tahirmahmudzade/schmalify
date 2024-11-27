@@ -9,11 +9,11 @@ export const useConfirmModal = (title: string, description: string): Promise<boo
       description,
       onClose: () => {
         modal.close()
-        resolve(false) // Resolve as false if the user closes the modal (cancels)
+        resolve(false)
       },
       onConfirm: () => {
         modal.close()
-        resolve(true) // Resolve as true if the user confirms
+        resolve(true)
       },
     })
   })

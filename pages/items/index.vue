@@ -1,6 +1,10 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { Item } from '~/server/database/drizzle'
 
+const limit = 16
+</script>
+
+<script setup lang="ts">
 useSeoMeta({
   title: `All Items`,
   description: () => `Discover the best items`,
@@ -17,7 +21,6 @@ const { t } = useI18n()
 const itemStore = useItemStore()
 const { filterItems } = itemStore
 
-const limit = 16
 const offset = ref(0)
 const items = ref<(Item & { seller: { avatar: string | null; location: string | null } | null })[]>([])
 const loadingMore = ref(false)

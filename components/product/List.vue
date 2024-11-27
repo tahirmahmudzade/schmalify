@@ -1,6 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { Item } from '~/server/database/drizzle'
+</script>
 
+<script setup lang="ts">
 const { items } = defineProps<{ items: (Item & { seller?: { avatar: string | null; location: string | null } | null })[] }>()
 
 const { resetFilters } = useItemStore()

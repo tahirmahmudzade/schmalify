@@ -5,10 +5,8 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
   const modal = useModal()
   const { user } = useUserSession()
 
-  // Fetch categories once and use them later
   const data = await $fetch('/api/category')
 
-  // If user is not logged in, allow them to create a letting directly
   if (!user.value) {
     modal.open(CreateLettingModal, {
       categories: data.categories,
@@ -18,7 +16,6 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
     return
   }
 
-  // If user is logged in and is a guest
   if (user.value.isGuest) {
     modal.open(AlertModal, {
       title: 'Limited Access',
@@ -37,7 +34,6 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
     return
   }
 
-  // If user is logged in and is not a guest, check for a phone number
   const { phone } = await $fetch(`/api/users/${user.value.id}/phone`)
 
   if (!phone) {
@@ -55,7 +51,6 @@ export const useCreateLettingModal = async (asGuest: boolean = false) => {
     return
   }
 
-  // If user has a phone number, allow them to create a letting
   modal.open(CreateLettingModal, {
     categories: data.categories,
     asGuest,

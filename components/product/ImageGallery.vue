@@ -1,6 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+</script>
 
+<script setup lang="ts">
 const emits = defineEmits<{ (e: 'preview', imageUrl: string): void }>()
 
 const { images } = defineProps<{ images: { id: number; name: string; src: string; alt: string }[] }>()

@@ -1,6 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { Item } from '~/server/database/drizzle'
+</script>
 
+<script setup lang="ts">
 const route = useRoute('items-id')
 
 const { user } = useUserSession()

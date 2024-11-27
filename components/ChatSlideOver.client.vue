@@ -3,8 +3,6 @@ import { ref, watch, onMounted } from 'vue'
 
 const { sellerName, itemId } = defineProps<{ sellerName: string; itemId: string }>()
 
-console.log('loadiung chat slide over')
-
 const { t } = useI18n()
 const isChatboxOpen = useChatboxState()
 const { user } = useUserSession()
@@ -14,10 +12,8 @@ const tempToken = ref('')
 const messages = ref<MessageData[]>([])
 const message = ref('')
 
-// New loading state
 const isLoading = ref(true)
 
-// Fetch conversation data
 const {
   data: conversationData,
   error: conversationError,
@@ -32,9 +28,6 @@ if (!conversationData.value || conversationError.value) {
 conversationId.value = conversationData.value.conversationId
 tempToken.value = conversationData.value.tempToken
 
-// Initialize chat connection
-console.log('conversation id here in chat slide over', conversationId.value)
-
 const {
   close: closeConnection,
   data: incomingData,
@@ -42,16 +35,13 @@ const {
   status: connectionStatus,
 } = useChatConnection<MessageData>(conversationId.value, tempToken.value, true)
 
-// Fetch messages lazily
 const {
   data: messagesData,
   error: messagesError,
   status: messagesStatus,
 } = await useLazyFetch<{ statusCode: number; data: MessageData[] }>(`/api/messages/${conversationId.value}`)
 
-// Variable to track if messages are loaded
 const messagesLoaded = ref(false)
-// Variable to track if the timer is completed
 const timerCompleted = ref(false)
 
 watch([messagesData, messagesError], ([dataValue, errorValue]) => {
@@ -60,14 +50,9 @@ watch([messagesData, messagesError], ([dataValue, errorValue]) => {
     useToast().add({ title: t("Couldn't load messages, please try again later or contact support"), color: 'red' })
     return
   } else {
-    console.log('back with the data')
-
-    console.log('data value is', dataValue.data)
     messages.value = dataValue.data || []
-    console.log('assigned messages', messages.value)
-
     messagesLoaded.value = true
-    // If the timer is already completed, hide the loading spinner
+
     if (timerCompleted.value) {
       isLoading.value = false
     }
@@ -77,7 +62,7 @@ watch([messagesData, messagesError], ([dataValue, errorValue]) => {
 watch(incomingData, newData => {
   try {
     let messageData: MessageData | undefined
-    // Parse the incoming data as JSON
+
     if (typeof newData === 'string') {
       messageData = JSON.parse(newData)
     }

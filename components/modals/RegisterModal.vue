@@ -1,7 +1,9 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { User } from '#auth-utils'
 import z from 'zod'
+</script>
 
+<script setup lang="ts">
 const { user = null } = defineProps<{ user?: User | null }>()
 
 const emit = defineEmits<{ (e: 'close', toLogin?: boolean): void }>()

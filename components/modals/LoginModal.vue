@@ -1,6 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
 import z from 'zod'
+</script>
 
+<script setup lang="ts">
 const emit = defineEmits<{ (e: 'close', toRegister?: boolean): void; (e: 'forgotPassword'): void }>()
 
 const { t } = useI18n()

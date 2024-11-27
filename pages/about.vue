@@ -1,6 +1,4 @@
-<script setup lang="ts">
-const { t } = useI18n()
-
+<script lang="ts">
 const team = [
   {
     name: 'Tahir Mahmudzade',
@@ -43,6 +41,10 @@ const team = [
 
 const teamDescription =
   'We’re a cozy group of students from Hochschule Schmalkalden, united by bright ideas and a shared passion for creating something meaningful. Together, we’re building a platform that brings our community closer, one project at a time.'
+</script>
+
+<script setup lang="ts">
+const { t } = useI18n()
 </script>
 
 <template>

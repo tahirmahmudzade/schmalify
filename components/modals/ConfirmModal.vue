@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const emits = defineEmits(['close', 'confirm'])
 const { title = 'Confirm your action.', description = '' } = defineProps<{ title: string; description: string }>()
+
+const emits = defineEmits(['close', 'confirm'])
 
 const { t } = useI18n()
 

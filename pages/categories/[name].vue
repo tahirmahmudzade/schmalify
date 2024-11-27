@@ -14,7 +14,7 @@ if (!categoryData.value && error.value) {
   })
 }
 
-const pageTitle = name.value.charAt(0).toUpperCase() + name.value.slice(1)
+const pageTitle = computed(() => name.value.charAt(0).toUpperCase() + name.value.slice(1))
 
 useSeoMeta({
   title: `${pageTitle} Products`,

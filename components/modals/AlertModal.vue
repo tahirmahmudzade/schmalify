@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ButtonColor } from '#ui/types'
 
-const emits = defineEmits(['close', 'confirm'])
-
 const {
   title = 'Alert',
   description = '',
@@ -14,6 +12,8 @@ const {
   confirmLabel?: string
   confirmColor?: ButtonColor
 }>()
+
+const emits = defineEmits(['close', 'confirm'])
 
 const { t } = useI18n()
 </script>

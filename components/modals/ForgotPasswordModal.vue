@@ -49,14 +49,11 @@ const isResetFormInvalid = computed(() => {
   return !result.success
 })
 
-// Reactive current time
 const now = useNow({ interval: 1000 })
 
-// Import store and get resetPasswordValidation
 const store = useStore()
 const { resetPasswordValidation } = storeToRefs(store)
 
-// Computed properties for lockout
 const isResetLockedOut = computed(() => {
   const lockoutExpiration = resetPasswordValidation.value.lockoutExpiration
   return lockoutExpiration !== null && now.value.getTime() < lockoutExpiration

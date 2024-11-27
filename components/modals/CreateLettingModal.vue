@@ -1,7 +1,14 @@
-<script setup lang="ts">
+<script lang="ts">
 import z from 'zod'
 import type { Category } from '~/server/database/drizzle'
 
+function onPhoneInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  input.value = input.value.replace(/[^0-9+]/g, '')
+}
+</script>
+
+<script setup lang="ts">
 const { categories, asGuest } = defineProps<{ categories: readonly Category[]; asGuest: boolean }>()
 
 const emit = defineEmits<{ (e: 'close', success?: boolean): void }>()
@@ -10,13 +17,8 @@ const { t } = useI18n()
 const toast = useToast()
 
 const buttonLoading = ref(false)
-const imageFiles = ref<File[]>([]) // Store an array of images
+const imageFiles = ref<File[]>([])
 const imagePreviews = ref<string[]>([])
-
-function onPhoneInput(event: Event) {
-  const input = event.target as HTMLInputElement
-  input.value = input.value.replace(/[^0-9+]/g, '') // Only allow + and numbers
-}
 
 const conditionOptions = computed(() => [
   { value: 'new', label: t('New') },

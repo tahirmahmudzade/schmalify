@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts">
 import {
   Dialog,
   DialogPanel,
@@ -17,7 +17,9 @@ import {
   TransitionRoot,
 } from '@headlessui/vue'
 import type { Category } from '~/server/database/drizzle'
+</script>
 
+<script setup lang="ts">
 const {
   title = 'All Products',
   description = 'Find unique second-hand items just for you',
@@ -48,21 +50,18 @@ const maxPrice = ref(MAX_ITEM_PRICE)
 
 // Watch for changes to price range and update the store
 watch([minPrice, maxPrice], ([newMin, newMax]) => {
-  // Ensure minPrice does not exceed maxPrice
   if (newMin > newMax) {
-    minPrice.value = newMax // Sync minPrice to maxPrice if min exceeds max
+    minPrice.value = newMax
   } else if (newMin < MIN_ITEM_PRICE) {
-    minPrice.value = MIN_ITEM_PRICE // Ensure minPrice doesn't go below the minimum allowed value
+    minPrice.value = MIN_ITEM_PRICE
   }
 
-  // Ensure maxPrice does not fall below minPrice
   if (newMax < newMin) {
-    maxPrice.value = newMin // Sync maxPrice to minPrice if max falls below min
+    maxPrice.value = newMin
   } else if (newMax > MAX_ITEM_PRICE) {
-    maxPrice.value = MAX_ITEM_PRICE // Ensure maxPrice doesn't go above the maximum allowed value
+    maxPrice.value = MAX_ITEM_PRICE
   }
 
-  // Update the price filter in the store
   setPriceFilter({ min: minPrice.value, max: maxPrice.value })
 })
 
@@ -115,7 +114,7 @@ function validatePrice(inputValue: number, isMin: boolean) {
 }
 
 function handleSortChange(option: string) {
-  setSortOption(option) // Update the sort option in the store
+  setSortOption(option)
 }
 
 function handleCategoryChange(categoryId: string) {
@@ -448,7 +447,6 @@ function handleConditionChange(condition: Condition) {
 </template>
 
 <style scoped>
-/* Hide the spinner controls on number inputs */
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -456,6 +454,6 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 input[type='number'] {
-  -moz-appearance: textfield; /* Hide spinner for Firefox */
+  -moz-appearance: textfield;
 }
 </style>

@@ -1,7 +1,9 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { InputSize, InputColor } from '#ui/types'
 import type { Item } from '~/server/database/drizzle'
+</script>
 
+<script setup lang="ts">
 const {
   inputSize = 'sm',
   inputColor = 'blue',
@@ -18,48 +20,43 @@ const {
 
 const { t } = useI18n()
 
-// Reactive variables
 const searchQuery = ref('')
-const debouncedSearchQuery = refDebounced(searchQuery, 300) // Debouncing to avoid too many requests
-const items = ref<Item[]>([]) // Empty array to store the fetched items
-const dropdownVisible = ref(false)
-const loading = ref(false) // Loading state to track API calls
-const searchPerformed = ref(false) // State to track if a search has been performed
+const debouncedSearchQuery = refDebounced(searchQuery, 300)
 
-// Fetch items based on search query
+const items = ref<Item[]>([])
+const dropdownVisible = ref(false)
+const loading = ref(false)
+const searchPerformed = ref(false)
+
 const fetchItems = async () => {
   if (debouncedSearchQuery.value.trim().length < 3) {
     items.value = []
-    searchPerformed.value = false // No search was performed
+    searchPerformed.value = false
     return
   }
 
-  loading.value = true // Start loading
-  searchPerformed.value = true // A search is in progress
+  loading.value = true
+  searchPerformed.value = true
 
   const data = await $fetch('/api/items', { query: { searchQuery: debouncedSearchQuery.value.trim() } })
 
-  items.value = data || [] // Store the fetched items
-  loading.value = false // End loading
+  items.value = data || []
+  loading.value = false
 }
 
-// Watch the debounced search query and fetch items when it changes
 watch(debouncedSearchQuery, () => {
   fetchItems()
 })
 
-// Clear items if the search query is empty
 watch(searchQuery, val => {
   if (!val.trim()) {
     items.value = []
-    searchPerformed.value = false // Reset search performed status
+    searchPerformed.value = false
   }
 })
 
-// Filter items based on the search query
 const filteredItems = computed(() => items.value)
 
-// Functions to handle dropdown visibility
 const showDropdown = () => {
   if (searchQuery.value) {
     dropdownVisible.value = true
@@ -69,29 +66,22 @@ const showDropdown = () => {
 const hideDropdown = () => {
   setTimeout(() => {
     dropdownVisible.value = false
-  }, 200) // slight delay to allow item click
+  }, 200)
 }
 
-// Handle item selection
 const selectItem = (item: Item) => {
-  searchQuery.value = '' // Clear the search input
-  hideDropdown() // Hide the dropdown
-  navigateTo(`/items/${item.id}`) // Navigate to the selected item's page
+  searchQuery.value = ''
+  hideDropdown()
+  navigateTo(`/items/${item.id}`)
 }
 
-// Input handler
 const onInput = () => {
-  if (searchQuery.value) {
-    showDropdown()
-  } else {
-    hideDropdown()
-  }
+  searchQuery.value ? showDropdown() : hideDropdown()
 }
 </script>
 
 <template>
   <div class="relative">
-    <!-- Search Input -->
     <UInput
       :placeholder="t(placeholder)"
       variant="outline"
@@ -110,7 +100,6 @@ const onInput = () => {
       </template>
     </UInput>
 
-    <!-- Dropdown suggestions -->
     <ul
       v-if="searchQuery && dropdownVisible && filteredItems.length"
       class="absolute w-full bg-gray-200 border rounded-lg shadow-lg z-10 mt-1"

@@ -1,6 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { Item } from '~/server/database/drizzle'
+</script>
 
+<script setup lang="ts">
 const { t } = useI18n()
 const toast = useToast()
 const { data: itemsData, error: getItemsError, refresh: refreshItems } = await useMyItems()

@@ -1,7 +1,9 @@
-<script setup lang="ts">
+<script lang="ts">
 import z from 'zod'
 import type { Item } from '~/server/database/drizzle'
+</script>
 
+<script setup lang="ts">
 const { item: itemData } = defineProps<{
   item: Item & { category?: { name: string } | null }
   refreshItems: () => Promise<void>

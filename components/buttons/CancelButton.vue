@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const { t } = useI18n()
 defineProps<{ click: () => void }>()
+
+const { t } = useI18n()
 </script>
 
 <template>

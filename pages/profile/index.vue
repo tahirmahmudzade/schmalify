@@ -1,7 +1,14 @@
-<script setup lang="ts">
+<script lang="ts">
 import { z } from 'zod'
 import type { Item, User } from '~/server/database/drizzle'
 
+function onPhoneInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  input.value = input.value.replace(/[^0-9+]/g, '')
+}
+</script>
+
+<script setup lang="ts">
 const { t } = useI18n()
 const toast = useToast()
 const { user } = useUserSession()
@@ -12,11 +19,6 @@ const { data: userData } = await useFetch<User & { items: (Item & { category: { 
 
 if (!userData.value) {
   throw createError({ statusCode: 404, message: t('Failed to load user data') })
-}
-
-function onPhoneInput(event: Event) {
-  const input = event.target as HTMLInputElement
-  input.value = input.value.replace(/[^0-9+]/g, '')
 }
 
 const schema = z.object({
@@ -93,24 +95,24 @@ const isFormUnchanged = computed(() => {
   )
 })
 
-async function handleLogout() {
-  if (user.value?.isGuest) {
-    const confirmTitle = 'Logout as Guest'
-    const confirmDescription = `You are logging out as a guest, you won't be able to log back in. Are you sure you want to continue?`
-    const confirmed = await useConfirmModal(confirmTitle, confirmDescription)
-    if (!confirmed) {
-      return
-    }
-  }
-  try {
-    await $fetch('/api/auth/logout')
-    toast.add({ title: t('User logged out') })
-    reloadNuxtApp({ path: '/' })
-  } catch (err: any) {
-    console.log('Error logging out', err)
-    toast.add({ title: t(err.data.message) || t('Something went wrong, please try again later or contact support') })
-  }
-}
+// async function handleLogout() {
+//   if (user.value?.isGuest) {
+//     const confirmTitle = 'Logout as Guest'
+//     const confirmDescription = `You are logging out as a guest, you won't be able to log back in. Are you sure you want to continue?`
+//     const confirmed = await useConfirmModal(confirmTitle, confirmDescription)
+//     if (!confirmed) {
+//       return
+//     }
+//   }
+//   try {
+//     await $fetch('/api/auth/logout')
+//     toast.add({ title: t('User logged out') })
+//     reloadNuxtApp({ path: '/' })
+//   } catch (err: any) {
+//     console.log('Error logging out', err)
+//     toast.add({ title: t(err.data.message) || t('Something went wrong, please try again later or contact support') })
+//   }
+// }
 
 async function uploadImage(e: Event) {
   const input = e.target as HTMLInputElement
