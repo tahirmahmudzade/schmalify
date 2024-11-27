@@ -72,8 +72,8 @@ export default defineNuxtConfig({
     ],
   },
 
-  $development: { hub: { database: true, blob: true, kv: true } },
-  hub: { database: true, blob: true, kv: true },
+  $development: { hub: { database: true, blob: true, kv: true, remote: 'preview' } },
+  hub: { database: true, blob: true, kv: true, remote: 'preview' },
 
   devtools: { enabled: true },
   imports: { dirs: ['composables/**'] },
