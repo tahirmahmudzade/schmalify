@@ -79,5 +79,5 @@ export default defineNuxtConfig({
   imports: { dirs: ['composables/**'] },
   vue: { propsDestructure: true },
   future: { compatibilityVersion: 4 },
-  compatibilityDate: '2024-09-25',
+  compatibilityDate: '2024-09-12',
 })
