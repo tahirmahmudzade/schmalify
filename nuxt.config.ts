@@ -17,6 +17,8 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
   ],
 
+  devServer: { port: 9562 },
+
   security: {
     requestSizeLimiter: { maxRequestSizeInBytes: 8000000, maxUploadFileRequestInBytes: 10000000, throwError: true },
     rateLimiter: { tokensPerInterval: 150, interval: 30000, throwError: true },
@@ -75,9 +77,7 @@ export default defineNuxtConfig({
   $development: { hub: { database: true, blob: true, kv: true } },
   hub: { database: true, blob: true, kv: true },
 
-  devtools: { enabled: true },
   imports: { dirs: ['composables/**'] },
-  vue: { propsDestructure: true },
   future: { compatibilityVersion: 4 },
-  compatibilityDate: '2024-09-25',
+  compatibilityDate: { default: '2025-01-20' },
 })
